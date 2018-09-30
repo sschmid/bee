@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+#
+# bee is a flexible plugin-based automatisation tool
+#
+# Shell Style Guide
+# https://google.github.io/styleguide/shell.xml
+set -eu
+
+resolve_bee_home() {
+  local cwd="${PWD}"
+  local bee_home="$1"
+
+  while [[ -L "${bee_home}" ]]; do
+    local dir="$(dirname "${bee_home}")"
+    bee_home="$(readlink "${bee_home}")"
+    cd "${dir}"
+    cd "$(dirname "${bee_home}")"
+  done
+
+  bee_home="$(cd "$(dirname "${bee_home}")"/.. && pwd)"
+  cd "${cwd}"
+  echo "${bee_home}"
+}
+
+export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
+
+plugins() {
+  for dir in "${BEE_PLUGINS}"/*; do
+    basename "${dir}"
+  done
+}
+
+commands() {
+  compgen -A function | grep '^[a-zA-Z]*::[a-zA-Z]'
+}
+
+new() {
+  if [[ $# -eq 0 ]]; then
+    if [[ -f bee.sh ]]; then
+      echo "bee.sh already exists"
+      exit 1
+    fi
+    echo '#!/usr/bin/env bash
+PROJECT="MyProject"
+PLUGINS=(git utils version)
+
+# Run bee new <plugins> to print all required variables
+# e.g. bee new git utils version' >> bee.sh
+
+    echo "created ${PWD}/bee.sh"
+  else
+    source_plugins "$@"
+    local plugins=("$@")
+    local template=""
+    for p in "${plugins[@]}"; do
+      template="${template}\n$("${p}::_new")\n"
+    done
+    echo -e "${template}" | pbcopy
+    echo -e "${template}"
+    echo ""
+    echo "(template has been copied to the clipboard)"
+  fi
+}
+
+version() {
+  local remote_version="$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/master/version.txt 2>/dev/null)"
+  local local_version="$(cat "${BEE_HOME}/version.txt")"
+  if [[ -n "${remote_version}" ]]; then
+    echo "bee ${local_version} (latest version: ${remote_version})"
+  else
+    echo "bee ${local_version}"
+  fi
+}
+
+update() {
+  pushd "${BEE_HOME}" >/dev/null
+    git pull
+    echo "bee is up-to-date and ready to bzzzz"
+  popd >/dev/null
+}
+
+wiki() {
+  open https://github.com/sschmid/bee/wiki
+}
+
+help() {
+  local local_version="$(cat "${BEE_HOME}/version.txt")"
+  echo "🐝 bee ${local_version} - plugin-based automatization tool - \"it's just bash\""
+  echo '
+usage:
+    bee plugins       - print all plugins
+    bee commands      - print all commands of enabled plugins
+    bee new           - create new bee.sh file
+    bee new <plugins> - print templates for plugins
+    bee [COMMAND]     - run command
+    bee version       - print version
+    bee update        - update bee to latest version
+    bee wiki          - open wiki
+
+available options:
+    -v                - verbose output
+
+customization:
+    see ~/.beerc
+
+EXAMPLE
+    bee dotnet::build
+    bee -v version::bump_minor
+    bee ios::dist'
+}
+
+main() {
+  source "${BEE_HOME}/libexec/bee_log"
+  source "${BEE_HOME}/libexec/bee_utils"
+  source_config
+
+  if [[ -f bee.sh ]]; then
+    source bee.sh
+    source_plugins "${PLUGINS[@]}"
+  fi
+
+  if [[ $# -gt 0 ]]; then
+    if [[ "$1" = "-v" ]]; then
+      shift
+      set -x
+    fi
+
+    local t=${SECONDS}
+
+    "$@"
+
+    if [[ "$@" = *"::"* ]]; then
+      log "bzzzz ($((${SECONDS} - ${t})) seconds)"
+    fi
+  else
+    help
+  fi
+}
+
+main "$@"
