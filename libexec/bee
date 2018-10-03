@@ -80,18 +80,27 @@ update() {
 }
 
 wiki() {
-  open https://github.com/sschmid/bee/wiki
+  open "https://github.com/sschmid/bee/wiki"
 }
 
 help() {
-  local local_version="$(cat "${BEE_HOME}/version.txt")"
-  echo "🐝 bee ${local_version} - plugin-based automatization tool - \"it's just bash\""
-  echo '
+  if [[ $# -eq 1 ]]; then
+    local readme="${BEE_PLUGINS}/$1/README.md"
+    if [[ -f "${readme}" ]]; then
+      cat "${readme}"
+    else
+      echo "Help for $1 doesn't exit"
+    fi
+  else
+    local local_version="$(cat "${BEE_HOME}/version.txt")"
+    echo "🐝 bee ${local_version} - plugin-based automatization tool - \"it's just bash\""
+    echo '
 usage:
+    bee help <plugin> - print readme for plugin
     bee plugins       - print all plugins
     bee commands      - print all commands of enabled plugins
     bee new           - create new bee.sh file
-    bee new <plugins> - print templates for plugins
+    bee new <plugins> - print code templates for plugins
     bee [COMMAND]     - run command
     bee version       - print version
     bee update        - update bee to latest version
@@ -107,6 +116,7 @@ EXAMPLE
     bee dotnet::build
     bee -v version::bump_minor
     bee ios::dist'
+  fi
 }
 
 main() {

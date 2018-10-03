@@ -3,7 +3,7 @@
 # Commit and push releases
 
 git::_new() {
-  echo '# git'
+  echo '# git => version'
 }
 
 git::merge_develop() {
