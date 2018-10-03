@@ -119,6 +119,10 @@ EXAMPLE
   fi
 }
 
+❤️() {
+  open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
+}
+
 main() {
   source "${BEE_HOME}/libexec/bee_log"
   source "${BEE_HOME}/libexec/bee_utils"

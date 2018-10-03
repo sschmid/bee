@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
 _bee_completions() {
-  COMPREPLY=($(compgen -W "$(bee commands)" "${COMP_WORDS[1]}"))
-  if [[ "${#COMPREPLY[@]}" -eq 0 ]]; then
-    COMPREPLY=($(compgen -W "plugins commands new version update wiki" "${COMP_WORDS[1]}"))
-  fi
+  local wordlist="plugins commands new version update wiki ❤️"
+  wordlist+=" $(bee commands)"
+  COMPREPLY=($(compgen -W "${wordlist}" "${COMP_WORDS[1]}"))
 }
 
 complete -F _bee_completions bee
