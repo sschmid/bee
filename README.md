@@ -21,6 +21,8 @@ Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to bee! Share
 your plugins with the bee community so everyone can start saving time today.
 
+[**🐝 Explore plugins**](https://github.com/sschmid/bee/tree/master/plugins)
+
 
 ## Example
 
@@ -74,7 +76,7 @@ $ vim ~/.beerc
 
 Read more about bee, checkout more examples and contribute your first own plugin
 
-[> open the bee wiki](https://github.com/sschmid/bee/wiki)
+[**🐝 Open the bee wiki**](https://github.com/sschmid/bee/wiki)
 
 <p align="center">
     <b>bee is free, but powered by your donations</b>
