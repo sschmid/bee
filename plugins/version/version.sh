@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Read, write and bump version numbers
 
 version::_new() {

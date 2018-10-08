@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Merge changes into changelog
 # https://keepachangelog.com
 

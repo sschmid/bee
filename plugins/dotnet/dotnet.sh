@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Build and test .NET apps
 
 dotnet::_new() {

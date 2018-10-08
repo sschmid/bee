@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Generate docs with doxygen
 
 DOXYGEN_BUILD=Build/docs

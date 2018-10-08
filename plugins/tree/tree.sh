@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Prints folder and file overview
 
 tree::_new() {

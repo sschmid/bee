@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Archive and upload to TestFlight
 
 ios::_new() {

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # A set of commonly used utility functions
 
 utils::_new() {

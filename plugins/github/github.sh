@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+# Author: @sschmid
 # Create github releases and upload attachments
 
 github::_new() {
