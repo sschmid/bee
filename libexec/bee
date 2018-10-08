@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# bee is a flexible plugin-based automatisation tool
+# 🐝 bee - plugin-based automation - "it's just bash"
 #
 # Shell Style Guide
 # https://google.github.io/styleguide/shell.xml

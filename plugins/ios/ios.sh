@@ -21,6 +21,7 @@ ios::archive() {
   -workspace "${IOS_WORKSPACE}" \
   -scheme "${IOS_SCHEME}" \
   -archivePath "${IOS_ARCHIVE}" \
+  -quiet \
   archive
 }
 
@@ -30,7 +31,8 @@ ios::export() {
   -exportArchive \
   -archivePath "${IOS_ARCHIVE}" \
   -exportPath "${IOS_EXPORT_PATH}" \
-  -exportOptionsPlist "${IOS_EXPORT_OPTIONS}"
+  -exportOptionsPlist "${IOS_EXPORT_OPTIONS}" \
+  -quiet
 }
 
 ios::upload() {
