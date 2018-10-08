@@ -1,5 +1,9 @@
 # 🐝 bee - plugin-based automation - "it's just bash"
 
+[![Join the chat at https://gitter.im/sschmid/bee](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/sschmid/bee)
+[![Twitter @s_schmid](https://img.shields.io/badge/twitter-follow%20%40s__schmid-blue.svg)](https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2Fsschmid%2Fbee&screen_name=s_schmid&tw_p=followbutton)
+[![Latest release](https://img.shields.io/github/release/sschmid/bee.svg)](https://github.com/sschmid/bee/releases)
+
 ## Automate your development and release process
 
 bee is an open source platform aimed to simplify and standardize automation and deployment.
