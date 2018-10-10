@@ -95,7 +95,7 @@ help() {
     fi
   else
     local local_version="$(cat "${BEE_HOME}/version.txt")"
-    echo "🐝 bee ${local_version} - plugin-based automatization tool - \"it's just bash\""
+    echo "🐝 bee ${local_version} - plugin-based automation - \"it's just bash\""
     echo '
 usage:
     bee help <plugin> - print readme for plugin
