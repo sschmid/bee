@@ -25,8 +25,10 @@ resolve_bee_home() {
 export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
 
 plugins() {
-  for dir in "${BEE_PLUGINS}"/*; do
-    basename "${dir}"
+  for f in "${BEE_PLUGINS}"/*; do
+    if [[ -d "${f}" ]]; then
+      basename "${f}"
+    fi
   done
 }
 
