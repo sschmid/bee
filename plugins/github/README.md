@@ -1,6 +1,7 @@
 github
 ======
-Please see https://github.com
+Please see
+- https://github.com
 
 `github::create_release`
 ------------------------

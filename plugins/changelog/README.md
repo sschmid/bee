@@ -1,6 +1,7 @@
 changelog
 =========
-Please see https://keepachangelog.com
+Please see
+- https://keepachangelog.com
 
 `changelog::merge`
 ------------------
