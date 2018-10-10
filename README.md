@@ -39,6 +39,7 @@ release() {
   git::commit_release_sync_master
   git::push_all
   github::create_release
+  slack::message "New release $(version::read)"
 }
 ```
 
@@ -53,6 +54,7 @@ $ bee release
 - `git::commit_release_sync_master` - commit, tag and merge develop into master
 - `git::push_all` - push develop, master and tags
 - `github::create_release` - create a github release and optionally attach artifacts
+- `slack::message` - send a message via slack to notify the team about a new release
 
 
 ## Install
