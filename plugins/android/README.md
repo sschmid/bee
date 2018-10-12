@@ -7,11 +7,16 @@ android
 
 `android::install`
 ------------------
-- installs apk to connected device
+- installs apk `ANDROID_APK` to connected device
 
 `android::logcat`
 -----------------
-- receives log messages from connected device using `adb logcat`
+- prints log messages from connected device using `adb logcat`
+
+`android::debug`
+-----------------
+- runs `android::install`
+- runs `android::logcat`
 
 
 Dependencies
@@ -24,7 +29,9 @@ Examples
 ```
 $ bee android::devices
 
-$ bee android::install MyGame.apk
+$ bee android::install
 
 $ bee android::logcat -s "Unity"
+
+$ bee android::debug -s "Unity"
 ```
