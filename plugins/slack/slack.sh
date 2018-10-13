@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 # Author: @sschmid
-# Send messages via slack
+# Send messages via slack webhooks
 
 slack::_new() {
   echo '# slack
-SLACK_WEBHOOK_URL="https://hooks.slack.com/services/abcdefgh123456"
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/abc123"
 '
 }
 

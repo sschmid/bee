@@ -5,11 +5,11 @@
 	<key>method</key>
 	<string>app-store</string>
 	<key>teamID</key>
-    <string>ABCDE12345</string>
+    <string>ABC123</string>
 	<key>provisioningProfiles</key>
   	<dict>
     	<key>com.company.MyProject</key>
-    	<string>abcdefgh123456</string>
+    	<string>abc123</string>
   	</dict>
   	<key>signingCertificate</key>
   	<string>iOS Distribution</string>
