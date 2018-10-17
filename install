@@ -10,27 +10,12 @@ LOCAL_REPO=/usr/local/opt/bee
 SYM_LINK=/usr/local/bin/bee
 REPO=https://github.com/sschmid/bee
 
-echo "This script will install bee into
-
-    ${LOCAL_REPO}
-
-bee will be symlinked to
-
-    ${SYM_LINK}
-
-Do you want to continue? (y / n)"
-
-read -s -n 1 REPLY
-
-if [[ "${REPLY}" == "y" ]]; then
-  if [[ -d "${LOCAL_REPO}" ]]; then
-    echo "It seems like bee is already installed at ${LOCAL_REPO}"
-    echo "Run 'bee update' to update bee to the latest version"
-  else
-    git clone "${REPO}" "${LOCAL_REPO}"
-    echo "symlink to ${SYM_LINK}"
-    ln -s "${LOCAL_REPO}/libexec/bee" "${SYM_LINK}"
-  fi
+if [[ -d "${LOCAL_REPO}" ]]; then
+  echo "It seems like bee is already installed at ${LOCAL_REPO}"
+  echo "Run 'bee update' to update bee to the latest version"
 else
-  echo "Ok, bee will not be installed"
+  git clone "${REPO}" "${LOCAL_REPO}"
+  echo "symlink to ${SYM_LINK}"
+  ln -s "${LOCAL_REPO}/libexec/bee" "${SYM_LINK}"
+  echo "🐝 bee has been installed successfully"
 fi
