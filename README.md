@@ -15,6 +15,7 @@ bee runs everywhere - "it's just bash"
 Combine bee with continuous integration tools such as [Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
 build and distribute your applications.
 
+[**🐝 Continuous Integration**](https://github.com/sschmid/bee/wiki/Continuous-Integration)
 
 ## Extending with Plugins
 
