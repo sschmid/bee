@@ -12,14 +12,14 @@ bee runs everywhere - "it's just bash"
 
 *__Automate the entire process from building your Unity project to uploading it to the app store__*
 
-Combine bee with continuous integration tools such as [jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
+Combine bee with continuous integration tools such as [Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
 build and distribute your applications.
 
 
 ## Extending with Plugins
 
 bee comes with a set of builtin plugins like 
-`changelog`, `dotnet`, `doxygen`, `git`, `github`, `ios`, `unity`, `version`, and more...
+`android`, `changelog`, `dotnet`, `doxygen`, `git`, `github`, `ios`, `unity`, `version`, and more...
 
 Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to bee! Share
