@@ -65,7 +65,7 @@ PLUGINS=(git utils version)
 }
 
 version() {
-  local remote_version="$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/master/version.txt 2>/dev/null)"
+  local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   local local_version="$(cat "${BEE_HOME}/version.txt")"
   if [[ -n "${remote_version}" ]]; then
     echo "bee ${local_version} (latest version: ${remote_version})"
