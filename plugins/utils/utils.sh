@@ -15,6 +15,6 @@ utils::clean_dir() {
   mkdir -p "$@"
 }
 
-utils::sync_files() {
-  rsync -ai --include-from "${UTILS_RSYNC_INCLUDE}" --exclude-from "${UTILS_RSYNC_EXCLUDE}" "$1" "$2"
+utils::sync() {
+  rsync -ahri --delete --include-from "${UTILS_RSYNC_INCLUDE}" --exclude-from "${UTILS_RSYNC_EXCLUDE}" "$1" "$2"
 }
