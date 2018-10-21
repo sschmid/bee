@@ -1,3 +1,8 @@
+## [0.5.0] - 2018-10-21
+### Changed
+- Remove `utils::sync` deleting extraneous files
+- Update template code to use ${RESOURCES}
+
 ## [0.4.0] - 2018-10-21
 ### Added
 - Add `ANDROID_APK`
