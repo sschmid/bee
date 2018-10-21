@@ -1,3 +1,15 @@
+## [0.4.0] - 2018-10-21
+### Added
+- Add `ANDROID_APK`
+- Add `android::debug`
+- Add `res` command
+
+### Changed
+- `android::install` uses `ANDROID_APK`
+- Rename `utils::sync_files` to `utils::sync`
+- `utils::sync` deletes extraneous files
+- install script doesn't require user input
+
 ## [0.3.0] - 2018-10-10
 ### Added
 - Add `android` plugin
