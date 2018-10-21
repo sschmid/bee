@@ -1,6 +1,7 @@
 ios
 ===
-Please see templates folder for sample resources
+This plugin comes with additional resources.
+Please run `bee res ios` to copy all required files to you project.
 
 `ios::archive`
 --------------

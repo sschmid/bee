@@ -1,6 +1,7 @@
 utils
 =====
-Please see templates folder for sample resources
+This plugin comes with additional resources.
+Please run `bee res utils` to copy all required files to you project.
 
 `utils::clean_dir`
 ------------------

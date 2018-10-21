@@ -1,6 +1,7 @@
 doxygen
 =======
-Please see templates folder for sample resources
+This plugin comes with additional resources.
+Please run `bee res doxygen` to copy all required files to you project.
 
 `doxygen::generate`
 -------------------
