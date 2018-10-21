@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 PROJECT="bee"
 PLUGINS=(changelog git github version)
+RESOURCES=.bee
 
 # changelog => version
 CHANGELOG_PATH=CHANGELOG.md
