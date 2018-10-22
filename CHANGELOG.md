@@ -1,3 +1,7 @@
+## [0.6.0] - 2018-10-22
+### Changed
+- Fix `doxygen::generate` cannot read `VERSION`
+
 ## [0.5.0] - 2018-10-21
 ### Changed
 - Remove `utils::sync` deleting extraneous files
