@@ -17,8 +17,7 @@ DOXYGEN_DOCSET_ICONS=("${RESOURCES}"/docs/icon.png "${RESOURCES}"/docs/icon@2x.p
 
 doxygen::generate_doxyfile() {
   log_func "$1"
-  local version="$(version::read)"
-  sed -i .bak -e "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = ${version}/" "$1"
+  sed -i .bak -e "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = ${2}/" "$1"
   rm "$1.bak"
   doxygen "$1"
 }
@@ -45,8 +44,9 @@ doxygen::generate() {
   require doxygen
   utils::clean_dir "${DOXYGEN_BUILD}"
 
+  local version="$(version::read)"
   for f in "${DOXYGEN_DOXY_FILES[@]}"; do
-    doxygen::generate_doxyfile "${f}"
+    doxygen::generate_doxyfile "${f}" "${version}"
   done
 
   utils::clean_dir "${DOXYGEN_EXPORT_PATH}"
