@@ -1,3 +1,7 @@
+## [0.7.0] - 2018-10-24
+### Added
+- Add `android::start`
+
 ## [0.6.0] - 2018-10-22
 ### Changed
 - Fix `doxygen::generate` cannot read `VERSION`
