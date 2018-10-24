@@ -9,6 +9,10 @@ android
 ------------------
 - installs apk `ANDROID_APK` to connected device
 
+`android::start`
+------------------
+- starts `ANDROID_ACTIVITY` on connected device
+
 `android::logcat`
 -----------------
 - prints log messages from connected device using `adb logcat`
