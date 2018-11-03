@@ -16,19 +16,6 @@ optional arguments:
 -----------------
 - cleans and builds `DOTNET_SOLUTION`
 
-`dotnet::build_tests`
----------------------
-- builds `DOTNET_TESTS_PROJECT`
-
-`dotnet::run_tests`
--------------------
-- runs `DOTNET_TESTS_RUNNER`
-
-`dotnet::tests`
----------------
-- runs `dotnet::build_tests`
-- runs `dotnet::run_tests`
-
 
 Dependencies
 ============
@@ -45,6 +32,4 @@ $ bee dotnet::build MyProject.csproj
 $ bee dotnet::clean
 
 $ bee dotnet::rebuild
-
-$ bee dotnet::tests
 ```
