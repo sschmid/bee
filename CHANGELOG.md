@@ -1,3 +1,12 @@
+## [0.8.0] - 2018-11-04
+### Added
+- Add `nspec` plugin
+
+### Changed
+- Remove `dotnet::build_tests`
+- Remove `dotnet::run_tests`
+- Remove `dotnet::tests`
+
 ## [0.7.0] - 2018-10-24
 ### Added
 - Add `android::start`
