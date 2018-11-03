@@ -20,7 +20,7 @@ build and distribute your applications.
 ## Extending with Plugins
 
 bee comes with a set of builtin plugins like 
-`android`, `changelog`, `dotnet`, `doxygen`, `git`, `github`, `ios`, `unity`, `version`, and more...
+`android`, `changelog`, `dotnet`, `doxygen`, `git`, `github`, `ios`, `nspec` `unity`, `version`, and more...
 
 Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to bee! Share
@@ -33,6 +33,7 @@ your plugins with the bee community so everyone can start saving time today.
 
 ```bash
 release() {
+  nspec::run
   version::bump_minor
   unity::execute_method BuildIOS
   ios::dist
@@ -48,6 +49,7 @@ release() {
 $ bee release
 ```
 
+- `nspec::run` - run the tests
 - `version::bump_minor` - bump the minor version
 - `unity::execute_method BuildIOS` - build the Unity project
 - `ios::dist` - archive, export, sign and upload to [TestFlight](https://developer.apple.com/testflight/)
