@@ -69,6 +69,7 @@ res() {
   for p in "$@"; do
     local d="${BEE_PLUGINS}/${p}/templates"
     if [[ -d "${d}" ]]; then
+      echo "Copying resources into ${RESOURCES}/${p}"
       mkdir -p "${RESOURCES}/${p}/"
       cp -r "${d}/"* "${RESOURCES}/${p}/"
     fi
@@ -114,7 +115,7 @@ usage:
     bee commands      - print all commands of enabled plugins
     bee new           - create new bee.sh file
     bee new <plugins> - print code templates for plugins
-    bee res <plugins> - copy template files into res dir
+    bee res <plugins> - copy template files into resources dir
     bee [COMMAND]     - run command
     bee version       - print version
     bee update        - update bee to latest version

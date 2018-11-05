@@ -20,6 +20,7 @@ android
 `android::debug`
 -----------------
 - runs `android::install`
+- runs `android::start`
 - runs `android::logcat`
 
 
