@@ -19,6 +19,7 @@ source_config() {
   if [[ ! -f "${config}" ]]; then
     echo "#!/usr/bin/env bash" > "${config}"
     echo 'BEE_PLUGINS="${BEE_HOME}/plugins"' >> "${config}"
+    echo 'BEE_USER_PLUGINS="${HOME}/.bee/plugins"' >> "${config}"
   fi
   source "${config}"
 }
@@ -26,8 +27,11 @@ source_config() {
 source_plugins() {
   for p in "$@"; do
     local f="${BEE_PLUGINS}/${p}/${p}.sh"
+    local uf="${BEE_USER_PLUGINS}/${p}/${p}.sh"
     if [[ -f "${f}" ]]; then
       source "${f}"
+    elif [[ -f "${uf}" ]]; then
+      source "${uf}"
     else
       log_error "Could not find plugin ${p}"
       exit 1
