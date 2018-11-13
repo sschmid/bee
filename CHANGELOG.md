@@ -1,3 +1,10 @@
+## [0.9.0] - 2018-11-13
+### Added
+- Add support for user plugins
+
+### Upgrade
+- Add `BEE_USER_PLUGINS="${HOME}/.bee/plugins"` to your `.beerc`
+
 ## [0.8.0] - 2018-11-04
 ### Added
 - Add `nspec` plugin
