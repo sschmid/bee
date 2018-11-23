@@ -1,3 +1,14 @@
+## [0.10.0] - 2018-11-24
+### Changed
+- Change `BEE_PLUGINS` to array and remove `BEE_USER_PLUGINS`
+
+### Upgrade
+- Update `~/.beerc` to use `BEE_PLUGINS` array
+
+```
+BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
+```
+
 ## [0.9.0] - 2018-11-13
 ### Added
 - Add support for user plugins
