@@ -18,21 +18,23 @@ source_config() {
   local config="${HOME}/.beerc"
   if [[ ! -f "${config}" ]]; then
     echo "#!/usr/bin/env bash" > "${config}"
-    echo 'BEE_PLUGINS="${BEE_HOME}/plugins"' >> "${config}"
-    echo 'BEE_USER_PLUGINS="${HOME}/.bee/plugins"' >> "${config}"
+    echo 'BEE_PLUGINS=("${BEE_HOME}/plugins")' >> "${config}"
   fi
   source "${config}"
 }
 
 source_plugins() {
   for p in "$@"; do
-    local f="${BEE_PLUGINS}/${p}/${p}.sh"
-    local uf="${BEE_USER_PLUGINS}/${p}/${p}.sh"
-    if [[ -f "${f}" ]]; then
-      source "${f}"
-    elif [[ -f "${uf}" ]]; then
-      source "${uf}"
-    else
+    local found=false
+    for d in "${BEE_PLUGINS[@]}"; do
+      local f="${d}/${p}/${p}.sh"
+      if [[ -f "${f}" ]]; then
+        source "${f}"
+        found=true
+      fi
+    done
+
+    if [[ ${found} == false ]]; then
       log_error "Could not find plugin ${p}"
       exit 1
     fi

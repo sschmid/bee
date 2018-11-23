@@ -25,15 +25,12 @@ resolve_bee_home() {
 export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
 
 plugins() {
-  for f in "${BEE_PLUGINS}"/*; do
-    if [[ -d "${f}" ]]; then
-      basename "${f}"
-    fi
-  done
-  for f in "${BEE_USER_PLUGINS}"/*; do
-    if [[ -d "${f}" ]]; then
-      basename "${f}"
-    fi
+  for d in "${BEE_PLUGINS[@]}"; do
+    for f in "${d}"/*; do
+      if [[ -d "${f}" ]]; then
+        basename "${f}"
+      fi
+    done
   done
 }
 
@@ -72,17 +69,14 @@ RESOURCES=.bee
 
 res() {
   for p in "$@"; do
-    local d="${BEE_PLUGINS}/${p}/templates"
-    local ud="${BEE_USER_PLUGINS}/${p}/templates"
-    if [[ -d "${d}" ]]; then
-      echo "Copying resources into ${RESOURCES}/${p}"
-      mkdir -p "${RESOURCES}/${p}/"
-      cp -r "${d}/"* "${RESOURCES}/${p}/"
-    elif [[ -d "${ud}" ]]; then
-      echo "Copying resources into ${RESOURCES}/${p}"
-      mkdir -p "${RESOURCES}/${p}/"
-      cp -r "${ud}/"* "${RESOURCES}/${p}/"
-    fi
+    for d in "${BEE_PLUGINS[@]}"; do
+      local t="${d}/${p}/templates"
+      if [[ -d "${t}" ]]; then
+        echo "Copying resources into ${RESOURCES}/${p}"
+        mkdir -p "${RESOURCES}/${p}/"
+        cp -r "${t}/"* "${RESOURCES}/${p}/"
+      fi
+    done
   done
 }
 
@@ -109,13 +103,15 @@ wiki() {
 
 help() {
   if [[ $# -eq 1 ]]; then
-    local readme="${BEE_PLUGINS}/$1/README.md"
-    local ureadme="${BEE_USER_PLUGINS}/$1/README.md"
-    if [[ -f "${readme}" ]]; then
-      cat "${readme}"
-    elif [[ -f "${ureadme}" ]]; then
-      cat "${ureadme}"
-    else
+    local found=false
+    for d in "${BEE_PLUGINS[@]}"; do
+      local readme="${d}/$1/README.md"
+      if [[ -f "${readme}" ]]; then
+        cat "${readme}"
+        found=true
+      fi
+    done
+    if [[ ${found} == false ]]; then
       echo "Help for $1 doesn't exit"
     fi
   else
