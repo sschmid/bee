@@ -3,23 +3,21 @@ ios
 This plugin comes with additional resources.
 Please run `bee res ios` to copy all required files to you project.
 
-`ios::archive`
+`ios::archive_project`
 --------------
-- creates archive
+- creates archive from project
+
+`ios::archive_workspace`
+--------------
+- creates archive from workspace
 
 `ios::export`
 -------------
-- exports archive
+- exports archive from workspace
 
 `ios::upload`
 -------------
 - uploads exported archive to [TestFlight](https://developer.apple.com/testflight/)
-
-`ios::dist`
------------
-- runs `ios::archive`
-- runs `ios::export`
-- runs `ios::upload`
 
 
 Dependencies
@@ -31,5 +29,9 @@ Dependencies
 Examples
 ========
 ```
-$ bee ios::dist
+$ bee ios::archive_project
+
+$ bee ios::export
+
+$ bee ios::upload
 ```

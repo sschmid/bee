@@ -5,6 +5,7 @@
 
 ios::_new() {
   echo '# ios
+IOS_PROJECT="Build/iOS/${PROJECT}/Unity-iPhone.xcodeproj"
 IOS_WORKSPACE="Build/iOS/${PROJECT}/Unity-iPhone.xcworkspace"
 IOS_SCHEME="Unity-iPhone"
 IOS_ARCHIVE="Build/iOS/${PROJECT}/${PROJECT}.xcarchive"
@@ -16,7 +17,17 @@ IOS_USER="user"
 IOS_PASSWORD="password"'
 }
 
-ios::archive() {
+ios::archive_project() {
+  log_func
+  xcodebuild \
+  -project "${IOS_PROJECT}" \
+  -scheme "${IOS_SCHEME}" \
+  -archivePath "${IOS_ARCHIVE}" \
+  -quiet \
+  archive
+}
+
+ios::archive_workspace() {
   log_func
   xcodebuild \
   -workspace "${IOS_WORKSPACE}" \
@@ -39,10 +50,4 @@ ios::export() {
 ios::upload() {
   log_func
   "${ALTOOL}" --upload-app -f "${IOS_IPA}" -u "${IOS_USER}" -p "${IOS_PASSWORD}"
-}
-
-ios::dist() {
-  ios::archive
-  ios::export
-  ios::upload
 }
