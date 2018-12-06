@@ -1,3 +1,11 @@
+## [0.11.0] - 2018-12-06
+### Changed
+- Rename `ios::archive` to `ios::archive_workspace`
+- Add `ios::archive_project`
+
+### Upgrade
+- Replace calls to `ios::archive` with `ios::archive_workspace`
+
 ## [0.10.0] - 2018-11-24
 ### Changed
 - Change `BEE_PLUGINS` to array and remove `BEE_USER_PLUGINS`
