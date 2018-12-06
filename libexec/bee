@@ -139,7 +139,7 @@ customization:
 EXAMPLE
     bee dotnet::build
     bee -v version::bump_minor
-    bee ios::dist'
+    bee ios::archive'
   fi
 }
 

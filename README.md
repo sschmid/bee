@@ -36,7 +36,9 @@ release() {
   nspec::run
   version::bump_minor
   unity::execute_method BuildIOS
-  ios::dist
+  ios::archive_project
+  ios::export
+  ios::upload
   changelog::merge
   git::commit_release_sync_master
   git::push_all
@@ -52,7 +54,9 @@ $ bee release
 - `nspec::run` - run the tests
 - `version::bump_minor` - bump the minor version
 - `unity::execute_method BuildIOS` - build the Unity project
-- `ios::dist` - archive, export, sign and upload to [TestFlight](https://developer.apple.com/testflight/)
+- `ios::archive_project` - archive xcode project
+- `ios::export` - export archive
+- `ios::upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
 - `changelog::merge` - merge the latest changes into the changelog
 - `git::commit_release_sync_master` - commit, tag and merge develop into master
 - `git::push_all` - push develop, master and tags
