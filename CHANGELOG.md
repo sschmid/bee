@@ -1,3 +1,10 @@
+## [0.13.0] - 2018-12-09
+### Added
+- git lfs track *.png
+
+### Upgrade
+- git lfs migrate required a force push. Please reinstall bee and clone again
+
 ## [0.12.0] - 2018-12-09
 ### Added
 - Improve bash-completion
