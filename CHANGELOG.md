@@ -1,3 +1,7 @@
+## [0.12.0] - 2018-12-09
+### Added
+- Improve bash-completion
+
 ## [0.11.0] - 2018-12-06
 ### Changed
 - Rename `ios::archive` to `ios::archive_workspace`
