@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="https://raw.githubusercontent.com/sschmid/bee/master/readme/bee-header.png" alt="bee bash automation">
+</p>
+
 # 🐝 bee - plugin-based automation - "it's just bash"
 
 [![Join the chat at https://gitter.im/sschmid/bee](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/sschmid/bee)
