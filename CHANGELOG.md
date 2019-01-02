@@ -1,3 +1,10 @@
+## [0.14.0] - 2019-01-02
+### Changed
+- Rename `dotnet` to `msbuild`
+
+### Upgrade
+- Update usages of `dotnet` to `msbuild`
+
 ## [0.13.0] - 2018-12-09
 ### Added
 - git lfs track *.png
