@@ -137,7 +137,7 @@ customization:
     see ~/.beerc
 
 EXAMPLE
-    bee dotnet::build
+    bee msbuild::build
     bee -v version::bump_minor
     bee ios::archive'
   fi

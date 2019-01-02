@@ -3,7 +3,7 @@ nspec
 
 `nspec::run`
 ---------------
-- runs `dotnet::build` with `NSPEC_TESTS_PROJECT`
+- runs `msbuild::build` with `NSPEC_TESTS_PROJECT`
 - runs the test runner `NSPEC_TESTS_RUNNER` with `mono`
 
 optional arguments:

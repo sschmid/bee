@@ -23,8 +23,8 @@ build and distribute your applications.
 
 ## Extending with Plugins
 
-bee comes with a set of builtin plugins like 
-`android`, `changelog`, `dotnet`, `doxygen`, `git`, `github`, `ios`, `nspec` `unity`, `version`, and more...
+bee comes with a set of builtin plugins like
+`android`, `changelog`, `msbuild`, `doxygen`, `git`, `github`, `ios`, `nspec` `unity`, `version`, and more...
 
 Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to bee! Share
