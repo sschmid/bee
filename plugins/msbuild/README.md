@@ -16,6 +16,10 @@ optional arguments:
 -----------------
 - cleans and builds `MSBUILD_SOLUTION`
 
+`msbuild::restore`
+-----------------
+- restore packages in `MSBUILD_SOLUTION`
+
 
 Dependencies
 ============

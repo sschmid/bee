@@ -31,3 +31,7 @@ msbuild::rebuild() {
   msbuild::clean
   msbuild::build
 }
+
+msbuild::restore() {
+  msbuild -t:restore "${MSBUILD_SOLUTION}"
+}
