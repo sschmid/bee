@@ -1,3 +1,7 @@
+## [0.15.0] - 2019-01-04
+### Added
+- Add `msbuild::restore`
+
 ## [0.14.0] - 2019-01-02
 ### Changed
 - Rename `dotnet` to `msbuild`
