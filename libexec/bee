@@ -35,7 +35,7 @@ plugins() {
 }
 
 commands() {
-  compgen -A function | grep '^[a-zA-Z]*::[a-zA-Z]'
+  compgen -A function | grep '^[_a-zA-Z]*::[a-zA-Z]'
 }
 
 new() {
