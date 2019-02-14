@@ -167,9 +167,19 @@ main() {
 
     local t=${SECONDS}
 
-    "$@"
+    if [[ $(command -v "$@") == "$@" ]]; then
+      # command found
+      "$@"
+    else
+      # command not found
+      # try loading as a plugin
+      local p=($@)
+      source_plugins "${p}"
+      shift
+      "$@"
+    fi
 
-    if [[ "$@" = *"::"* ]]; then
+    if [[ "$@" == *"::"* ]]; then
       log "bzzzz ($((${SECONDS} - ${t})) seconds)"
     fi
   else
