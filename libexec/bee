@@ -60,10 +60,12 @@ RESOURCES=.bee
     for p in "${plugins[@]}"; do
       template="${template}\n$("${p}::_new")\n"
     done
-    echo -e "${template}" | pbcopy
     echo -e "${template}"
-    echo ""
-    echo "(template has been copied to the clipboard)"
+    command -v pbcopy &>/dev/null && {
+      echo -e "${template}" | pbcopy
+      echo ""
+      echo "(template has been copied to the clipboard)"
+    }
   fi
 }
 
