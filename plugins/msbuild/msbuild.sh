@@ -21,6 +21,18 @@ msbuild::build() {
   msbuild /property:Configuration=Release /verbosity:minimal "${path}"
 }
 
+msbuild::debug_build() {
+  local path
+  if [[ $# -eq 1 ]]; then
+    path="$1"
+  else
+    path="${MSBUILD_SOLUTION}"
+  fi
+
+  log_func "${path}"
+  msbuild /property:Configuration=Debug /verbosity:minimal "${path}"
+}
+
 msbuild::clean() {
   log_func
   msbuild /target:Clean /property:Configuration=Release /verbosity:minimal "${MSBUILD_SOLUTION}"
