@@ -11,6 +11,6 @@ NSPEC_TESTS_RUNNER=Tests/bin/Release/Tests.exe'
 
 nspec::run() {
   log_func
-  msbuild::build "${NSPEC_TESTS_PROJECT}"
+  msbuild::debug_build "${NSPEC_TESTS_PROJECT}"
   mono "${NSPEC_TESTS_RUNNER}" "$@"
 }
