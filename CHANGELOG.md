@@ -1,3 +1,11 @@
+## [0.16.0] - 2019-02-18
+### Added
+- Allow underscore in command names
+- Only copy plugin template if pbcopy is available #1
+- Add support for loading plugins on the fly without bee.sh
+- Improve bash-completion
+- Add `msbuild::debug_build`
+
 ## [0.15.0] - 2019-01-04
 ### Added
 - Add `msbuild::restore`
