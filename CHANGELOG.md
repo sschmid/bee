@@ -1,3 +1,10 @@
+## [0.17.0] - 2019-02-20
+### Changed
+- `android::logcat` only prints logs from the app specified `ANDROID_PACKAGE`
+
+### Upgrade
+- Add `ANDROID_PACKAGE="com.company.myapp"` to bee.sh
+
 ## [0.16.0] - 2019-02-18
 ### Added
 - Allow underscore in command names
