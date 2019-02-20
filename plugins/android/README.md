@@ -15,7 +15,8 @@ android
 
 `android::logcat`
 -----------------
-- prints log messages from connected device using `adb logcat`
+- prints log messages from connected device and
+  app with pid for `ANDROID_PACKAGE` using `adb logcat --pid`
 
 `android::debug`
 -----------------
