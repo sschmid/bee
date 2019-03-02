@@ -3,7 +3,7 @@
 _bee_completions() {
   local word="${COMP_WORDS[1]}"
   if [[ $COMP_CWORD -lt 2 ]]; then
-    local wordlist="help plugins commands new res version update wiki ❤️"
+    local wordlist="help plugins commands new deps res version update wiki ❤️"
     wordlist+=" $(bee plugins)"
     wordlist+=" $(bee commands)"
     COMPREPLY=($(compgen -W "${wordlist}" "${word}"))
