@@ -1,3 +1,8 @@
+## [0.18.0] - 2019-03-02
+### Added
+- Add `bee deps` to print missing dependencies
+- Add `deps` to bee-completion
+
 ## [0.17.0] - 2019-02-20
 ### Changed
 - `android::logcat` only prints logs from the app specified `ANDROID_PACKAGE`
