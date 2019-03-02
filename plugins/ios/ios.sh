@@ -4,8 +4,8 @@
 # Archive and upload to TestFlight
 
 ios::_new() {
-  echo '# ios
-IOS_PROJECT="Build/iOS/${PROJECT}/Unity-iPhone.xcodeproj"
+  echo "# ios"
+  echo 'IOS_PROJECT="Build/iOS/${PROJECT}/Unity-iPhone.xcodeproj"
 IOS_WORKSPACE="Build/iOS/${PROJECT}/Unity-iPhone.xcworkspace"
 IOS_SCHEME="Unity-iPhone"
 IOS_ARCHIVE="Build/iOS/${PROJECT}/${PROJECT}.xcarchive"

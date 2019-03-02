@@ -4,8 +4,8 @@
 # Read, write and bump version numbers
 
 version::_new() {
-  echo '# version
-VERSION_PATH=version.txt'
+  echo "# version"
+  echo 'VERSION_PATH=version.txt'
 }
 
 version::read() {

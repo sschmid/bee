@@ -4,12 +4,16 @@
 # Create github releases and upload attachments
 
 github::_new() {
-  echo '# github => version
-GITHUB_CHANGES=CHANGES.md
+  echo "# github => $(github::_deps)"
+  echo 'GITHUB_CHANGES=CHANGES.md
 GITHUB_RELEASE_PREFIX="${PROJECT}-"
 GITHUB_REPO="user/${PROJECT}"
 GITHUB_ATTACHMENTS_ZIP=("Build/${PROJECT}.zip")
 GITHUB_ACCESS_TOKEN="0123456789"'
+}
+
+github::_deps() {
+  echo "version"
 }
 
 github::create_release() {

@@ -69,6 +69,43 @@ RESOURCES=.bee
   fi
 }
 
+deps() {
+  missing=()
+  for p in "${PLUGINS[@]}"; do
+    local f="${p}::_deps"
+
+    if [[ $(command -v "${f}") == "${f}" ]]; then
+      local deps=$(${f})
+      local result=""
+
+      for d in ${deps}; do
+        local found=false
+        for u in "${PLUGINS[@]}"; do
+          if [[ "${u}" == "${d}" ]]; then
+            found=true
+            break
+          fi
+        done
+
+        if [[ ${found} == true ]]; then
+          result="${result} ${d}"
+        else
+          result="${result} \033[1m${d}\033[0m"
+          missing+=(${d})
+        fi
+      done
+
+      echo -e "${p} =>${result}"
+    fi
+  done
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    echo ""
+    echo "Missing dependencies:"
+    echo "${missing[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '
+  fi
+}
+
 res() {
   for p in "$@"; do
     for d in "${BEE_PLUGINS[@]}"; do

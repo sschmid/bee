@@ -4,8 +4,8 @@
 # Prints folder and file overview
 
 tree::_new() {
-  echo '# tree
-TREE_IGNORE="bin|obj|Build|Temp"
+  echo "# tree"
+  echo 'TREE_IGNORE="bin|obj|Build|Temp"
 TREE_PATH=tree.txt'
 }
 

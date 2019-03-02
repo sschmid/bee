@@ -4,9 +4,8 @@
 # Build .NET apps
 
 msbuild::_new() {
-  echo '# msbuild
-MSBUILD_SOLUTION="${PROJECT}.sln"
-'
+  echo "# msbuild"
+  echo 'MSBUILD_SOLUTION="${PROJECT}.sln"'
 }
 
 msbuild::build() {
@@ -18,7 +17,7 @@ msbuild::build() {
   fi
 
   log_func "${path}"
-  msbuild /property:Configuration=Release /verbosity:minimal "${path}"
+  msbuild /p:Configuration=Release /v:m "${path}"
 }
 
 msbuild::debug_build() {
@@ -30,12 +29,12 @@ msbuild::debug_build() {
   fi
 
   log_func "${path}"
-  msbuild /property:Configuration=Debug /verbosity:minimal "${path}"
+  msbuild /p:Configuration=Debug /v:m "${path}"
 }
 
 msbuild::clean() {
   log_func
-  msbuild /target:Clean /property:Configuration=Release /verbosity:minimal "${MSBUILD_SOLUTION}"
+  msbuild /t:Clean /p:Configuration=Release /v:m "${MSBUILD_SOLUTION}"
 }
 
 msbuild::rebuild() {

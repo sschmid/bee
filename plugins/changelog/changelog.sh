@@ -5,9 +5,13 @@
 # https://keepachangelog.com
 
 changelog::_new() {
-  echo '# changelog => version
-CHANGELOG_PATH=CHANGELOG.md
+  echo "# changelog => $(changelog::_deps)"
+  echo 'CHANGELOG_PATH=CHANGELOG.md
 CHANGELOG_CHANGES=CHANGES.md'
+}
+
+changelog::_deps() {
+  echo "version"
 }
 
 changelog::merge() {

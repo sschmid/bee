@@ -6,13 +6,17 @@
 DOXYGEN_BUILD=Build/docs
 
 doxygen::_new() {
-  echo '# doxygen => utils version
-DOXYGEN_EXPORT_PATH=docs
+  echo "# doxygen => $(doxygen::_deps)"
+  echo 'DOXYGEN_EXPORT_PATH=docs
 DOXYGEN_DOXY_FILES=("${RESOURCES}"/docs/html.doxyfile)
 DOXYGEN_DOCSET_NAME="${PROJECT}.docset"
 DOXYGEN_DOCSET="com.company.${PROJECT}.docset"
 DOXYGEN_DOCSET_KEY="$(echo "${PROJECT}" | tr "[:upper:]" "[:lower:]")"
 DOXYGEN_DOCSET_ICONS=("${RESOURCES}"/docs/icon.png "${RESOURCES}"/docs/icon@2x.png)'
+}
+
+doxygen::_deps() {
+  echo "utils version"
 }
 
 doxygen::generate_doxyfile() {

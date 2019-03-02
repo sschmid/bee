@@ -4,8 +4,8 @@
 # Execute methods in Unity
 
 unity::_new() {
-  echo '# unity
-UNITY_PROJECT_PATH=.
+  echo "# unity"
+  echo 'UNITY_PROJECT_PATH=.
 UNITY=/Applications/Unity/Hub/Editor/2018.2.5f1/Unity.app/Contents/MacOS/Unity'
 }
 

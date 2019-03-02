@@ -4,7 +4,11 @@
 # Commit and push releases
 
 git::_new() {
-  echo '# git => version'
+  echo "# git => $(git::_deps)"
+}
+
+git::_deps() {
+  echo "version"
 }
 
 git::merge_develop() {

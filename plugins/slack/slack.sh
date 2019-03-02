@@ -4,9 +4,8 @@
 # Send messages via slack webhooks
 
 slack::_new() {
-  echo '# slack
-SLACK_WEBHOOK_URL="https://hooks.slack.com/services/abc123"
-'
+  echo "# slack"
+  echo 'SLACK_WEBHOOK_URL="https://hooks.slack.com/services/abc123"'
 }
 
 slack::message() {

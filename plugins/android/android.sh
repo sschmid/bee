@@ -4,12 +4,11 @@
 # Shortcuts to adb
 
 android::_new() {
-  echo '# android
-ANDROID_ADB="${HOME}/Library/Android/sdk/platform-tools/adb"
+  echo "# android"
+  echo 'ANDROID_ADB="${HOME}/Library/Android/sdk/platform-tools/adb"
 ANDROID_APK="Build/Android/MyGame.apk"
 ANDROID_PACKAGE="com.company.myapp"
-ANDROID_ACTIVITY="${ANDROID_PACKAGE}/com.unity3d.player.UnityPlayerNativeActivity"
-'
+ANDROID_ACTIVITY="${ANDROID_PACKAGE}/com.unity3d.player.UnityPlayerNativeActivity"'
 }
 
 android::devices() {
@@ -33,5 +32,6 @@ android::logcat() {
 android::debug() {
   android::install
   android::start
+  sleep 1
   android::logcat "$@"
 }
