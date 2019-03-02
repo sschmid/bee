@@ -164,6 +164,7 @@ usage:
     bee new           - create new bee.sh file
     bee new <plugins> - print code templates for plugins
     bee res <plugins> - copy template files into resources dir
+    bee deps          - print dependencies of enabled plugins
     bee [COMMAND]     - run command
     bee version       - print version
     bee update        - update bee to latest version
