@@ -6,7 +6,7 @@
 android::_new() {
   echo "# android"
   echo 'ANDROID_ADB="${HOME}/Library/Android/sdk/platform-tools/adb"
-ANDROID_APK="Build/Android/MyGame.apk"
+ANDROID_APK="Build/Android/${PROJECT}.apk"
 ANDROID_PACKAGE="com.company.myapp"
 ANDROID_ACTIVITY="${ANDROID_PACKAGE}/com.unity3d.player.UnityPlayerNativeActivity"'
 }
@@ -34,4 +34,10 @@ android::debug() {
   android::start
   sleep 1
   android::logcat "$@"
+}
+
+android::screenshot() {
+  "${ANDROID_ADB}" shell screencap -p /sdcard/screenshot.png
+  "${ANDROID_ADB}" pull /sdcard/screenshot.png
+  "${ANDROID_ADB}" shell rm /sdcard/screenshot.png
 }

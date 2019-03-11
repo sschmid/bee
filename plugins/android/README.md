@@ -24,6 +24,10 @@ android
 - runs `android::start`
 - runs `android::logcat`
 
+`android::screenshot`
+-----------------
+- takes a screenshot on the device and saves it on your computer under screenshot.png
+
 
 Dependencies
 ============
