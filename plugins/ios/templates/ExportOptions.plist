@@ -5,15 +5,15 @@
 	<key>method</key>
 	<string>app-store</string>
 	<key>teamID</key>
-    <string>ABC123</string>
+	<string>ABC123</string>
 	<key>provisioningProfiles</key>
-  	<dict>
-    	<key>com.company.MyProject</key>
-    	<string>abc123</string>
-  	</dict>
-  	<key>signingCertificate</key>
-  	<string>iOS Distribution</string>
-  	<key>uploadBitcode</key>
-	<false/>
+	<dict>
+		<key>com.company.MyProject</key>
+		<string>abc123</string>
+	</dict>
+	<key>signingCertificate</key>
+	<string>iOS Distribution</string>
+	<key>uploadBitcode</key>
+	<true/>
 </dict>
 </plist>
