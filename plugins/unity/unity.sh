@@ -15,6 +15,7 @@ unity::execute_method() {
   -quit \
   -batchmode \
   -nographics \
+  -logfile \
   -projectPath "${UNITY_PROJECT_PATH}" \
   -executeMethod "$@"
 }
