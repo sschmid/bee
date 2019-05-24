@@ -12,10 +12,10 @@ UNITY=/Applications/Unity/Hub/Editor/2018.2.5f1/Unity.app/Contents/MacOS/Unity'
 unity::execute_method() {
   log_func "$@"
   "${UNITY}" \
-  -quit \
+  -projectPath "${UNITY_PROJECT_PATH}" \
   -batchmode \
+  -executeMethod "$@" \
   -nographics \
   -logfile \
-  -projectPath "${UNITY_PROJECT_PATH}" \
-  -executeMethod "$@"
+  -quit
 }

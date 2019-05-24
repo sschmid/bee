@@ -27,7 +27,7 @@ doxygen::generate_doxyfile() {
 }
 
 doxygen::make_docset() {
-  pushd "${DOXYGEN_BUILD}/docset" >/dev/null
+  pushd "${DOXYGEN_BUILD}/docset" > /dev/null
     make
     # In order for Dash to associate this docset with the project keyword,
     # we have to manually modify the generated plist.
@@ -40,7 +40,7 @@ doxygen::make_docset() {
     done
 
     mv "${DOXYGEN_DOCSET}" "${DOXYGEN_DOCSET_NAME}"
-  popd >/dev/null
+  popd > /dev/null
 }
 
 doxygen::generate() {

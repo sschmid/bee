@@ -17,6 +17,7 @@ msbuild::build() {
   fi
 
   log_func "${path}"
+
   msbuild /p:Configuration=Release /v:m "${path}"
 }
 
