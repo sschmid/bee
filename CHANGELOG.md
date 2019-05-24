@@ -1,3 +1,14 @@
+## [0.19.0] - 2019-05-24
+### Added
+- Add `deps` to help text
+- Add `android::screenshot`
+- Add `lfs` plugin
+- Add `.editorconfig`
+- Log unity output to stdout
+
+### Changed
+- Upload bitcode
+
 ## [0.18.0] - 2019-03-02
 ### Added
 - Add `bee deps` to print missing dependencies
