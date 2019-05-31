@@ -1,3 +1,7 @@
+## [0.20.0] - 2019-05-31
+### Added
+- Add `android::keyhash`
+
 ## [0.19.0] - 2019-05-24
 ### Added
 - Add `deps` to help text
