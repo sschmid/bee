@@ -28,6 +28,11 @@ android
 -----------------
 - takes a screenshot on the device and saves it on your computer under screenshot.png
 
+`android::keyhash`
+-----------------
+- creates key hash for `ANDROID_PACKAGE` in `ANDROID_KEYSTORE`
+- confirm with enter twice
+
 
 Dependencies
 ============

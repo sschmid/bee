@@ -8,6 +8,7 @@ android::_new() {
   echo 'ANDROID_ADB="${HOME}/Library/Android/sdk/platform-tools/adb"
 ANDROID_APK="Build/Android/${PROJECT}.apk"
 ANDROID_PACKAGE="com.company.myapp"
+ANDROID_KEYSTORE=.bee/android/keys.keystore
 ANDROID_ACTIVITY="${ANDROID_PACKAGE}/com.unity3d.player.UnityPlayerNativeActivity"'
 }
 
@@ -40,4 +41,11 @@ android::screenshot() {
   "${ANDROID_ADB}" shell screencap -p /sdcard/screenshot.png
   "${ANDROID_ADB}" pull /sdcard/screenshot.png
   "${ANDROID_ADB}" shell rm /sdcard/screenshot.png
+}
+
+android::keyhash() {
+  keytool -exportcert -alias "${ANDROID_PACKAGE}" -keystore "${ANDROID_KEYSTORE}"
+  keytool -exportcert -alias "${ANDROID_PACKAGE}" -keystore "${ANDROID_KEYSTORE}" \
+    | openssl sha1 -binary \
+    | openssl base64
 }
