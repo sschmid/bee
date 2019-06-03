@@ -49,3 +49,7 @@ android::keyhash() {
     | openssl sha1 -binary \
     | openssl base64
 }
+
+android::fingerprint() {
+  keytool -list -v -keystore "${ANDROID_KEYSTORE}" -alias "${ANDROID_PACKAGE}" | grep -A12 "${ANDROID_PACKAGE}"
+}

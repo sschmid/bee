@@ -33,6 +33,11 @@ android
 - creates key hash for `ANDROID_PACKAGE` in `ANDROID_KEYSTORE`
 - confirm with enter twice
 
+`android::fingerprint`
+-----------------
+- prints certificate fingerprints for `ANDROID_PACKAGE` in `ANDROID_KEYSTORE`
+- confirm with enter
+
 
 Dependencies
 ============

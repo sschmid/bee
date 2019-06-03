@@ -1,3 +1,7 @@
+## [0.21.0] - 2019-06-03
+### Added
+- Add `android::fingerprint`
+
 ## [0.20.0] - 2019-05-31
 ### Added
 - Add `android::keyhash`
