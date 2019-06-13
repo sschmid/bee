@@ -1,3 +1,7 @@
+## [0.22.1] - 2019-06-13
+### Added
+- Only source ~/.bashrc before executing plugin commands
+
 ## [0.22.0] - 2019-06-13
 ### Added
 - Source ~/.bashrc before executing commands
