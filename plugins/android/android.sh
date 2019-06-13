@@ -51,5 +51,5 @@ android::keyhash() {
 }
 
 android::fingerprint() {
-  keytool -list -v -keystore "${ANDROID_KEYSTORE}" -alias "${ANDROID_PACKAGE}" | grep -A12 "${ANDROID_PACKAGE}"
+  keytool -list -v -keystore "${ANDROID_KEYSTORE}" -alias "${ANDROID_PACKAGE}" | grep --color=never -A12 "${ANDROID_PACKAGE}"
 }
