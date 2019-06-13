@@ -1,3 +1,7 @@
+## [0.22.0] - 2019-06-13
+### Added
+- Source ~/.bashrc before executing commands
+
 ## [0.21.0] - 2019-06-03
 ### Added
 - Add `android::fingerprint`
