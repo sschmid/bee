@@ -1,3 +1,7 @@
+## [0.22.2] - 2019-06-13
+### Added
+- Always disable grep color for internal functions
+
 ## [0.22.1] - 2019-06-13
 ### Added
 - Only source ~/.bashrc before executing plugin commands
