@@ -3,7 +3,7 @@ version
 
 `version::read`
 ---------------
-- ptints the current version found in `VERSION_PATH`
+- prints the current version found in `VERSION_PATH`
 
 `version::write`
 ----------------

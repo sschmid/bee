@@ -203,6 +203,10 @@ main() {
       set -x
     fi
 
+    if [[ -f "${HOME}/.bashrc" ]]; then
+      source "${HOME}/.bashrc"
+    fi
+
     local t=${SECONDS}
 
     local cmd=($@)
