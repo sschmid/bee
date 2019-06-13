@@ -203,27 +203,25 @@ main() {
       set -x
     fi
 
-    if [[ -f "${HOME}/.bashrc" ]]; then
-      source "${HOME}/.bashrc"
-    fi
-
     local t=${SECONDS}
 
     local cmd=($@)
 
-    if [[ $(command -v "${cmd}") == "${cmd}" ]]; then
-      # command found
-      "$@"
-    else
+    if [[ $(command -v "${cmd}") != "${cmd}" ]]; then
       # command not found
       # try loading as a plugin
       source_plugins "${cmd}"
       shift
-      "$@"
     fi
 
     if [[ "$@" == *"::"* ]]; then
+      if [[ -f "${HOME}/.bashrc" ]]; then
+        source "${HOME}/.bashrc"
+      fi
+      "$@"
       log "bzzzz ($((${SECONDS} - ${t})) seconds)"
+    else
+      "$@"
     fi
   else
     help
