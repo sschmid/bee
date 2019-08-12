@@ -6,6 +6,11 @@ unity
 - opens Unity in batchmode and executes the specified method
 
 
+`unity::ping_project`
+-----------------------
+- opens project in batchmode and quits
+
+
 Dependencies
 ============
 3rd party:
