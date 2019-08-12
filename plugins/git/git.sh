@@ -23,7 +23,7 @@ git::commit_release() {
   local version="$(version::read)"
   git add .
   git commit -am "Release ${version}"
-  git tag "${version}"
+  git tag "${version}${1:-}"
 }
 
 git::commit_release_sync_master() {
@@ -34,7 +34,7 @@ git::commit_release_sync_master() {
   git checkout master
   git pull
   git merge develop
-  git tag "${version}"
+  git tag "${version}${1:-}"
   git checkout develop
 }
 
