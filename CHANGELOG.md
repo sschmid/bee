@@ -1,3 +1,12 @@
+## [0.23.0] - 2019-08-14
+### Added
+- Tag with optional suffix in `git::commit_release`
+- Tag with optional suffix in `git::commit_release_sync_master`
+- Add `unity::ping_project`
+- Use `UNITY_USER`, `UNITY_PASSWORD` and `UNITY_SERIAL` for batchmode commands
+- Add hints to `bee plugins` and `bee commands`
+- Trap `EXIT` to show duration even when command fails
+
 ## [0.22.2] - 2019-06-13
 ### Added
 - Always disable grep color for internal functions
