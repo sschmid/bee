@@ -6,6 +6,11 @@
 # https://google.github.io/styleguide/shell.xml
 set -eu
 
+MODE_INTERNAL=0
+MODE_COMMAND=1
+MODE=${MODE_INTERNAL}
+T=${SECONDS}
+
 resolve_bee_home() {
   local cwd="${PWD}"
   local bee_home="$1"
@@ -195,7 +200,20 @@ EXAMPLE
   open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
+terminate() {
+  local r=$?
+  if [[ ${MODE} -eq 1 ]]; then
+    if [[ ${r} -eq 0 ]]; then
+      log "bzzzz ($((${SECONDS} - ${T})) seconds)"
+    else
+      log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
+    fi
+  fi
+}
+
 main() {
+  trap terminate EXIT
+
   source "${BEE_HOME}/libexec/bee_log"
   source "${BEE_HOME}/libexec/bee_utils"
   source_config
@@ -211,7 +229,7 @@ main() {
       set -x
     fi
 
-    local t=${SECONDS}
+    T=${SECONDS}
 
     local cmd=($@)
 
@@ -223,12 +241,13 @@ main() {
     fi
 
     if [[ "$@" == *"::"* ]]; then
+      MODE=${MODE_COMMAND}
       if [[ -f "${HOME}/.bashrc" ]]; then
         source "${HOME}/.bashrc"
       fi
       "$@"
-      log "bzzzz ($((${SECONDS} - ${t})) seconds)"
     else
+      MODE=${MODE_INTERNAL}
       "$@"
     fi
   else
