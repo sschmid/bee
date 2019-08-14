@@ -26,16 +26,24 @@ export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
 
 plugins() {
   for d in "${BEE_PLUGINS[@]}"; do
+    echo -e "\033[1m${d}\033[0m"
     for f in "${d}"/*; do
       if [[ -d "${f}" ]]; then
-        basename "${f}"
+        echo "$(basename "${f}")"
       fi
     done
+    echo ""
   done
+
+  echo "You can add more plugins to BEE_PLUGINS in ~/.beerc"
+  echo "To show all available commands run 'bee commands'"
 }
 
 commands() {
   compgen -A function | grep --color=never '^[_a-zA-Z]*::[a-zA-Z]'
+  echo ""
+  echo "You can add more commands by adding plugins"
+  echo "To show all available plugins run 'bee plugins'"
 }
 
 new() {
@@ -88,9 +96,9 @@ deps() {
         done
 
         if [[ ${found} == true ]]; then
-          result="${result} ${d}"
+          result="${result} \033[32m${d}\033[0m"
         else
-          result="${result} \033[1m${d}\033[0m"
+          result="${result} \033[31m${d}\033[0m"
           missing+=(${d})
         fi
       done
