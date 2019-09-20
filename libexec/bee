@@ -151,7 +151,7 @@ help() {
     for dir in "${BEE_PLUGINS[@]}"; do
       local readme="${dir}/$1/README.md"
       if [[ -f "${readme}" ]]; then
-        cat "${readme}"
+        less "${readme}"
         found=true
       fi
     done
