@@ -12,7 +12,7 @@ MODE=${MODE_INTERNAL}
 T=${SECONDS}
 
 resolve_bee_home() {
-  local cwd="${PWD}"
+  local currentDir="${PWD}"
   local bee_home="$1"
 
   while [[ -L "${bee_home}" ]]; do
@@ -23,17 +23,17 @@ resolve_bee_home() {
   done
 
   bee_home="$(cd "$(dirname "${bee_home}")"/.. && pwd)"
-  cd "${cwd}"
+  cd "${currentDir}"
   echo "${bee_home}"
 }
 
 export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
 
 plugins() {
-  for d in "${BEE_PLUGINS[@]}"; do
-    for f in "${d}"/*; do
-      if [[ -d "${f}" ]]; then
-        echo "$(basename "${f}")"
+  for dir in "${BEE_PLUGINS[@]}"; do
+    for path in "${dir}"/*; do
+      if [[ -d "${path}" ]]; then
+        echo "$(basename "${path}")"
       fi
     done
   done
@@ -49,9 +49,9 @@ new() {
       echo "bee.sh already exists"
       exit 1
     fi
-    echo '#!/usr/bin/env bash
-PROJECT="MyProject"
-PLUGINS=(git utils version)
+    echo '#!/usr/bin/env bash' > bee.sh
+    echo "PROJECT=\"$(basename "${PWD}")\"" >> bee.sh
+    echo 'PLUGINS=()
 RESOURCES=.bee
 
 # Run bee new <plugins> to print all required variables
@@ -62,45 +62,44 @@ RESOURCES=.bee
     source_plugins "$@"
     local plugins=("$@")
     local template=""
-    for p in "${plugins[@]}"; do
-      template="${template}\n$("${p}::_new")\n"
+    for pluginName in "${plugins[@]}"; do
+      template="${template}\n$("${pluginName}::_new")\n"
     done
     echo -e "${template}"
     command -v pbcopy &> /dev/null && {
       echo -e "${template}" | pbcopy
-      echo ""
-      echo "(template has been copied to the clipboard)"
+      echo "(template has been copied to clipboard)"
     }
   fi
 }
 
 deps() {
   missing=()
-  for p in "${PLUGINS[@]}"; do
-    local f="${p}::_deps"
+  for pluginName in "${PLUGINS[@]}"; do
+    local func="${pluginName}::_deps"
 
-    if [[ $(command -v "${f}") == "${f}" ]]; then
-      local deps=$(${f})
+    if [[ $(command -v "${func}") == "${func}" ]]; then
+      local deps=$(${func})
       local result=""
 
-      for d in ${deps}; do
+      for dep in ${deps}; do
         local found=false
-        for u in "${PLUGINS[@]}"; do
-          if [[ "${u}" == "${d}" ]]; then
+        for p in "${PLUGINS[@]}"; do
+          if [[ "${p}" == "${dep}" ]]; then
             found=true
             break
           fi
         done
 
         if [[ ${found} == true ]]; then
-          result="${result} \033[32m${d}\033[0m"
+          result="${result} \033[32m${dep}\033[0m"
         else
-          result="${result} \033[31m${d}\033[0m"
-          missing+=(${d})
+          result="${result} \033[31m${dep}\033[0m"
+          missing+=(${dep})
         fi
       done
 
-      echo -e "${p} =>${result}"
+      echo -e "${pluginName} =>${result}"
     fi
   done
 
@@ -112,13 +111,14 @@ deps() {
 }
 
 res() {
-  for p in "$@"; do
-    for d in "${BEE_PLUGINS[@]}"; do
-      local t="${d}/${p}/templates"
-      if [[ -d "${t}" ]]; then
-        echo "Copying resources into ${RESOURCES}/${p}"
-        mkdir -p "${RESOURCES}/${p}/"
-        cp -r "${t}/"* "${RESOURCES}/${p}/"
+  for pluginName in "$@"; do
+    for dir in "${BEE_PLUGINS[@]}"; do
+      local templateDir="${dir}/${pluginName}/templates"
+      if [[ -d "${templateDir}" ]]; then
+        local targetDir="${RESOURCES}/${pluginName}"
+        echo "Copying resources into ${targetDir}"
+        mkdir -p "${targetDir}/"
+        cp -r "${templateDir}/"* "${targetDir}/"
       fi
     done
   done
@@ -148,8 +148,8 @@ wiki() {
 help() {
   if [[ $# -eq 1 ]]; then
     local found=false
-    for d in "${BEE_PLUGINS[@]}"; do
-      local readme="${d}/$1/README.md"
+    for dir in "${BEE_PLUGINS[@]}"; do
+      local readme="${dir}/$1/README.md"
       if [[ -f "${readme}" ]]; then
         cat "${readme}"
         found=true
@@ -170,7 +170,7 @@ usage:
     bee new <plugins> - print code templates for plugins
     bee res <plugins> - copy template files into resources dir
     bee deps          - print dependencies of enabled plugins
-    bee [COMMAND]     - run command
+    bee <COMMAND>     - run command
     bee version       - print version
     bee update        - update bee to latest version
     bee wiki          - open wiki
@@ -193,9 +193,9 @@ EXAMPLE
 }
 
 terminate() {
-  local r=$?
-  if [[ ${MODE} -eq 1 ]]; then
-    if [[ ${r} -eq 0 ]]; then
+  local exitCode=$?
+  if [[ ${MODE} -eq ${MODE_COMMAND} ]]; then
+    if [[ ${exitCode} -eq 0 ]]; then
       log "bzzzz ($((${SECONDS} - ${T})) seconds)"
     else
       log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
@@ -234,9 +234,6 @@ main() {
 
     if [[ "$@" == *"::"* ]]; then
       MODE=${MODE_COMMAND}
-      if [[ -f "${HOME}/.bashrc" ]]; then
-        source "${HOME}/.bashrc"
-      fi
       "$@"
     else
       MODE=${MODE_INTERNAL}

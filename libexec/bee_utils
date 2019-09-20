@@ -24,19 +24,24 @@ source_config() {
 }
 
 source_plugins() {
-  for p in "$@"; do
+  local foundAll=true
+  for pluginName in "$@"; do
     local found=false
-    for d in "${BEE_PLUGINS[@]}"; do
-      local f="${d}/${p}/${p}.sh"
-      if [[ -f "${f}" ]]; then
-        source "${f}"
+    for dir in "${BEE_PLUGINS[@]}"; do
+      local pluginPath="${dir}/${pluginName}/${pluginName}.sh"
+      if [[ -f "${pluginPath}" ]]; then
+        source "${pluginPath}"
         found=true
       fi
     done
 
     if [[ ${found} == false ]]; then
-      log_error "Could not find plugin ${p}"
-      exit 1
+      foundAll=false
+      log_error "Could not find plugin ${pluginName}"
     fi
   done
+
+  if [[ ${foundAll} == false ]]; then
+    exit 1
+  fi
 }
