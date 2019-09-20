@@ -1,3 +1,14 @@
+## [0.24.0] - 2019-09-21
+### Changed
+- Install bee-completion
+- Use less instead of cat for help
+- Simplify utils resources
+- Simplify .gitattributes
+
+### Remove
+- Remove msbuild
+- Remove nspec
+
 ## [0.23.0] - 2019-08-14
 ### Added
 - Tag with optional suffix in `git::commit_release`
