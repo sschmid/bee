@@ -63,7 +63,7 @@ RESOURCES=.bee
     local plugins=("$@")
     local template=""
     for pluginName in "${plugins[@]}"; do
-      template="${template}\n$("${pluginName}::_new")\n"
+      template+="$("${pluginName}::_new")\n\n"
     done
     echo -e "${template}"
     command -v pbcopy &> /dev/null && {
@@ -92,9 +92,9 @@ deps() {
         done
 
         if [[ ${found} == true ]]; then
-          result="${result} \033[32m${dep}\033[0m"
+          result+=" \033[32m${dep}\033[0m"
         else
-          result="${result} \033[31m${dep}\033[0m"
+          result+=" \033[31m${dep}\033[0m"
           missing+=(${dep})
         fi
       done
