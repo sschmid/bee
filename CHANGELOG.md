@@ -1,3 +1,7 @@
+## [0.25.0] - 2019-09-21
+### Changed
+- Update `ios` to work with Xcode 11 
+
 ## [0.24.0] - 2019-09-21
 ### Changed
 - Install bee-completion
