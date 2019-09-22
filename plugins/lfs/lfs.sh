@@ -8,6 +8,6 @@ lfs::_new() {
 }
 
 lfs::track_and_add() {
-    git lfs track "$1"
-    git add "$1"
+    git lfs track "${1}"
+    git add "${1}"
 }

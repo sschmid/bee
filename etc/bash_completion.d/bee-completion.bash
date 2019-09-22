@@ -1,35 +1,37 @@
 #!/usr/bin/env bash
 
 _bee_completions() {
-  local word="${COMP_WORDS[1]}"
-  if [[ $COMP_CWORD -lt 2 ]]; then
-    local wordlist="help plugins commands new deps res version update wiki ❤️"
-    wordlist+=" $(bee plugins)"
-    wordlist+=" $(bee commands)"
-    COMPREPLY=($(compgen -W "${wordlist}" "${word}"))
+  if [[ $COMP_CWORD == 1 ]]; then
+    COMPREPLY=("$(compgen -W "$(bee internal_commands) $(bee plugins) $(bee commands)")")
   else
+    local word="${COMP_WORDS[1]}"
     case "${word}" in
-      "plugins" | "commands" | "version" | "update" | "wiki" | ❤️)
-        ;;
+      "commands" | "deps" | "donate" | "plugins" | "update" | "version" | "wiki")
+      ;;
+
       "help")
-        if [[ $COMP_CWORD -eq 2 ]]; then
-          COMPREPLY=($(compgen -W "$(bee plugins)" "${word}"))
+        if (( $COMP_CWORD == 2 )); then
+          COMPREPLY=("$(compgen -W "$(bee plugins)")")
         fi
         ;;
+
       "new" | "res")
-        COMPREPLY=($(compgen -W "$(bee plugins)" "${word}"))
+        COMPREPLY=("$(compgen -W "$(bee plugins)")")
         ;;
+
       *)
-        if [[ $COMP_CWORD -eq 2 ]]; then
-          local plugins=($(bee plugins))
-          for p in "${plugins[@]}"; do
-            if [[ "${word}" == "$p" ]]; then
-              COMPREPLY=($(compgen -W "$(bee ${word} commands)" "${word}"))
-              break
+        if [[ $COMP_CWORD == 2 ]]; then
+          local plugins="$(bee plugins)"
+          for plugin_name in ${plugins}; do
+            if [[ "${word}" == "${plugin_name}" ]]; then
+              COMPREPLY=("$(compgen -W "$(bee "${word}" commands)")")
+              return
             fi
           done
+
+          COMPREPLY=("$(compgen -A file "${word}")")
         else
-          COMPREPLY=$(compgen -W "$(ls -a)" -- "${word}")
+          COMPREPLY=("$(compgen -A file "${word}")")
         fi
         ;;
     esac

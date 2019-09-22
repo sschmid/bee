@@ -29,8 +29,8 @@ github::create_release() {
   local upload_url="https://uploads.github.com/repos/${GITHUB_REPO}/releases/${id}/assets"
 
   for f in "${GITHUB_ATTACHMENTS_ZIP[@]}"; do
-    pushd "$(dirname "$f")" > /dev/null
-      echo "$(curl -H "Content-Type:application/zip" -H "Authorization: token "${GITHUB_ACCESS_TOKEN}"" --data-binary @"$(basename "$f")" "${upload_url}"?name="$(basename "$f")")" | tr -d "\r"
+    pushd "$(dirname "${f}")" > /dev/null
+      echo "$(curl -H "Content-Type:application/zip" -H "Authorization: token "${GITHUB_ACCESS_TOKEN}"" --data-binary @"$(basename "${f}")" "${upload_url}"?name="$(basename "${f}")")" | tr -d "\r"
     popd > /dev/null
   done
 }

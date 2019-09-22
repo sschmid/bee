@@ -14,7 +14,7 @@ version::read() {
 }
 
 version::write() {
-  echo "$1" > "${VERSION_PATH}"
+  echo "${1}" > "${VERSION_PATH}"
   cat "${VERSION_PATH}"
 }
 
