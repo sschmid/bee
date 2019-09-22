@@ -1,3 +1,13 @@
+## [0.26.0] - 2019-09-22
+### Added
+- Improve bash-completion
+
+### Changed
+- Move source file to src 
+
+### Removed
+- Delete bin/bee
+
 ## [0.25.0] - 2019-09-21
 ### Changed
 - Update `ios` to work with Xcode 11 
