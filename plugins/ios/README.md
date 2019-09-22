@@ -13,7 +13,7 @@ Please run `bee res ios` to copy all required files to you project.
 
 `ios::export`
 -------------
-- exports archive from workspace
+- exports archive
 
 `ios::upload`
 -------------
@@ -29,7 +29,7 @@ Dependencies
 Examples
 ========
 ```
-$ bee ios::archive_project
+$ bee ios::archive_workspace
 
 $ bee ios::export
 

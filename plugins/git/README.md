@@ -42,5 +42,7 @@ Dependencies
 Examples
 ========
 ```
+$ bee git::commit_release "-MyTagSuffix"
+
 $ bee git::commit_release_sync_master
 ```
