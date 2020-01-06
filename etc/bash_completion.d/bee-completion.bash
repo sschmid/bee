@@ -10,7 +10,7 @@ _bee_completions() {
     COMPREPLY=($(compgen -W "${words}" "${firstWord}"))
   else
     case "${firstWord}" in
-      "commands" | "deps" | "donate" | "plugins" | "update" | "version" | "wiki")
+      "commands" | "deps" | "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
       "help")

@@ -217,6 +217,14 @@ res() {
   done
 }
 
+uninstall_internal_help=("uninstall | uninstall bee from your system")
+uninstall() {
+  rm -f /usr/local/bin/bee
+  rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
+  rm -rf /usr/local/opt/bee/
+  log "Uninstalled bee"
+}
+
 ################################################################################
 # run
 ################################################################################
