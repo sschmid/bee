@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -u
-
 _bee_completions() {
   local firstWord="${COMP_WORDS[1]}"
   local lastWord="${COMP_WORDS[-1]}"
@@ -28,7 +26,7 @@ _bee_completions() {
           local plugins="$(bee plugins)"
           for plugin_name in ${plugins}; do
             if [[ "${firstWord}" == "${plugin_name}" ]]; then
-              COMPREPLY=($(compgen -W "$(bee "${firstWord}" commands)" "${COMP_WORDS[-1]}"))
+              COMPREPLY=($(compgen -W "$(bee "${firstWord}" commands)" "${lastWord}"))
               return
             fi
           done
