@@ -22,6 +22,10 @@ unity::execute_method() {
   run_batchmode -executeMethod "$@"
 }
 
+unity::sync_solution() {
+  unity::execute_method UnityEditor.SyncVS.SyncSolution "$@"
+}
+
 run_batchmode() {
   "${UNITY}" \
   -projectPath "${UNITY_PROJECT_PATH}" \
