@@ -17,9 +17,8 @@ resolve_home() {
     cd "$(dirname "${link}")"
     path="${link}"
   done
-  local home="$(dirname "${PWD}")"
   cd "${current_dir}"
-  echo "${home}"
+  echo "$(dirname "$(dirname "${path}")")"
 }
 
 export BEE_HOME="$(resolve_home "${BASH_SOURCE[0]}")"

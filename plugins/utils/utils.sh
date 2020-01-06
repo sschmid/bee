@@ -16,5 +16,5 @@ utils::clean_dir() {
 }
 
 utils::sync() {
-  rsync -ahri --include-from "${UTILS_RSYNC_INCLUDE}" --exclude-from "${UTILS_RSYNC_EXCLUDE}" "$@"
+  rsync -ahriI --include-from "${UTILS_RSYNC_INCLUDE}" --exclude-from "${UTILS_RSYNC_EXCLUDE}" "$@"
 }
