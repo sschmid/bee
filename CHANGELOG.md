@@ -1,3 +1,8 @@
+## [0.27.0] - 2020-01-06
+### Added
+- Add `unity::sync_solution`
+- Improve bash-completion
+
 ## [0.26.0] - 2019-09-22
 ### Added
 - Improve bash-completion
