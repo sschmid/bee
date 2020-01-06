@@ -1,3 +1,7 @@
+## [0.28.1] - 2020-01-06
+### Fixed
+- Fix bee-completion setting `-u` flag
+
 ## [0.28.0] - 2020-01-06
 ### Added
 - Add `bee uninstall`
