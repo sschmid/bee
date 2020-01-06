@@ -1,3 +1,7 @@
+## [0.28.0] - 2020-01-06
+### Added
+- Add `bee uninstall`
+
 ## [0.27.0] - 2020-01-06
 ### Added
 - Add `unity::sync_solution`
