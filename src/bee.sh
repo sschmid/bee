@@ -160,7 +160,7 @@ new() {
   if (( $# == 0 )); then
     new_bee
   else
-    new_plugin
+    new_plugin "$@"
   fi
 }
 
@@ -211,7 +211,7 @@ res() {
         local target_dir="${RESOURCES}/${plugin_name}"
         echo "Copying resources into ${target_dir}"
         mkdir -p "${target_dir}/"
-        cp -r "${template_dir}/"* "${target_dir}/"
+        cp -r "${template_dir}/". "${target_dir}/"
       fi
     done
   done
