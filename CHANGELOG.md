@@ -1,3 +1,8 @@
+## [0.29.0] - 2020-01-07
+### Fixed
+- Fix `bee new <plugin>`
+- Fix `bee res` not copying hidden files
+
 ## [0.28.1] - 2020-01-06
 ### Fixed
 - Fix bee-completion setting `-u` flag
