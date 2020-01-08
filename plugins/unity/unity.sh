@@ -14,7 +14,7 @@ UNITY_SERIAL="AB-1234-5678-1234-5678"'
 
 unity::ping_project() {
   log_func "$@"
-  run_batchmode
+  run_batchmode "$@"
 }
 
 unity::execute_method() {

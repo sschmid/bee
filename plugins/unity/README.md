@@ -1,14 +1,17 @@
 unity
 =====
 
+`unity::ping_project`
+-----------------------
+- opens project in batchmode and quits
+
 `unity::execute_method`
 -----------------------
 - opens Unity in batchmode and executes the specified method
 
-
-`unity::ping_project`
+`unity::sync_solution`
 -----------------------
-- opens project in batchmode and quits
+- opens Unity in batchmode and syncs C# project
 
 
 Dependencies
