@@ -129,7 +129,7 @@ new_bee() {
     exit 1
   fi
   echo '#!/usr/bin/env bash' > bee.sh
-  echo "PROJECT=\"$(basename "${PWD}")\"" >> bee.sh
+  echo "PROJECT=\"$(basename ${PWD})\"" >> bee.sh
   echo 'PLUGINS=()
 RESOURCES=.bee
 

@@ -7,7 +7,9 @@ github::_new() {
   echo "# github => $(github::_deps)"
   echo 'GITHUB_CHANGES=CHANGES.md
 GITHUB_RELEASE_PREFIX="${PROJECT}-"
-GITHUB_REPO="user/${PROJECT}"
+GITHUB_USER="user"
+GITHUB_REPO="${GITHUB_USER}/${PROJECT}"
+GITHUB_ORG_ID="0123456789"
 GITHUB_ATTACHMENTS_ZIP=("Build/${PROJECT}.zip")
 GITHUB_ACCESS_TOKEN="0123456789"'
 }
@@ -22,7 +24,7 @@ github::create_release() {
   local version="$(version::read)"
   local changes="$(cat "${GITHUB_CHANGES}")"
   local data="{\"tag_name\": \"${version}\", \"name\": \"${GITHUB_RELEASE_PREFIX}${version}\", \"body\": \"${changes//$'\n'/\\n}\"}"
-  local response="$(curl -H "Authorization: token "${GITHUB_ACCESS_TOKEN}"" -d "${data}" https://api.github.com/repos/"${GITHUB_REPO}"/releases)"
+  local response="$(curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "${data}" https://api.github.com/repos/"${GITHUB_REPO}"/releases)"
 
   # Assets
   local id="$(echo "${response}" | jq .id)"
@@ -30,7 +32,20 @@ github::create_release() {
 
   for f in "${GITHUB_ATTACHMENTS_ZIP[@]}"; do
     pushd "$(dirname "${f}")" > /dev/null
-      echo "$(curl -H "Content-Type:application/zip" -H "Authorization: token "${GITHUB_ACCESS_TOKEN}"" --data-binary @"$(basename "${f}")" "${upload_url}"?name="$(basename "${f}")")" | tr -d "\r"
+      echo "$(curl -H "Content-Type:application/zip" -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" --data-binary @"$(basename "${f}")" "${upload_url}"?name="$(basename "${f}")")" | tr -d "\r"
     popd > /dev/null
   done
+}
+
+github::org() {
+  curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "https://api.github.com/orgs/${GITHUB_USER}"
+}
+
+github::teams() {
+  curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "https://api.github.com/repos/${GITHUB_REPO}/teams"
+}
+
+github::add_team() {
+  local data="{\"permission\": \"${2}\"}"
+  curl -X PUT -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "${data}" "https://api.github.com/organizations/${GITHUB_ORG_ID}/team/${1}/repos/${GITHUB_REPO}"
 }
