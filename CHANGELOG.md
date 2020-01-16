@@ -1,3 +1,10 @@
+## [0.30.0] - 2020-01-16
+### Added
+- Add `github::org`
+- Add `github::teams`
+- Add `github::add_team`
+- Update `unity` readme
+
 ## [0.29.0] - 2020-01-07
 ### Fixed
 - Fix `bee new <plugin>`
