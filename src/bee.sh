@@ -37,7 +37,7 @@ help_bee() {
   local local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "🐝 bee ${local_version} - plugin-based bash automation"
   echo ""
-  echo "usage: bee [--verbose] <command> [<args>]"
+  echo "usage: bee [--silent --verbose] <command> [<args>]"
   echo ""
   echo -e "${commands}" | column -s '|' -t
   echo ""
@@ -235,15 +235,19 @@ MODE=${MODE_INTERNAL}
 T=${SECONDS}
 
 terminate() {
-  local exit_code=$?
-  if (( ${MODE} == ${MODE_COMMAND} )); then
-    if (( ${exit_code} == 0 )); then
-      log "bzzzz ($((${SECONDS} - ${T})) seconds)"
-    else
-      log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
+  if [[ $BEE_SILENT == false ]]; then
+    local exit_code=$?
+    if (( ${MODE} == ${MODE_COMMAND} )); then
+      if (( ${exit_code} == 0 )); then
+        log "bzzzz ($((${SECONDS} - ${T})) seconds)"
+      else
+        log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
+      fi
     fi
   fi
 }
+
+BEE_SILENT=false
 
 main() {
   trap terminate EXIT
@@ -258,6 +262,10 @@ main() {
   fi
 
   if (( $# > 0 )); then
+    if [[ "${1}" == "--silent" ]]; then
+      shift
+      BEE_SILENT=true
+    fi
     if [[ "${1}" == "--verbose" ]]; then
       shift
       set -x
