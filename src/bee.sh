@@ -229,16 +229,22 @@ uninstall() {
 # run
 ################################################################################
 
-MODE_INTERNAL=0
-MODE_COMMAND=1
-MODE=${MODE_INTERNAL}
+BEE_SILENT=false
+BEE_CANCELED=false
+BEE_MODE_INTERNAL=0
+BEE_MODE_COMMAND=1
+BEE_MODE=${BEE_MODE_INTERNAL}
 T=${SECONDS}
 
+cancel() {
+  BEE_CANCELED=true
+}
+
 terminate() {
-  if [[ $BEE_SILENT == false ]]; then
-    local exit_code=$?
-    if (( ${MODE} == ${MODE_COMMAND} )); then
-      if (( ${exit_code} == 0 )); then
+  local exit_code=$?
+  if [[ ${BEE_SILENT} == false ]]; then
+    if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
+      if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
         log "bzzzz ($((${SECONDS} - ${T})) seconds)"
       else
         log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
@@ -247,9 +253,10 @@ terminate() {
   fi
 }
 
-BEE_SILENT=false
 
 main() {
+  trap cancel INT
+  trap cancel TERM
   trap terminate EXIT
 
   source "${BEE_HOME}/src/bee_log.sh"
@@ -262,13 +269,13 @@ main() {
   fi
 
   if (( $# > 0 )); then
-    if [[ "${1}" == "--silent" ]]; then
-      shift
-      BEE_SILENT=true
-    fi
     if [[ "${1}" == "--verbose" ]]; then
       shift
       set -x
+    fi
+    if [[ "${1}" == "--silent" ]]; then
+      shift
+      BEE_SILENT=true
     fi
 
     local cmd=("$@")
@@ -281,9 +288,9 @@ main() {
     fi
 
     if [[ "$*" == *"::"* ]]; then
-      MODE=${MODE_COMMAND}
+      BEE_MODE=${BEE_MODE_COMMAND}
     else
-      MODE=${MODE_INTERNAL}
+      BEE_MODE=${BEE_MODE_INTERNAL}
     fi
 
     "$@"
