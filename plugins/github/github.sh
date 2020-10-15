@@ -49,3 +49,8 @@ github::add_team() {
   local data="{\"permission\": \"${2}\"}"
   curl -X PUT -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "${data}" "https://api.github.com/organizations/${GITHUB_ORG_ID}/team/${1}/repos/${GITHUB_REPO}"
 }
+
+github::set_topics() {
+  local data="{\"names\":[\"${1}\"]}"
+  curl -X PUT -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -H "Accept: application/vnd.github.mercy-preview+json" -d "${data}" "https://api.github.com/repos/${GITHUB_REPO}/topics"
+}

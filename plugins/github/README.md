@@ -20,6 +20,10 @@ Please see
 ------------------------
 - adds specified teamId with the specified permissions (pull | push | admin) to `GITHUB_REPO` in `GITHUB_ORG_ID`
 
+`github::set_topics`
+------------------------
+- sets specified topics on `GITHUB_REPO`
+
 
 Dependencies
 ============
@@ -35,4 +39,5 @@ Examples
 $ bee github::create_release
 $ bee github::teams
 $ bee github::add_team 123 push
+$ bee github::set_topics game
 ```
