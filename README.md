@@ -30,6 +30,8 @@ Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to bee! Share
 your plugins with the bee community so everyone can start saving time today.
 
+Plugins and commands can easily be discovered with bee's built-in auto-completion! (see [wiki](https://github.com/sschmid/bee/wiki/bee-bash-completion))
+
 [**🐝 Explore plugins**](https://github.com/sschmid/bee/tree/master/plugins)
 
 
