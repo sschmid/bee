@@ -1,3 +1,7 @@
+## [0.33.0] - 2020-10-15
+### Added
+- Add `github::set_topics`
+
 ## [0.32.0] - 2020-10-15
 ### Added
 - Add slack::message using slack.com/api instead of webhook
