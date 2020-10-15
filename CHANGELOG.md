@@ -1,6 +1,11 @@
 ## [0.32.0] - 2020-10-15
 ### Added
-- Add `-silent`
+- Add slack::message using slack.com/api instead of webhook
+- Add slack::upload
+- trap INT and TERM
+
+### Changed
+- Rename `slack::message` to `slack::message_webhook`
 
 ## [0.31.0] - 2020-01-24
 ### Added
@@ -36,14 +41,14 @@
 - Improve bash-completion
 
 ### Changed
-- Move source file to src 
+- Move source file to src
 
 ### Removed
 - Delete bin/bee
 
 ## [0.25.0] - 2019-09-21
 ### Changed
-- Update `ios` to work with Xcode 11 
+- Update `ios` to work with Xcode 11
 
 ## [0.24.0] - 2019-09-21
 ### Changed
@@ -218,4 +223,3 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - bee
 - plugins and templates
 - install script
-
