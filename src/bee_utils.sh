@@ -26,7 +26,7 @@ require() {
 }
 
 source_config() {
-  local config="${HOME}/.beerc"
+  local config="${1}"
   if [[ ! -f "${config}" ]]; then
     echo "#!/usr/bin/env bash" > "${config}"
     echo 'BEE_PLUGINS=("${BEE_HOME}/plugins")' >> "${config}"

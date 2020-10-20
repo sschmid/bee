@@ -261,7 +261,7 @@ main() {
 
   source "${BEE_HOME}/src/bee_log.sh"
   source "${BEE_HOME}/src/bee_utils.sh"
-  source_config
+  source_config "${BEE_RC:-${HOME}/.beerc}"
 
   if [[ -f bee.sh ]]; then
     source bee.sh
