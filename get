@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# This script downloads a specific bee version into your current working directory
+# Run
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/master/get) <tag>"
+
+set -e
+
+export GIT_LFS_SKIP_SMUDGE=1
+git clone --depth 1 --branch "${1}" git@github.com:sschmid/bee.git
