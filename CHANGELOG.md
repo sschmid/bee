@@ -1,6 +1,6 @@
 ## [0.34.0] - 2020-10-21
 ### Added
-- Add support for custom .beerc path by exporting BEE_RCs
+- Add support for custom .beerc path by exporting `BEE_RCs`
 
 ## [0.33.0] - 2020-10-15
 ### Added
