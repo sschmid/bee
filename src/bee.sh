@@ -22,6 +22,7 @@ resolve_home() {
 }
 
 export BEE_HOME="$(resolve_home "${BASH_SOURCE[0]}")"
+export BEE_RC="${BEE_RC:-${HOME}/.beerc}"
 
 # help #########################################################################
 
@@ -42,7 +43,7 @@ help_bee() {
   echo -e "${commands}" | column -s '|' -t
   echo ""
   echo "customization:"
-  echo "  see ~/.beerc"
+  echo "  see ${BEE_RC}"
   echo ""
   echo "EXAMPLE"
   echo "  bee slack::message"
@@ -253,7 +254,6 @@ terminate() {
   fi
 }
 
-
 main() {
   trap cancel INT
   trap cancel TERM
@@ -261,7 +261,7 @@ main() {
 
   source "${BEE_HOME}/src/bee_log.sh"
   source "${BEE_HOME}/src/bee_utils.sh"
-  source_config "${BEE_RC:-${HOME}/.beerc}"
+  source_config
 
   if [[ -f bee.sh ]]; then
     source bee.sh
