@@ -61,4 +61,5 @@ $ bee github::create_release
 $ bee github::teams
 $ bee github::add_team 123 push
 $ bee github::set_topics game
+$ me="$(bee --silent github::me)"
 ```
