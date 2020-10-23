@@ -1,3 +1,15 @@
+## [0.35.0] - 2020-10-23
+### Added
+- Add `get` script to download a specific bee version
+- Add `github::create_org_repo`
+- Add `github::remove_team`
+- Add `github::add_user`
+- Add `github::remove_user`
+- Add `Add github::me`
+
+### Changed
+- Print real BEE_RC path in help
+
 ## [0.34.0] - 2020-10-21
 ### Added
 - Add support for custom .beerc path by exporting `BEE_RCs`
