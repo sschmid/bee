@@ -18,6 +18,10 @@ github::_deps() {
   echo "version"
 }
 
+github::create_org_repo() {
+  curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "{\"name\": \"${1}\", \"private\": ${2}}" https://api.github.com/orgs/${GITHUB_USER}/repos
+}
+
 github::create_release() {
   log_func
   require jq
@@ -48,6 +52,10 @@ github::teams() {
 github::add_team() {
   local data="{\"permission\": \"${2}\"}"
   curl -X PUT -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "${data}" "https://api.github.com/organizations/${GITHUB_ORG_ID}/team/${1}/repos/${GITHUB_REPO}"
+}
+
+github::remove_team() {
+  curl -X DELETE -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "https://api.github.com/organizations/${GITHUB_ORG_ID}/team/${1}/repos/${GITHUB_REPO}"
 }
 
 github::set_topics() {
