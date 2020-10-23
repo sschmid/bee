@@ -28,6 +28,10 @@ Please see
 ------------------------
 - removes the specified teamId from `GITHUB_REPO` in `GITHUB_ORG_ID`
 
+`github::me`
+------------------------
+- get the current authenticated user login name
+
 `github::add_user`
 ------------------------
 - adds the specified user with the specified permissions (pull | push | admin) to `GITHUB_REPO`

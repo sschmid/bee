@@ -58,6 +58,10 @@ github::remove_team() {
   curl -X DELETE -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "https://api.github.com/organizations/${GITHUB_ORG_ID}/team/${1}/repos/${GITHUB_REPO}"
 }
 
+github::me() {
+  curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "https://api.github.com/user" | jq -r '.login'
+}
+
 github::add_user() {
   local data="{\"permission\": \"${2}\"}"
   curl -X PUT -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -d "${data}" "https://api.github.com/repos/${GITHUB_REPO}/collaborators/${1}"
