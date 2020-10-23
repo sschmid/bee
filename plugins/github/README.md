@@ -12,7 +12,7 @@ Please see
 - creates new github release with current version
 - attaches all zips in `GITHUB_ATTACHMENTS_ZIP` to github release
 
-`github::github::org`
+`github::org`
 ------------------------
 - prints org details for `GITHUB_USER`
 
@@ -28,9 +28,17 @@ Please see
 ------------------------
 - removes the specified teamId from `GITHUB_REPO` in `GITHUB_ORG_ID`
 
+`github::add_user`
+------------------------
+- adds the specified user with the specified permissions (pull | push | admin) to `GITHUB_REPO`
+
+`github::remove_user`
+------------------------
+- removes the specified use from `GITHUB_REPO`
+
 `github::set_topics`
 ------------------------
-- sets specified topics on `GITHUB_REPO`
+- sets the specified topics on `GITHUB_REPO`
 
 
 Dependencies
