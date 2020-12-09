@@ -1,3 +1,16 @@
+## [0.36.0] - 2020-12-09
+### General
+- Uninstall git lfs
+- Replace lfs pointers with real files
+
+### Added
+- Add `lfs::untrack_and_add`
+- Add `lfs::track_and_add_type`
+- Add `lfs::untrack_and_add_type`
+
+### Changed
+- Rename `tag` to `BEE_VERSION` in `get`
+
 ## [0.35.0] - 2020-10-23
 ### Added
 - Add `get` script to download a specific bee version
