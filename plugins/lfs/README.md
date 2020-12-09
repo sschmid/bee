@@ -3,11 +3,19 @@ lfs
 
 `lfs::track_and_add`
 --------------------
-- lfs track && lfs add specified file
+- lfs track && git add specified file
+
+`lfs::untrack_and_add`
+--------------------
+- lfs untrack && git rm --cached && git add specified file
 
 `lfs::track_and_add_type`
 --------------------
-- lfs track && lfs add specified file type found in the current folder and subfolders
+- lfs::track_and_add specified file type found in the current folder and subfolders
+
+`lfs::untrack_and_add_type`
+--------------------
+- lfs::untrack_and_add specified file type found in the current folder and subfolders
 
 
 Dependencies
