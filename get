@@ -7,4 +7,4 @@
 set -e
 
 export GIT_LFS_SKIP_SMUDGE=1
-git clone --depth 1 --branch "${BEE_VERSION}" git@github.com:sschmid/bee.git
+git -c advice.detachedHead=false clone --depth 1 --branch "${BEE_VERSION}" git@github.com:sschmid/bee.git
