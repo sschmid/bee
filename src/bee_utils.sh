@@ -25,14 +25,6 @@ require() {
   }
 }
 
-source_config() {
-  if [[ ! -f "${BEE_RC}" ]]; then
-    echo "#!/usr/bin/env bash" > "${BEE_RC}"
-    echo 'BEE_PLUGINS=("${BEE_HOME}/plugins")' >> "${BEE_RC}"
-  fi
-  source "${BEE_RC}"
-}
-
 source_plugins() {
   local found_all=true
   for plugin_name in "$@"; do

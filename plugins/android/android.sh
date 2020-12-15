@@ -6,7 +6,7 @@
 android::_new() {
   echo "# android"
   echo 'ANDROID_ADB="${HOME}/Library/Android/sdk/platform-tools/adb"
-ANDROID_APK="Build/Android/${PROJECT}.apk"
+ANDROID_APK="Build/Android/${BEE_PROJECT}.apk"
 ANDROID_PACKAGE="com.company.myapp"
 ANDROID_KEYSTORE=.bee/android/keys.keystore
 ANDROID_ACTIVITY="${ANDROID_PACKAGE}/com.unity3d.player.UnityPlayerNativeActivity"'

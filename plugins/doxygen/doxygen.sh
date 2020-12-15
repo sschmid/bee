@@ -8,11 +8,11 @@ DOXYGEN_BUILD=Build/docs
 doxygen::_new() {
   echo "# doxygen => $(doxygen::_deps)"
   echo 'DOXYGEN_EXPORT_PATH=docs
-DOXYGEN_DOXY_FILES=("${RESOURCES}"/docs/html.doxyfile)
-DOXYGEN_DOCSET_NAME="${PROJECT}.docset"
-DOXYGEN_DOCSET="com.company.${PROJECT}.docset"
-DOXYGEN_DOCSET_KEY="$(echo "${PROJECT}" | tr "[:upper:]" "[:lower:]")"
-DOXYGEN_DOCSET_ICONS=("${RESOURCES}"/docs/icon.png "${RESOURCES}"/docs/icon@2x.png)'
+DOXYGEN_DOXY_FILES=("${BEE_RESOURCES}"/docs/html.doxyfile)
+DOXYGEN_DOCSET_NAME="${BEE_PROJECT}.docset"
+DOXYGEN_DOCSET="com.company.${BEE_PROJECT}.docset"
+DOXYGEN_DOCSET_KEY="$(echo "${BEE_PROJECT}" | tr "[:upper:]" "[:lower:]")"
+DOXYGEN_DOCSET_ICONS=("${BEE_RESOURCES}"/docs/icon.png "${BEE_RESOURCES}"/docs/icon@2x.png)'
 }
 
 doxygen::_deps() {

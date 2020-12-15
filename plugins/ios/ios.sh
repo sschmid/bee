@@ -5,13 +5,13 @@
 
 ios::_new() {
   echo "# ios"
-  echo 'IOS_PROJECT="Build/iOS/${PROJECT}/Unity-iPhone.xcodeproj"
-IOS_WORKSPACE="Build/iOS/${PROJECT}/Unity-iPhone.xcworkspace"
+  echo 'IOS_PROJECT="Build/iOS/${BEE_PROJECT}/Unity-iPhone.xcodeproj"
+IOS_WORKSPACE="Build/iOS/${BEE_PROJECT}/Unity-iPhone.xcworkspace"
 IOS_SCHEME="Unity-iPhone"
-IOS_ARCHIVE="Build/iOS/${PROJECT}/${PROJECT}.xcarchive"
-IOS_EXPORT_PATH="Build/iOS/${PROJECT}/Export"
-IOS_EXPORT_OPTIONS="${RESOURCES}"/ios/ExportOptions.plist
-IOS_IPA="Build/iOS/${PROJECT}/Export/Unity-iPhone.ipa"
+IOS_ARCHIVE="Build/iOS/${BEE_PROJECT}/${BEE_PROJECT}.xcarchive"
+IOS_EXPORT_PATH="Build/iOS/${BEE_PROJECT}/Export"
+IOS_EXPORT_OPTIONS="${BEE_RESOURCES}"/ios/ExportOptions.plist
+IOS_IPA="Build/iOS/${BEE_PROJECT}/Export/Unity-iPhone.ipa"
 IOS_USER="user"
 IOS_PASSWORD="password"'
 }

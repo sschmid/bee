@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-PROJECT="bee"
+BEE_PROJECT="bee"
+# use system bee
+# BEE_VERSION=0.37.0
+# use system bee plugins
+# BEE_PLUGINS="${BEE_HOME}/plugins"
+BEE_RESOURCES=.bee
 PLUGINS=(changelog git github version)
-RESOURCES=.bee
 
-source "${RESOURCES}"/bee.sh
+source "${BEE_RESOURCES}"/bee.sh
 
 # changelog => version
 CHANGELOG_PATH=CHANGELOG.md
@@ -11,7 +15,7 @@ CHANGELOG_CHANGES=CHANGES.md
 
 # github => version
 GITHUB_CHANGES=CHANGES.md
-GITHUB_RELEASE_PREFIX="${PROJECT}-"
+GITHUB_RELEASE_PREFIX="${BEE_PROJECT}-"
 GITHUB_REPO="sschmid/bee"
 GITHUB_ATTACHMENTS_ZIP=()
 source "${HOME}/.bee/github.sh"

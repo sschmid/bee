@@ -5,8 +5,8 @@
 
 utils::_new() {
   echo "# utils"
-  echo 'UTILS_RSYNC_INCLUDE="${RESOURCES}"/utils/rsync_include.txt
-UTILS_RSYNC_EXCLUDE="${RESOURCES}"/utils/rsync_exclude.txt'
+  echo 'UTILS_RSYNC_INCLUDE="${BEE_RESOURCES}"/utils/rsync_include.txt
+UTILS_RSYNC_EXCLUDE="${BEE_RESOURCES}"/utils/rsync_exclude.txt'
 }
 
 utils::clean_dir() {
