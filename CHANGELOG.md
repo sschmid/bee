@@ -1,3 +1,21 @@
+## [0.37.0] - 2020-12-15
+### Action required
+- Rename your project `bee.sh` to `.beerc`
+- Rename `PROJECT` to `BEE_PROJECT`
+- Rename `RESOURCES` to `BEE_RESOURCES`
+
+### Added
+- Add support for custom .beerc path with `BEE_RC`
+- Add support for fixed bee version per project by defining `BEE_VERSION` in your project `.beerc`
+
+### Changed
+- Rename `PROJECT` to `BEE_PROJECT`
+- Rename `RESOURCES` to `BEE_RESOURCES`
+- Extract `bee_runner.sh` from `bee_sh`
+
+### Removed
+- `get` command
+
 ## [0.36.0] - 2020-12-09
 ### General
 - Uninstall git lfs
