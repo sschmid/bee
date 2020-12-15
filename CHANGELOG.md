@@ -14,7 +14,7 @@
 - Extract `bee_runner.sh` from `bee_sh`
 
 ### Removed
-- `get` command
+- Remove `get` command
 
 ## [0.36.0] - 2020-12-09
 ### General
