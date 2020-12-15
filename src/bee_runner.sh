@@ -57,7 +57,7 @@ help() {
 
 update_internal_help=("update | update bee to latest version")
 update() {
-  pushd "${BEE_HOME}" > /dev/null
+  pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull
     echo "bee is up-to-date and ready to bzzzz"
   popd > /dev/null

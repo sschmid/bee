@@ -19,11 +19,12 @@ resolve_bee_home() {
   echo "$(dirname "$(dirname "${path}")")"
 }
 
-export BEE_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
+export BEE_SYSTEM_HOME="$(resolve_bee_home "${BASH_SOURCE[0]}")"
+export BEE_HOME="${BEE_SYSTEM_HOME}"
 
 if [[ ! -f "${HOME}/.beerc" ]]; then
   echo "#!/usr/bin/env bash" > "${HOME}/.beerc"
-  echo 'export BEE_PLUGINS=("${BEE_HOME}/plugins")' >> "${HOME}/.beerc"
+  echo 'export BEE_PLUGINS=("${BEE_SYSTEM_HOME}/plugins")' >> "${HOME}/.beerc"
 fi
 source "${HOME}/.beerc"
 
