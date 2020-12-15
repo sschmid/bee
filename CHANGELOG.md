@@ -1,3 +1,7 @@
+## [0.37.1] - 2020-12-15
+### Changed
+- Fix `bee update` to only update system bee
+
 ## [0.37.0] - 2020-12-15
 ### Action required
 - Rename your project `bee.sh` to `.beerc`
