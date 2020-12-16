@@ -28,6 +28,9 @@ if [[ ! -f "${HOME}/.beerc" ]]; then
 fi
 source "${HOME}/.beerc"
 
+# migration support
+source "${BEE_SYSTEM_HOME}/src/bee_migration_0370.sh"
+
 if [[ ! -v BEE_RC ]]; then
   if [[ -f .beerc ]]; then
     export BEE_RC=.beerc
