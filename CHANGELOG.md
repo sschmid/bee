@@ -1,3 +1,7 @@
+## [0.37.2] - 2020-12-16
+### Changed
+- Store bee versions in ~/.bee/versions
+
 ## [0.37.1] - 2020-12-15
 ### Changed
 - Fix `bee update` to only update system bee
