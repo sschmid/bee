@@ -1,3 +1,7 @@
+## [0.37.3] - 2020-12-16
+### Added
+- Add bee_migration_0370.sh
+
 ## [0.37.2] - 2020-12-16
 ### Changed
 - Store bee versions in ~/.bee/versions
