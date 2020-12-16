@@ -40,7 +40,7 @@ else
 fi
 
 if [[ -v BEE_VERSION ]]; then
-  BEE_HOME="${BEE_HOME}/versions/${BEE_VERSION}"
+  BEE_HOME="${HOME}/.bee/versions/${BEE_VERSION}"
   source "${BEE_RC}"
   if [[ ! -d "${BEE_HOME}" ]]; then
     git -c advice.detachedHead=false clone --depth 1 --branch "${BEE_VERSION}" git@github.com:sschmid/bee.git "${BEE_HOME}"
