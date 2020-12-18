@@ -10,6 +10,9 @@ Dependencies
 ============
 none
 
+3rd party:
+- `osascript` - https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/introduction/ASLR_intro.htmll
+
 
 Examples
 ========

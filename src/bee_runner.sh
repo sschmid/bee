@@ -216,11 +216,11 @@ BEE_MODE_COMMAND=1
 BEE_MODE=${BEE_MODE_INTERNAL}
 T=${SECONDS}
 
-cancel() {
+bee_cancel() {
   BEE_CANCELED=true
 }
 
-terminate() {
+bee_terminate() {
   local exit_code=$?
   if [[ ${BEE_SILENT} == false ]]; then
     if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
@@ -234,9 +234,8 @@ terminate() {
 }
 
 bee_run() {
-  trap cancel INT
-  trap cancel TERM
-  trap terminate EXIT
+  trap bee_cancel INT TERM
+  trap bee_terminate EXIT
 
   source "${BEE_HOME}/src/bee_log.sh"
   source "${BEE_HOME}/src/bee_utils.sh"
