@@ -37,6 +37,7 @@ source "${HOME}/.beerc"
 
 # TODO: remove when expired
 source "${BEE_SYSTEM_HOME}/src/bee_migration_0370.sh"
+source "${BEE_SYSTEM_HOME}/src/bee_migration_0380.sh"
 
 if [[ -v BEE_RC ]]; then
   source "${BEE_RC}"
