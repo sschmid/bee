@@ -4,7 +4,7 @@ _bee_completions() {
   local firstWord="${COMP_WORDS[1]}"
   local lastWord="${COMP_WORDS[-1]}"
   if [[ $COMP_CWORD == 1 ]]; then
-    local words="$(bee internal_commands) $(bee plugins) $(bee commands)"
+    local words="$(bee builtin_commands) $(bee plugins) $(bee commands)"
     COMPREPLY=($(compgen -W "${words}" "${firstWord}"))
   else
     case "${firstWord}" in

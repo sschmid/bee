@@ -2,9 +2,6 @@
 BEE_PROJECT="bee"
 # use system bee
 # BEE_VERSION=0.37.0
-# use system bee plugins
-# BEE_PLUGINS="${BEE_HOME}/plugins"
-BEE_RESOURCES=.bee
 PLUGINS=(changelog git github version)
 
 source "${BEE_RESOURCES}"/bee.sh

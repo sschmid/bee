@@ -1,19 +1,9 @@
 #!/usr/bin/env bash
 
-internal_commands() {
-  local internal_commands=()
-  for command in $(compgen -A function); do
-    local help_var="${command}_internal_help[@]"
-    if [[ -v "${help_var}" ]]; then
-      internal_commands+=("${command}")
-    fi
-  done
-  echo "${internal_commands[@]}"
-}
-
 assert_file() {
-  if [[ ! -f "${!1}" ]]; then
-    echo "❌ ASSERT ${1}: file not found: ${!1}" >&2
+  local file="${!1}"
+  if [[ ! -f "${file}" ]]; then
+    echo "❌ ASSERT ${1}: file not found: ${file}" >&2
     exit 1
   fi
 }
@@ -29,8 +19,8 @@ source_plugins() {
   local found_all=true
   for plugin_name in "$@"; do
     local found=false
-    for dir in "${BEE_PLUGINS[@]}"; do
-      local plugin_path="${dir}/${plugin_name}/${plugin_name}.sh"
+    for path in "${BEE_PLUGINS[@]}"; do
+      local plugin_path="${path}/${plugin_name}/${plugin_name}.sh"
       if [[ -f "${plugin_path}" ]]; then
         source "${plugin_path}"
         found=true

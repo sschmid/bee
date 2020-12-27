@@ -1,61 +1,22 @@
 #!/usr/bin/env bash
 
-# help #########################################################################
-
-help_bee() {
-  local commands=""
-  for command in $(internal_commands); do
-    local help_var="${command}_internal_help[@]"
-    for entry in "${!help_var}"; do
-      commands+="  ${entry}\n"
-    done
-  done
-
-  local local_version="$(cat "${BEE_HOME}/version.txt")"
-  echo "🐝 bee ${local_version} - plugin-based bash automation"
-  echo ""
-  echo "usage: bee [--silent --verbose] <command> [<args>]"
-  echo ""
-  echo -e "${commands}" | column -s '|' -t
-  echo ""
-  echo "customization:"
-  echo "  see ${BEE_RC}"
-  echo ""
-  echo "EXAMPLE"
-  echo "  bee slack::message"
-  echo "  bee version::bump_minor"
-  echo "  bee ios::upload"
-}
-
-help_plugin() {
-  local found_help=false
-  for dir in "${BEE_PLUGINS[@]}"; do
-    local readme="${dir}/${1}/README.md"
-    if [[ -f "${readme}" ]]; then
-      found_help=true
-      less "${readme}"
-      break
-    fi
-  done
-  if [[ ${found_help} == false ]]; then
-    echo "Help for ${1} doesn't exit"
-  fi
-}
-
-help_internal_help=("help | show bee usage" "help <plugin> | show help for plugin")
-help() {
-  if (( $# == 1 )); then
-    help_plugin "$@"
-  else
-    help_bee
-  fi
-}
-
 ################################################################################
 # commands
 ################################################################################
 
-update_internal_help=("update | update bee to latest version")
+builtin_commands() {
+  local commands=""
+  for command in $(compgen -A function); do
+    help_var="${command}_builtin_help[@]"
+    if [[ -v "${help_var}" ]]; then
+      commands+="${command}\n"
+    fi
+  done
+
+  echo -e "${commands}"
+}
+
+update_builtin_help=("update | update bee to latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull
@@ -63,7 +24,7 @@ update() {
   popd > /dev/null
 }
 
-version_internal_help=("version | show bee version")
+version_builtin_help=("version | show bee version")
 version() {
   local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   local local_version="$(cat "${BEE_HOME}/version.txt")"
@@ -74,30 +35,30 @@ version() {
   fi
 }
 
-wiki_internal_help=("wiki | open wiki")
+wiki_builtin_help=("wiki | open wiki")
 wiki() {
   open "https://github.com/sschmid/bee/wiki"
 }
 
-donate_internal_help=("donate | bee is free, but powered by your donations")
+donate_builtin_help=("donate | bee is free, but powered by your donations")
 donate() {
   open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
-plugins_internal_help=("plugins | list all plugins")
+plugins_builtin_help=("plugins | list all plugins")
 plugins() {
-  for dir in "${BEE_PLUGINS[@]}"; do
-    for path in "${dir}"/*; do
-      if [[ -d "${path}" ]]; then
-        basename "${path}"
+  for path in "${BEE_PLUGINS[@]}"; do
+    for plugin in "${path}"/*; do
+      if [[ -d "${plugin}" ]]; then
+        basename "${plugin}"
       fi
     done
   done
 }
 
-commands_internal_help=("commands | list all commands of enabled plugins")
+commands_builtin_help=("commands | list all commands of enabled plugins")
 commands() {
-  compgen -A function | grep --color=never '^[_a-zA-Z]*::[a-zA-Z]'
+  compgen -A function | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' || true
 }
 
 new_bee() {
@@ -106,15 +67,15 @@ new_bee() {
     exit 1
   fi
   local local_version="$(cat "${BEE_HOME}/version.txt")"
-  echo '#!/usr/bin/env bash' > .beerc
-  echo "BEE_PROJECT=\"$(basename ${PWD})\"" >> .beerc
-  echo "BEE_VERSION=${local_version}" >> .beerc
-  echo 'BEE_PLUGINS=("${BEE_HOME}/plugins")
-BEE_RESOURCES=.bee
-PLUGINS=()
-
-# Run bee new <plugins> to print all required variables
-# e.g. bee new git utils version' >> .beerc
+  {
+    echo '#!/usr/bin/env bash'
+    echo "BEE_PROJECT=\"$(basename ${PWD})\""
+    echo "BEE_VERSION=${local_version}"
+    echo 'PLUGINS=()'
+    echo ""
+    echo "# Run bee new <plugins> to print all required variables"
+    echo "# e.g. bee new git utils version"
+  } > .beerc
 
   echo "created ${PWD}/.beerc"
 }
@@ -132,7 +93,7 @@ new_plugin() {
   }
 }
 
-new_internal_help=(
+new_builtin_help=(
   "new | create new .beerc"
   "new <plugins> | show code templates for plugins"
 )
@@ -144,7 +105,7 @@ new() {
   fi
 }
 
-deps_internal_help=("deps | list dependencies of enabled plugins")
+deps_builtin_help=("deps | list dependencies of enabled plugins")
 deps() {
   missing=()
   for plugin_name in "${PLUGINS[@]}"; do
@@ -179,14 +140,15 @@ deps() {
     echo ""
     echo "Missing dependencies:"
     echo "${missing[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '
+    echo ""
   fi
 }
 
-res_internal_help=("res <plugins> | copy template files into resources dir")
+res_builtin_help=("res <plugins> | copy template files into resources dir")
 res() {
   for plugin_name in "$@"; do
-    for dir in "${BEE_PLUGINS[@]}"; do
-      local template_dir="${dir}/${plugin_name}/templates"
+    for path in "${BEE_PLUGINS[@]}"; do
+      local template_dir="${path}/${plugin_name}/templates"
       if [[ -d "${template_dir}" ]]; then
         local target_dir="${BEE_RESOURCES}/${plugin_name}"
         echo "Copying resources into ${target_dir}"
@@ -197,12 +159,61 @@ res() {
   done
 }
 
-uninstall_internal_help=("uninstall | uninstall bee from your system")
+uninstall_builtin_help=("uninstall | uninstall bee from your system")
 uninstall() {
   rm -f /usr/local/bin/bee
   rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
   rm -rf /usr/local/opt/bee/
+  rm -rf "${HOME}/.bee/versions"
   log "Uninstalled bee"
+}
+
+# help #########################################################################
+
+help_bee() {
+  local commands=""
+  for command in $(builtin_commands); do
+    local help_var="${command}_builtin_help[@]"
+    for entry in "${!help_var}"; do
+      commands+="  ${entry}\n"
+    done
+  done
+
+  local local_version="$(cat "${BEE_HOME}/version.txt")"
+  echo "🐝 bee ${local_version} - plugin-based bash automation"
+  echo ""
+  echo "usage: bee [--silent --verbose] <command> [<args>]"
+  echo ""
+  echo -e "${commands}" | column -s '|' -t
+  echo ""
+  echo "EXAMPLE"
+  echo "  bee slack::message"
+  echo "  bee version::bump_minor"
+  echo "  bee ios::upload"
+}
+
+help_plugin() {
+  local found_help=false
+  for path in "${BEE_PLUGINS[@]}"; do
+    local readme="${path}/${1}/README.md"
+    if [[ -f "${readme}" ]]; then
+      found_help=true
+      less "${readme}"
+      break
+    fi
+  done
+  if [[ ${found_help} == false ]]; then
+    echo "Help for ${1} doesn't exit"
+  fi
+}
+
+help_builtin_help=("help | show bee usage" "help <plugin> | show help for plugin")
+help() {
+  if (( $# == 1 )); then
+    help_plugin "$@"
+  else
+    help_bee
+  fi
 }
 
 ################################################################################
@@ -220,7 +231,7 @@ bee_cancel() {
   BEE_CANCELED=true
 }
 
-bee_terminate() {
+bee_exit() {
   local exit_code=$?
   if [[ ${BEE_SILENT} == false ]]; then
     if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
@@ -235,7 +246,7 @@ bee_terminate() {
 
 bee_run() {
   trap bee_cancel INT TERM
-  trap bee_terminate EXIT
+  trap bee_exit EXIT
 
   source "${BEE_HOME}/src/bee_log.sh"
   source "${BEE_HOME}/src/bee_utils.sh"
