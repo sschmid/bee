@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
 
-BEE_SPINNER_FRAMES=('-' '\' '|' '/')
-BEE_SPINNER_INTERVAL=0.2
+BEE_SPINNER_FRAMES=(
+  '🐝'
+  ' 🐝'
+  '  🐝'
+  '   🐝'
+  '    🐝'
+  '     🐝'
+  '      🐝'
+  '       🐝'
+  '        🐝'
+  '         🐝'
+  '        🐝'
+  '       🐝'
+  '      🐝'
+  '     🐝'
+  '    🐝'
+  '   🐝'
+  '  🐝'
+  ' 🐝'
+  '🐝'
+)
+BEE_SPINNER_INTERVAL=0.1
 
 BEE_SPINNER_PID=0
 BEE_JOB_RUNNING=false
