@@ -227,12 +227,25 @@ BEE_MODE_COMMAND=1
 BEE_MODE=${BEE_MODE_INTERNAL}
 T=${SECONDS}
 
-bee_cancel() {
+bee_int() {
   BEE_CANCELED=true
+  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+    job_int
+  fi
+}
+
+bee_term() {
+  BEE_CANCELED=true
+  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+    job_term
+  fi
 }
 
 bee_exit() {
   local exit_code=$?
+  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+    job_exit "${exit_code}"
+  fi
   if [[ ${BEE_SILENT} == false ]]; then
     if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
       if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
@@ -245,11 +258,13 @@ bee_exit() {
 }
 
 bee_run() {
-  trap bee_cancel INT TERM
+  trap bee_int INT
+  trap bee_term TERM
   trap bee_exit EXIT
 
   source "${BEE_HOME}/src/bee_log.sh"
   source "${BEE_HOME}/src/bee_utils.sh"
+  source "${BEE_HOME}/src/bee_job.sh"
 
   if [[ -v PLUGINS ]]; then
     source_plugins "${PLUGINS[@]}"
