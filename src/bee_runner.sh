@@ -125,7 +125,7 @@ deps() {
         fi
       done
 
-      echo -e "${plugin_name} =>${status}"
+      echo -e "${plugin_id} =>${status}"
     fi
   done
 
