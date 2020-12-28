@@ -5,18 +5,11 @@
 ################################################################################
 
 builtin_commands() {
-  local commands=""
-  for command in $(compgen -A function); do
-    help_var="${command}_builtin_help[@]"
-    if [[ -v "${help_var}" ]]; then
-      commands+="${command}\n"
-    fi
-  done
-
-  echo -e "${commands}"
+  local commands=("$(compgen -v bee_help_)")
+  echo "${commands[@]//bee_help_/}"
 }
 
-update_builtin_help=("update | update bee to latest version")
+bee_help_update=("update | update bee to latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull
@@ -24,7 +17,7 @@ update() {
   popd > /dev/null
 }
 
-version_builtin_help=("version | show bee version")
+bee_help_version=("version | show bee version")
 version() {
   local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   local local_version="$(cat "${BEE_HOME}/version.txt")"
@@ -35,20 +28,20 @@ version() {
   fi
 }
 
-wiki_builtin_help=("wiki | open wiki")
+bee_help_wiki=("wiki | open wiki")
 wiki() {
   open "https://github.com/sschmid/bee/wiki"
 }
 
-donate_builtin_help=("donate | bee is free, but powered by your donations")
+bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
   open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
-plugins_builtin_help=("plugins | list all plugins")
+bee_help_plugins=("plugins | list all plugins")
 plugins() {
   for path in "${BEE_PLUGINS[@]}"; do
-    for plugin in "${path}"/*; do
+    for plugin in "${path}/"*; do
       if [[ -d "${plugin}" ]]; then
         basename "${plugin}"
       fi
@@ -56,7 +49,7 @@ plugins() {
   done
 }
 
-commands_builtin_help=("commands | list all commands of enabled plugins")
+bee_help_commands=("commands | list all commands of enabled plugins")
 commands() {
   compgen -A function | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' || true
 }
@@ -93,7 +86,7 @@ new_plugin() {
   }
 }
 
-new_builtin_help=(
+bee_help_new=(
   "new | create new .beerc"
   "new <plugins> | show code templates for plugins"
 )
@@ -105,17 +98,18 @@ new() {
   fi
 }
 
-deps_builtin_help=("deps | list dependencies of enabled plugins")
+bee_help_deps=("deps | list dependencies of enabled plugins")
 deps() {
   missing=()
-  for plugin_name in "${PLUGINS[@]}"; do
-    local func="${plugin_name}::_deps"
+  for plugin in $(resolve_plugins "${PLUGINS[@]}"); do
+    local plugin_id="${plugin%:*}"
+    local plugin_name="${plugin_id%:*}"
 
-    if [[ $(command -v "${func}") == "${func}" ]]; then
-      local deps=$(${func})
-      local result=""
-
-      for dep in ${deps}; do
+    local deps_func="${plugin_name}::_deps"
+    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+      local dependencies=($(${deps_func} | tr ' ' '\n'))
+      local status=""
+      for dep in ${dependencies[@]}; do
         local found_dep=false
         for p in "${PLUGINS[@]}"; do
           if [[ "${p}" == "${dep}" ]]; then
@@ -125,14 +119,14 @@ deps() {
         done
 
         if [[ ${found_dep} == true ]]; then
-          result+=" \033[32m${dep}\033[0m"
+          status+=" \033[32m${dep}\033[0m"
         else
-          result+=" \033[31m${dep}\033[0m"
+          status+=" \033[31m${dep}\033[0m"
           missing+=("${dep}")
         fi
       done
 
-      echo -e "${plugin_name} =>${result}"
+      echo -e "${plugin_name} =>${status}"
     fi
   done
 
@@ -144,36 +138,39 @@ deps() {
   fi
 }
 
-res_builtin_help=("res <plugins> | copy template files into resources dir")
+bee_help_res=("res <plugins> | copy template files into resources dir")
 res() {
-  for plugin_name in "$@"; do
-    for path in "${BEE_PLUGINS[@]}"; do
-      local template_dir="${path}/${plugin_name}/templates"
-      if [[ -d "${template_dir}" ]]; then
-        local target_dir="${BEE_RESOURCES}/${plugin_name}"
-        echo "Copying resources into ${target_dir}"
-        mkdir -p "${target_dir}/"
-        cp -r "${template_dir}/". "${target_dir}/"
-      fi
-    done
+  for plugin in $(resolve_plugins "$@"); do
+    local plugin_id="${plugin%:*}"
+    local plugin_name="${plugin_id%:*}"
+    local plugin_version="${plugin_id##*:}"
+    local plugin_path="${plugin##*:}"
+
+    local template_dir="${plugin_path}/${plugin_version}/templates"
+    if [[ -d "${template_dir}" ]]; then
+      local target_dir="${BEE_RESOURCES}/${plugin_name}"
+      echo "Copying resources into ${target_dir}"
+      mkdir -p "${target_dir}/"
+      cp -r "${template_dir}/". "${target_dir}/"
+    fi
   done
 }
 
-uninstall_builtin_help=("uninstall | uninstall bee from your system")
+bee_help_uninstall=("uninstall | uninstall bee from your system")
 uninstall() {
   rm -f /usr/local/bin/bee
   rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
   rm -rf /usr/local/opt/bee/
   rm -rf "${HOME}/.bee/versions"
-  log "Uninstalled bee"
+  echo "Uninstalled bee"
 }
 
 # help #########################################################################
 
 help_bee() {
   local commands=""
-  for command in $(builtin_commands); do
-    local help_var="${command}_builtin_help[@]"
+  for help_var in $(compgen -v bee_help_); do
+    help_var+="[@]"
     for entry in "${!help_var}"; do
       commands+="  ${entry}\n"
     done
@@ -193,21 +190,20 @@ help_bee() {
 }
 
 help_plugin() {
-  local found_help=false
-  for path in "${BEE_PLUGINS[@]}"; do
-    local readme="${path}/${1}/README.md"
-    if [[ -f "${readme}" ]]; then
-      found_help=true
-      less "${readme}"
-      break
-    fi
-  done
-  if [[ ${found_help} == false ]]; then
+  local plugin="$(resolve_plugins $1)"
+  local plugin_id="${plugin%:*}"
+  local plugin_version="${plugin_id##*:}"
+  local plugin_path="${plugin##*:}"
+
+  local readme="${plugin_path}/${plugin_version}/README.md"
+  if [[ -f "${readme}" ]]; then
+    less "${readme}"
+  else
     echo "Help for ${1} doesn't exit"
   fi
 }
 
-help_builtin_help=("help | show bee usage" "help <plugin> | show help for plugin")
+bee_help_help=("help | show bee usage" "help <plugin> | show help for plugin")
 help() {
   if (( $# == 1 )); then
     help_plugin "$@"

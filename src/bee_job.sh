@@ -60,7 +60,7 @@ complete_job() {
   echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
 }
 
-job_builtin_help=("job <title> <command>| run a command as a job")
+bee_help_job=("job <title> <command>| run a command as a job")
 job() {
   BEE_JOB_RUNNING=true
   BEE_JOB_TITLE="${1}"
