@@ -1,5 +1,5 @@
-utils
-=====
+utils 0.1.0
+===========
 This plugin comes with additional resources.
 Please run `bee res utils` to copy all required files to you project.
 

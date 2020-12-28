@@ -1,5 +1,5 @@
-macos
-=====
+macos 0.1.0
+===========
 
 `macos::notification`
 ------------------

@@ -1,5 +1,5 @@
-ios
-===
+ios 0.1.0
+=========
 This plugin comes with additional resources.
 Please run `bee res ios` to copy all required files to you project.
 

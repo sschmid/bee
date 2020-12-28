@@ -1,5 +1,5 @@
-changelog
-=========
+changelog 0.1.0
+===============
 Please see
 - https://keepachangelog.com
 

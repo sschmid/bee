@@ -1,5 +1,5 @@
-slack
-=====
+slack 0.1.0
+===========
 Please see
 - https://slack.com
 - https://api.slack.com/tutorials/slack-apps-hello-world
@@ -15,6 +15,7 @@ Please see
 `slack::upload`
 -----------------
 - Send a message using `https://slack.com/api/files.upload`
+
 
 Dependencies
 ============
