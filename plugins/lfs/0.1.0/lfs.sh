@@ -19,14 +19,14 @@ lfs::untrack_and_add() {
 }
 
 lfs::track_and_add_type() {
-  local files=("$(find . -name "*.$1" -type f)")
+  local files=("$(find . -name "*.${1}" -type f)")
   for f in "${files[@]}"; do
     lfs::track_and_add "$f"
   done
 }
 
 lfs::untrack_and_add_type() {
-  local files=("$(find . -name "*.$1" -type f)")
+  local files=("$(find . -name "*.${1}" -type f)")
   for f in "${files[@]}"; do
     lfs::untrack_and_add "$f"
   done

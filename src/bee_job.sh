@@ -84,7 +84,7 @@ job_term() {
 }
 
 job_exit() {
-  local exit_code=$1
+  local exit_code=${1}
   if (( ${exit_code} != 0 )); then
     stop_spinner
     echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"

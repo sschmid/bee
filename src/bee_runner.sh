@@ -190,7 +190,7 @@ help_bee() {
 }
 
 help_plugin() {
-  local plugin="$(resolve_plugins $1)"
+  local plugin="$(resolve_plugins ${1})"
   local plugin_id="${plugin%:*}"
   local plugin_version="${plugin_id##*:}"
   local plugin_path="${plugin##*:}"
