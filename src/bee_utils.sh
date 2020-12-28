@@ -25,7 +25,7 @@ resolve_plugins() {
       for path in "${BEE_PLUGINS[@]}"; do
         local plugin_path="${path}/${plugin_name}"
         if [[ -d "${plugin_path}" ]]; then
-          local versions=("${plugin_path}/"*)
+          local versions=("$(find ${plugin_path}/* -maxdepth 0 -type d)")
           plugin_version="$(basename ${versions[@]} | sort -V | tail -n 1)"
           found=true
           echo "${plugin_name}:${plugin_version}:${plugin_path}"
@@ -52,6 +52,16 @@ resolve_plugins() {
   if [[ ${found_all} == false ]]; then
     exit 1
   fi
+}
+
+resolve_plugin_ids() {
+  for plugin in $(resolve_plugins $@); do
+    local plugin_id="${plugin%:*}"
+    local plugin_name="${plugin_id%:*}"
+    local plugin_version="${plugin_id##*:}"
+
+    echo "${plugin_name}:${plugin_version}"
+  done
 }
 
 source_plugins() {

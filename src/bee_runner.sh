@@ -101,18 +101,17 @@ new() {
 bee_help_deps=("deps | list dependencies of enabled plugins")
 deps() {
   missing=()
-  for plugin in $(resolve_plugins "${PLUGINS[@]}"); do
-    local plugin_id="${plugin%:*}"
+  local plugin_ids=$(resolve_plugin_ids "${PLUGINS[@]}")
+  for plugin_id in ${plugin_ids}; do
     local plugin_name="${plugin_id%:*}"
-
     local deps_func="${plugin_name}::_deps"
     if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
       local dependencies=($(${deps_func} | tr ' ' '\n'))
       local status=""
       for dep in ${dependencies[@]}; do
         local found_dep=false
-        for p in "${PLUGINS[@]}"; do
-          if [[ "${p}" == "${dep}" ]]; then
+        for p in ${plugin_ids}; do
+          if [[ "${p}" == "${dep}" ]] || [[ "${p%:*}" == "${dep}" ]]; then
             found_dep=true
             break
           fi
@@ -159,7 +158,7 @@ res() {
 bee_help_changelog=("changelog | show bee changelog" "changelog <plugin> | show changelog for plugin")
 changelog() {
   if (( $# == 1 )); then
-    local plugin="$(resolve_plugins ${1})"
+    local plugin=$(resolve_plugins ${1})
     local plugin_path="${plugin##*:}"
     local log="${plugin_path}/CHANGELOG.md"
     if [[ -f "${log}" ]]; then
@@ -206,7 +205,7 @@ help_bee() {
 }
 
 help_plugin() {
-  local plugin="$(resolve_plugins ${1})"
+  local plugin=$(resolve_plugins ${1})
   local plugin_id="${plugin%:*}"
   local plugin_version="${plugin_id##*:}"
   local plugin_path="${plugin##*:}"
