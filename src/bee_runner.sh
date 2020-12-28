@@ -156,6 +156,22 @@ res() {
   done
 }
 
+bee_help_changelog=("changelog | show bee changelog" "changelog <plugin> | show changelog for plugin")
+changelog() {
+  if (( $# == 1 )); then
+    local plugin="$(resolve_plugins ${1})"
+    local plugin_path="${plugin##*:}"
+    local log="${plugin_path}/CHANGELOG.md"
+    if [[ -f "${log}" ]]; then
+      less "${plugin_path}/CHANGELOG.md"
+    else
+      echo "Changelog for ${1} doesn't exit"
+    fi
+  else
+    less "${BEE_SYSTEM_HOME}/CHANGELOG.md"
+  fi
+}
+
 bee_help_uninstall=("uninstall | uninstall bee from your system")
 uninstall() {
   rm -f /usr/local/bin/bee
