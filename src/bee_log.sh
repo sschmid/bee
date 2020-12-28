@@ -4,6 +4,10 @@ log() {
   echo "🐝 $*"
 }
 
+log_warn() {
+  echo "⚠️ WARNING: $*" >&2
+}
+
 log_error() {
   echo "❌ ERROR: $*" >&2
 }

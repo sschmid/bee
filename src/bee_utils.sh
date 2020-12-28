@@ -55,11 +55,17 @@ resolve_plugins() {
 }
 
 source_plugins() {
+  # TODO: remove when expired
+  source "${BEE_SYSTEM_HOME}/src/bee_migration_0390.sh"
+
   for plugin in $(resolve_plugins $@); do
     local plugin_id="${plugin%:*}"
     local plugin_name="${plugin_id%:*}"
     local plugin_version="${plugin_id##*:}"
     local plugin_path="${plugin##*:}"
+
+    # TODO: remove when expired
+    plugin_version="$(bee_migration_0390 "${plugin_name}" "${plugin_version}")"
 
     source "${plugin_path}/${plugin_version}/${plugin_name}.sh"
   done
