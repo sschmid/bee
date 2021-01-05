@@ -13,7 +13,7 @@ IFS=$'\n\t'
 
 resolve_home() {
   local current_dir="${PWD}"
-  local path="${1}"
+  local path="$1"
   while [[ -L ${path} ]]; do
     local link="$(readlink "${path}")"
     cd "$(dirname "${path}")"

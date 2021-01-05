@@ -8,5 +8,5 @@ macos::_new() {
 }
 
 macos::notification() {
-  osascript -e 'display notification "'"${2}"'" with title "'"${1}"'"'
+  osascript -e 'display notification "'"$2"'" with title "'"$1"'"'
 }

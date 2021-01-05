@@ -158,13 +158,13 @@ res() {
 bee_help_changelog=("changelog | show bee changelog" "changelog <plugin> | show changelog for plugin")
 changelog() {
   if (( $# == 1 )); then
-    local plugin=$(resolve_plugins ${1})
+    local plugin=$(resolve_plugins $1)
     local plugin_path="${plugin##*:}"
     local log="${plugin_path}/CHANGELOG.md"
     if [[ -f "${log}" ]]; then
       less "${plugin_path}/CHANGELOG.md"
     else
-      echo "Changelog for ${1} doesn't exit"
+      echo "Changelog for $1 doesn't exit"
     fi
   else
     less "${BEE_SYSTEM_HOME}/CHANGELOG.md"
@@ -205,7 +205,7 @@ help_bee() {
 }
 
 help_plugin() {
-  local plugin=$(resolve_plugins ${1})
+  local plugin=$(resolve_plugins $1)
   local plugin_id="${plugin%:*}"
   local plugin_version="${plugin_id##*:}"
   local plugin_path="${plugin##*:}"
@@ -214,7 +214,7 @@ help_plugin() {
   if [[ -f "${readme}" ]]; then
     less "${readme}"
   else
-    echo "Help for ${1} doesn't exit"
+    echo "Help for $1 doesn't exit"
   fi
 }
 
@@ -282,11 +282,11 @@ bee_run() {
   fi
 
   if (( $# > 0 )); then
-    if [[ "${1}" == "--verbose" ]]; then
+    if [[ "$1" == "--verbose" ]]; then
       shift
       set -x
     fi
-    if [[ "${1}" == "--silent" ]]; then
+    if [[ "$1" == "--silent" ]]; then
       shift
       BEE_SILENT=true
     fi

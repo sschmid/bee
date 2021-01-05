@@ -10,12 +10,12 @@ slack::_new() {
 }
 
 slack::message_webhook() {
-  curl -s -X POST -H 'Content-type: application/json' --data "{\"text\":\"${1}\"}" "${SLACK_WEBHOOK_URL}"
+  curl -s -X POST -H 'Content-type: application/json' --data "{\"text\":\"$1\"}" "${SLACK_WEBHOOK_URL}"
 }
 
 slack::message() {
-  local channel="${1}"
-  local message="${2}"
+  local channel="$1"
+  local message="$2"
   local parent_ts="${3:-}"
   local json=$(cat <<EOF
 {
@@ -29,9 +29,9 @@ EOF
 }
 
 slack::upload() {
-  local channels="${1}"
-  local message="${2}"
-  local file="${3}"
+  local channels="$1"
+  local message="$2"
+  local file="$3"
   local parent_ts="${4:-}"
   curl -s -F "file=@${file}" -F "thread_ts=${parent_ts}" -F "initial_comment=${message}" -F "channels=${channels}" -H "Authorization: Bearer ${SLACK_AUTH_TOKEN}" https://slack.com/api/files.upload
 }

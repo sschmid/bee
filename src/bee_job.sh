@@ -63,7 +63,7 @@ complete_job() {
 bee_help_job=("job <title> <command>| run a command as a job")
 job() {
   BEE_JOB_RUNNING=true
-  BEE_JOB_TITLE="${1}"
+  BEE_JOB_TITLE="$1"
   shift
   start_spinner
   BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
@@ -84,7 +84,7 @@ job_term() {
 }
 
 job_exit() {
-  local exit_code=${1}
+  local exit_code=$1
   if (( ${exit_code} != 0 )); then
     stop_spinner
     echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"

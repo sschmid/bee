@@ -20,10 +20,10 @@ doxygen::_deps() {
 }
 
 doxygen::generate_doxyfile() {
-  log_func "${1}"
-  sed -i .bak -e "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = ${2}/" "${1}"
-  rm "${1}.bak"
-  doxygen "${1}"
+  log_func "$1"
+  sed -i .bak -e "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = $2/" "$1"
+  rm "$1.bak"
+  doxygen "$1"
 }
 
 doxygen::make_docset() {
