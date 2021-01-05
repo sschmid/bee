@@ -58,5 +58,6 @@ else
 fi
 
 BEE_PLUGINS+=("${BEE_HOME}/plugins")
+source "${BEE_HOME}/src/bee_plugins.sh"
 source "${BEE_HOME}/src/bee_runner.sh"
 bee_run "$@"

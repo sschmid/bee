@@ -14,9 +14,9 @@ if [[ -d "${LOCAL_REPO}" ]]; then
   echo "Run 'bee update' to update bee to the latest version"
 else
   git clone "${REPO}" "${LOCAL_REPO}"
-  echo "Linking ${LOCAL_REPO}/src/bee.sh to /usr/local/bin/bee"
+  echo "Linking ${LOCAL_REPO}/src/bee to /usr/local/bin/bee"
   mkdir -p /usr/local/bin
-  ln -s "${LOCAL_REPO}/src/bee.sh" /usr/local/bin/bee
+  ln -s "${LOCAL_REPO}/src/bee" /usr/local/bin/bee
   mkdir -p /usr/local/etc/bash_completion.d
   ln -s "${LOCAL_REPO}/etc/bash_completion.d/bee-completion.bash" /usr/local/etc/bash_completion.d/bee-completion.bash
   echo "Bash completion has been installed to: /usr/local/etc/bash_completion.d/bee-completion.bash"
