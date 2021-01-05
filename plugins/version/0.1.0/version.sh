@@ -19,7 +19,7 @@ version::write() {
 }
 
 version::bump_major() {
-  log_func
+  bee::log_func
   assert_file VERSION_PATH
   local version="$(version::read)"
   local major="${version%%.*}"
@@ -27,7 +27,7 @@ version::bump_major() {
 }
 
 version::bump_minor() {
-  log_func
+  bee::log_func
   assert_file VERSION_PATH
   local version="$(version::read)"
   local major="${version%%.*}"
@@ -37,7 +37,7 @@ version::bump_minor() {
 }
 
 version::bump_patch() {
-  log_func
+  bee::log_func
   assert_file VERSION_PATH
   local version="$(version::read)"
   local major="${version%%.*}"

@@ -10,7 +10,7 @@ UTILS_RSYNC_EXCLUDE="${BEE_RESOURCES}"/utils/rsync_exclude.txt'
 }
 
 utils::clean_dir() {
-  log_func "$@"
+  bee::log_func "$@"
   rm -rf "$@"
   mkdir -p "$@"
 }

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 bee::release() {
-  log_func
+  bee::log_func
   changelog::merge
   git::commit_release_sync_master
   git::push_all
-  log "bzzz... giving GitHub some time to process..."
+  bee::log "bzzz... giving GitHub some time to process..."
   sleep 10
   github::create_release
 }

@@ -17,7 +17,7 @@ IOS_PASSWORD="password"'
 }
 
 ios::archive_project() {
-  log_func
+  bee::log_func
   xcodebuild \
   -project "${IOS_PROJECT}" \
   -scheme "${IOS_SCHEME}" \
@@ -27,7 +27,7 @@ ios::archive_project() {
 }
 
 ios::archive_workspace() {
-  log_func
+  bee::log_func
   xcodebuild \
   -workspace "${IOS_WORKSPACE}" \
   -scheme "${IOS_SCHEME}" \
@@ -37,7 +37,7 @@ ios::archive_workspace() {
 }
 
 ios::export() {
-  log_func
+  bee::log_func
   xcodebuild \
   -exportArchive \
   -archivePath "${IOS_ARCHIVE}" \
@@ -47,6 +47,6 @@ ios::export() {
 }
 
 ios::upload() {
-  log_func
+  bee::log_func
   xcrun altool --upload-app -f "${IOS_IPA}" -u "${IOS_USER}" -p "${IOS_PASSWORD}"
 }

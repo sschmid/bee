@@ -15,7 +15,7 @@ changelog::_deps() {
 }
 
 changelog::merge() {
-  log_func
+  bee::log_func
   assert_file CHANGELOG_CHANGES
 
   if [[ ! -f "${CHANGELOG_PATH}" ]]; then

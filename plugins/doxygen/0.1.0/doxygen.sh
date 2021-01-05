@@ -20,7 +20,7 @@ doxygen::_deps() {
 }
 
 doxygen::generate_doxyfile() {
-  log_func "$1"
+  bee::log_func "$1"
   sed -i .bak -e "s/PROJECT_NUMBER.*/PROJECT_NUMBER         = $2/" "$1"
   rm "$1.bak"
   doxygen "$1"
@@ -44,7 +44,7 @@ doxygen::make_docset() {
 }
 
 doxygen::generate() {
-  log_func
+  bee::log_func
   require doxygen
   utils::clean_dir "${DOXYGEN_BUILD}"
 

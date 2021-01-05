@@ -10,7 +10,7 @@ TREE_PATH=tree.txt'
 }
 
 tree::create() {
-  log_func
+  bee::log_func
   require tree
   tree -I "${TREE_IGNORE}" --noreport -d > "${TREE_PATH}"
   tree -I "${TREE_IGNORE}" --noreport --dirsfirst >> "${TREE_PATH}"

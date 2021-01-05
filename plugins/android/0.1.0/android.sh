@@ -17,12 +17,12 @@ android::devices() {
 }
 
 android::install() {
-  log_func "${ANDROID_APK}"
+  bee::log_func "${ANDROID_APK}"
   "${ANDROID_ADB}" install -r "${ANDROID_APK}"
 }
 
 android::start() {
-  log_func "${ANDROID_APK}"
+  bee::log_func "${ANDROID_APK}"
   "${ANDROID_ADB}" shell am start -n "${ANDROID_ACTIVITY}"
 }
 

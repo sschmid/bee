@@ -15,27 +15,27 @@ IFS=$'\n\t'
 # log
 ################################################################################
 
-log() {
+bee::log() {
   echo "🐝 $*"
 }
 
-log_warn() {
+bee::log_warn() {
   echo "⚠️ WARNING: $*" >&2
 }
 
-log_error() {
+bee::log_error() {
   echo "❌ ERROR: $*" >&2
 }
 
-log_strong() {
+bee::log_strong() {
   echo ""
   echo "################################################################################"
   echo "# 🐝 $*"
   echo "################################################################################"
 }
 
-log_func() {
-  log_strong "${FUNCNAME[1]} $*"
+bee::log_func() {
+  bee::log_strong "${FUNCNAME[1]} $*"
 }
 
 ################################################################################
@@ -52,7 +52,7 @@ assert_file() {
 
 require() {
   command -v "$1" &> /dev/null || {
-    log_error "$1 not found! $1 is required."
+    bee::log_error "$1 not found! $1 is required."
     exit 1
   }
 }
@@ -87,7 +87,7 @@ resolve_plugins() {
 
     if [[ ${found} == false ]]; then
       found_all=false
-      log_error "Could not find plugin ${plugin}"
+      bee::log_error "Could not find plugin ${plugin}"
     fi
   done
 
@@ -109,7 +109,7 @@ resolve_plugin_ids() {
 # TODO: remove when expired
 bee_migration_0390() {
   if [[ "$2" == "README.md" ]]; then
-    log_warn "$1 doesn't support plugin versions yet, please consider updating the plugin"
+    bee::log_warn "$1 doesn't support plugin versions yet, please consider updating the plugin"
     echo "."
   else
     echo "$2"
@@ -551,9 +551,9 @@ bee_exit() {
   if [[ ${BEE_SILENT} == false ]]; then
     if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
       if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
-        log "bzzzz ($((${SECONDS} - ${T})) seconds)"
+        bee::log "bzzzz ($((${SECONDS} - ${T})) seconds)"
       else
-        log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
+        bee::log "❌ bzzzz ($((${SECONDS} - ${T})) seconds)"
       fi
     fi
   fi
