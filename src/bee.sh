@@ -236,7 +236,7 @@ deps() {
   fi
 }
 
-bee_help_res=("res <plugins> | copy template files into resources dir")
+bee_help_res=("res <plugins> | copy plugin resources into resources dir")
 res() {
   for plugin in $(resolve_plugins "$@"); do
     local plugin_id="${plugin%:*}"
@@ -244,12 +244,12 @@ res() {
     local plugin_version="${plugin_id##*:}"
     local plugin_path="${plugin##*:}"
 
-    local template_dir="${plugin_path}/${plugin_version}/templates"
-    if [[ -d "${template_dir}" ]]; then
+    local resources_dir="${plugin_path}/${plugin_version}/resources"
+    if [[ -d "${resources_dir}" ]]; then
       local target_dir="${BEE_RESOURCES}/${plugin_name}"
       echo "Copying resources into ${target_dir}"
       mkdir -p "${target_dir}"
-      cp -r "${template_dir}/". "${target_dir}/"
+      cp -r "${resources_dir}/". "${target_dir}/"
     fi
   done
 }
