@@ -23,7 +23,7 @@ github::create_org_repo() {
 }
 
 github::create_release() {
-  bee::log_func
+  log_func
   require jq
   local version="$(version::read)"
   local changes="$(cat "${GITHUB_CHANGES}")"

@@ -13,12 +13,12 @@ UNITY_SERIAL="AB-1234-5678-1234-5678"'
 }
 
 unity::ping_project() {
-  bee::log_func "$@"
+  log_func "$@"
   run_batchmode "$@"
 }
 
 unity::execute_method() {
-  bee::log_func "$@"
+  log_func "$@"
   run_batchmode -executeMethod "$@"
 }
 

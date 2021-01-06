@@ -19,7 +19,7 @@ git::merge_develop() {
 }
 
 git::commit_release() {
-  bee::log_func
+  log_func
   local version="$(version::read)"
   git add .
   git commit -am "Release ${version}"
@@ -27,7 +27,7 @@ git::commit_release() {
 }
 
 git::commit_release_sync_master() {
-  bee::log_func
+  log_func
   local version="$(version::read)"
   git add .
   git commit -am "Release ${version}"
@@ -39,13 +39,13 @@ git::commit_release_sync_master() {
 }
 
 git::push() {
-  bee::log_func
+  log_func
   git push origin master
   git push --tags
 }
 
 git::push_all() {
-  bee::log_func
+  log_func
   git push origin master
   git push origin develop
   git push --tags
