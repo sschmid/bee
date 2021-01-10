@@ -11,7 +11,7 @@ _bee_completions() {
       "deps" | "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
-      "changelog" | "help")
+      "changelog" | "help")
         if (( $COMP_CWORD == 2 )); then
           COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
         fi
