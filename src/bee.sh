@@ -50,7 +50,7 @@ resolve_plugins() {
 
     if [[ ${found} == false ]]; then
       found_all=false
-      log_error "Could not find plugin ${plugin}"
+      log_warn "Could not find plugin ${plugin}"
     fi
   done
 
@@ -106,7 +106,7 @@ bee_help_update=("update | update bee to the latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull
-    echo "bee is up-to-date and ready to bzzzz"
+    log "bee is up-to-date and ready to bzzzz"
   popd > /dev/null
 }
 
@@ -114,10 +114,9 @@ bee_help_version=("version | show the current bee version")
 version() {
   local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   local local_version="$(cat "${BEE_HOME}/version.txt")"
+  echo "bee ${local_version}"
   if [[ -n "${remote_version}" ]]; then
-    echo "bee ${local_version} (latest version: ${remote_version})"
-  else
-    echo "bee ${local_version}"
+    echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
 }
 
@@ -135,19 +134,20 @@ new_bee() {
   if [[ -f .beerc ]]; then
     echo ".beerc already exists"
     exit 1
-  fi
-  local local_version="$(cat "${BEE_HOME}/version.txt")"
-  {
-    echo '#!/usr/bin/env bash'
-    echo "BEE_PROJECT=\"$(basename ${PWD})\""
-    echo "BEE_VERSION=${local_version}"
-    echo 'PLUGINS=()'
-    echo ""
-    echo '# Run bee new <plugins> to print all required variables'
-    echo '# e.g. bee new git utils version'
-  } > .beerc
+  else
+    local local_version="$(cat "${BEE_HOME}/version.txt")"
+    {
+      echo '#!/usr/bin/env bash'
+      echo "BEE_PROJECT=\"$(basename ${PWD})\""
+      echo "BEE_VERSION=${local_version}"
+      echo 'PLUGINS=()'
+      echo ""
+      echo '# Run bee new <plugins> to print all required variables'
+      echo '# e.g. bee new git utils version'
+    } > .beerc
 
-  echo "created ${PWD}/.beerc"
+    echo "created ${PWD}/.beerc"
+  fi
 }
 
 new_plugin() {
@@ -438,7 +438,6 @@ job_exit() {
 # # main
 # ################################################################################
 
-BEE_SILENT=false
 BEE_CANCELED=false
 BEE_MODE_INTERNAL=0
 BEE_MODE_COMMAND=1
@@ -464,13 +463,11 @@ bee_exit() {
   if [[ ${BEE_JOB_RUNNING} == true ]]; then
     job_exit "${exit_code}"
   fi
-  if [[ ${BEE_SILENT} == false ]]; then
-    if (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
-      if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
-        log "bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
-      else
-        log "❌ bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
-      fi
+  if [[ ${BEE_SILENT} == false ]] && (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
+    if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
+      log "bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
+    else
+      log "❌ bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
     fi
   fi
 }

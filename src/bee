@@ -15,8 +15,21 @@ IFS=$'\n\t'
 # log
 ################################################################################
 
+BEE_SILENT=false
+
 log() {
-  echo "🐝 $*"
+  if [[ ${BEE_SILENT} == false ]]; then
+    echo "🐝 $*"
+  fi
+}
+
+log_info() {
+  if [[ ${BEE_SILENT} == false ]]; then
+    echo ""
+    echo "################################################################################"
+    echo "🐝 $*"
+    echo "################################################################################"
+  fi
 }
 
 log_warn() {
@@ -27,15 +40,8 @@ log_error() {
   echo "❌ ERROR: $*" >&2
 }
 
-log_strong() {
-  echo ""
-  echo "################################################################################"
-  echo "# 🐝 $*"
-  echo "################################################################################"
-}
-
 log_func() {
-  log_strong "${FUNCNAME[1]} $*"
+  log_info "${FUNCNAME[1]} $*"
 }
 
 log_var() {
@@ -73,8 +79,7 @@ source "${HOME}/.beerc"
 # TODO: remove when expired (Dec 2020)
 bee_migration_0370() {
   if [[ -f bee.sh ]]; then
-    log_warn "bee.sh is deprecated."
-    echo "Please see CHANGELOG.md and apply the required actions!"
+    log_warn "bee.sh is deprecated." "Please see CHANGELOG.md and apply the required actions!"
     source bee.sh
     BEE_PROJECT="${PROJECT}"
     BEE_RESOURCES="${RESOURCES:-${BEE_RESOURCES}}"
