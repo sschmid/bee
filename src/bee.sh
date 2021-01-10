@@ -183,16 +183,13 @@ new() {
 
 bee_help_commands=(
   "commands | list all commands of enabled plugins"
-  "commands <names> | list all commands of enabled and specified plugins"
+  "commands <search> | list search result of enabled plugins"
 )
 commands() {
-  if (( $# == 0 )); then
-    compgen -A function | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' || true
-  else
-    for command in "$@"; do
-      compgen -A function "${command}" | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' || true
-    done
-  fi
+  compgen -A function \
+    | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
+    | grep --color=never -- "$*" \
+    || true
 }
 
 bee_help_plugins=("plugins | list all plugins")
