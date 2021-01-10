@@ -160,11 +160,13 @@ new_plugin() {
       template+="$("${plugin_name}::_new")\n\n"
     fi
   done
-  echo -e "${template}"
-  command -v pbcopy &> /dev/null && {
-    echo -e "${template}" | pbcopy
-    echo "(template has been copied to clipboard, please paste into your .beerc)"
-  }
+  if [[ -n "${template}" ]]; then
+    echo -e "${template}"
+    command -v pbcopy &> /dev/null && {
+      echo -e "${template}" | pbcopy
+      echo "(template has been copied to clipboard, please paste into your .beerc)"
+    }
+  fi
 }
 
 bee_help_new=(
