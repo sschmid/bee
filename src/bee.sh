@@ -64,7 +64,6 @@ resolve_plugin_ids() {
     local plugin_id="${plugin%:*}"
     local plugin_name="${plugin_id%:*}"
     local plugin_version="${plugin_id##*:}"
-
     echo "${plugin_name}:${plugin_version}"
   done
 }
@@ -156,7 +155,6 @@ new_plugin() {
   for plugin in $(resolve_plugins "$@"); do
     local plugin_id="${plugin%:*}"
     local plugin_name="${plugin_id%:*}"
-
     local new_func="${plugin_name}::_new"
     if [[ $(command -v "${new_func}") == "${new_func}" ]]; then
       template+="$("${plugin_name}::_new")\n\n"
@@ -248,7 +246,6 @@ res() {
     local plugin_name="${plugin_id%:*}"
     local plugin_version="${plugin_id##*:}"
     local plugin_path="${plugin##*:}"
-
     local resources_dir="${plugin_path}/${plugin_version}/resources"
     if [[ -d "${resources_dir}" ]]; then
       local target_dir="${BEE_RESOURCES}/${plugin_name}"
@@ -332,7 +329,6 @@ help_plugin() {
   local plugin_id="${plugin%:*}"
   local plugin_version="${plugin_id##*:}"
   local plugin_path="${plugin##*:}"
-
   local readme="${plugin_path}/${plugin_version}/README.md"
   if [[ -f "${readme}" ]]; then
     less "${readme}"

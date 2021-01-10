@@ -52,7 +52,7 @@ log_var() {
 # init
 ################################################################################
 
-follow_file() {
+resolve_file() {
   local current_dir="${PWD}"
   local path="$1"
   while [[ -L "${path}" ]]; do
@@ -65,7 +65,7 @@ follow_file() {
   echo "${path}"
 }
 
-BEE_SYSTEM_HOME="$(dirname "$(dirname "$(follow_file "${BASH_SOURCE[0]}")")")"
+BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 BEE_RESOURCES=.bee
 
 if [[ ! -f "${HOME}/.beerc" ]]; then
