@@ -280,11 +280,25 @@ changelog() {
 
 bee_help_uninstall=("uninstall | uninstall bee from your system")
 uninstall() {
-  rm -f /usr/local/bin/bee
-  rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
-  rm -rf /usr/local/opt/bee/
-  rm -rf "${HOME}/.bee/versions"
-  echo "Uninstalled bee"
+  if [[ ${BEE_SILENT} == false ]]; then
+    echo "You're about to uninstall bee from your system."
+    echo "Do you want to continue? (yes | no)"
+    read a
+    if [[ "${a}" == "yes" ]]; then
+      rm -f /usr/local/bin/bee
+      rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
+      rm -rf /usr/local/opt/bee/
+      rm -rf "${HOME}/.bee/caches"
+      echo "Uninstalled bee"
+      echo "Thanks for using bee"
+    fi
+  else
+    rm -f /usr/local/bin/bee
+    rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
+    rm -rf /usr/local/opt/bee/
+    rm -rf "${HOME}/.bee/caches"
+    echo "complete"
+  fi
 }
 
 ################################################################################
