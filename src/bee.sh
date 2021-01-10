@@ -31,10 +31,12 @@ resolve_plugins() {
         local plugin_path="${path}/${plugin_name}"
         if [[ -d "${plugin_path}" ]]; then
           local versions=("${plugin_path}"/*/)
-          plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
-          found=true
-          echo "${plugin_name}:${plugin_version}:${plugin_path}"
-          break
+          if [[ -d "${versions}" ]]; then
+            plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
+            found=true
+            echo "${plugin_name}:${plugin_version}:${plugin_path}"
+            break
+          fi
         fi
       done
     else
@@ -196,7 +198,9 @@ bee_help_plugins=("plugins | list all plugins")
 plugins() {
   for path in "${BEE_PLUGINS[@]}"; do
     for plugin in "${path}"/*/; do
-      basename "${plugin}"
+      if [[ -d "${plugin}" ]]; then
+        basename "${plugin}"
+      fi
     done
   done
 }
