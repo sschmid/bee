@@ -70,7 +70,7 @@ resolve_plugin_ids() {
 
 # TODO: remove when expired (Dec 2020)
 bee_migration_0390() {
-  if [[ "$2" == "README.md" ]]; then
+  if [[ "$2" == "README.md" || "$2" == "*" ]]; then
     log_warn "$1 doesn't support plugin versions yet, please consider updating the plugin"
     echo "."
   else
