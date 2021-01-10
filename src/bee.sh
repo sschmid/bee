@@ -30,8 +30,8 @@ resolve_plugins() {
       for path in "${BEE_PLUGINS[@]}"; do
         local plugin_path="${path}/${plugin_name}"
         if [[ -d "${plugin_path}" ]]; then
-          local versions=("$(find ${plugin_path}/* -maxdepth 0 -type d)")
-          plugin_version="$(basename ${versions[@]} | sort -V | tail -n 1)"
+          local versions=("${plugin_path}"/*/)
+          plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
           found=true
           echo "${plugin_name}:${plugin_version}:${plugin_path}"
           break
@@ -198,10 +198,8 @@ commands() {
 bee_help_plugins=("plugins | list all plugins")
 plugins() {
   for path in "${BEE_PLUGINS[@]}"; do
-    for plugin in "${path}/"*; do
-      if [[ -d "${plugin}" ]]; then
-        basename "${plugin}"
-      fi
+    for plugin in "${path}"/*/; do
+      basename "${plugin}"
     done
   done
 }
@@ -214,9 +212,9 @@ deps() {
     local plugin_name="${plugin_id%:*}"
     local deps_func="${plugin_name}::_deps"
     if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-      local dependencies=("$("${deps_func}")")
+      local dependencies=($(${deps_func} | tr ' ' '\n'))
       local status=""
-      for dep in ${dependencies[@]}; do
+      for dep in "${dependencies[@]}"; do
         local found_dep=false
         for p in ${plugin_ids}; do
           if [[ "${p}" == "${dep}" ]] || [[ "${p%:*}" == "${dep}" ]]; then
@@ -238,10 +236,8 @@ deps() {
   done
 
   if [[ ${#missing[@]} -gt 0 ]]; then
-    echo ""
-    echo "Missing dependencies:"
-    echo "${missing[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '
-    echo ""
+    log_warn "Missing dependencies:"
+    echo "${missing[*]}" | sort -u
   fi
 }
 
