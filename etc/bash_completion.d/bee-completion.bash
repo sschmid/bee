@@ -11,14 +11,18 @@ _bee_completions() {
       "deps" | "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
-      "changelog" | "help")
+      "changelog" | "info" | "help")
         if (( $COMP_CWORD == 2 )); then
           COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
         fi
         ;;
 
-      "commands" | "new" | "res")
+      "commands" | "install" | "new" | "res")
         COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
+        ;;
+
+      "pull")
+        COMPREPLY=($(compgen -W "$(bee log_var BEE_PLUGIN_REGISTRIES[@])" "${lastWord}"))
         ;;
 
       *)

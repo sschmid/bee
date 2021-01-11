@@ -69,10 +69,7 @@ BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 BEE_RESOURCES=.bee
 
 if [[ ! -f "${HOME}/.beerc" ]]; then
-  {
-    echo '#!/usr/bin/env bash'
-    echo 'BEE_PLUGINS=()'
-  } > "${HOME}/.beerc"
+  echo '#!/usr/bin/env bash' > "${HOME}/.beerc"
 fi
 source "${HOME}/.beerc"
 
@@ -115,5 +112,4 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
-BEE_PLUGINS+=("${BEE_HOME}/plugins")
 source "${BEE_HOME}/src/bee.sh"

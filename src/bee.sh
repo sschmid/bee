@@ -19,7 +19,55 @@ require() {
   }
 }
 
-resolve_plugins() {
+################################################################################
+# registries
+################################################################################
+
+BEE_REGISTRIES_HOME="${HOME}/.bee/caches/registries"
+BEE_PLUGINS_HOME="${HOME}/.bee/caches/plugins"
+
+resolve_registry_cache() {
+  local url="$1"
+  if [[ "${url}" =~ ^git@.* ]]; then
+    echo "${BEE_REGISTRIES_HOME}/$(dirname "${url#git@}")/$(basename "${url}" .git)"
+  elif [[ "${url}" =~ ^file:// ]]; then
+    echo "${BEE_REGISTRIES_HOME}/$(basename "${url}")"
+  else
+    log_warn "Unsupported registry url: ${url}"
+  fi
+}
+
+resolve_registry_caches() {
+  for url in "${BEE_PLUGIN_REGISTRIES[@]}"; do
+    resolve_registry_cache "${url}"
+  done
+}
+
+bee_help_pull=(
+  "pull | update all plugin registries"
+  "pull <urls> | update plugin registries"
+)
+pull() {
+  for url in "${@-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
+    local cache="$(resolve_registry_cache "${url}")"
+    if [[ -n "${cache}" ]]; then
+      if [[ -d "${cache}" ]]; then
+        pushd "${cache}" > /dev/null
+          git pull
+        popd > /dev/null
+      else
+        git clone "${url}" "${cache}"
+      fi
+    fi
+  done
+}
+
+################################################################################
+# plugins
+################################################################################
+
+resolve_plugin_specs() {
+  local caches=($(resolve_registry_caches))
   local found_all=true
   for plugin in "$@"; do
     local plugin_name="${plugin%:*}"
@@ -27,24 +75,24 @@ resolve_plugins() {
     local found=false
     if [[ "${plugin_name}" == "${plugin_version}" ]]; then
       # find latest
-      for path in "${BEE_PLUGINS[@]}"; do
-        local plugin_path="${path}/${plugin_name}"
+      for cache in "${caches[@]}"; do
+        local plugin_path="${cache}/${plugin_name}"
         if [[ -d "${plugin_path}" ]]; then
           local versions=("${plugin_path}"/*/)
           if [[ -d "${versions}" ]]; then
             plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
             found=true
-            echo "${plugin_name}:${plugin_version}:${plugin_path}"
+            echo "${plugin_path}/${plugin_version}/plugin.sh"
             break
           fi
         fi
       done
     else
-      for path in "${BEE_PLUGINS[@]}"; do
-        local plugin_path="${path}/${plugin_name}"
+      for cache in "${caches[@]}"; do
+        local plugin_path="${cache}/${plugin_name}"
         if [[ -d "${plugin_path}/${plugin_version}" ]]; then
           found=true
-          echo "${plugin_name}:${plugin_version}:${plugin_path}"
+          echo "${plugin_path}/${plugin_version}/plugin.sh"
           break
         fi
       done
@@ -61,36 +109,125 @@ resolve_plugins() {
   fi
 }
 
-resolve_plugin_ids() {
-  for plugin in $(resolve_plugins $@); do
-    local plugin_id="${plugin%:*}"
-    local plugin_name="${plugin_id%:*}"
-    local plugin_version="${plugin_id##*:}"
-    echo "${plugin_name}:${plugin_version}"
+unload_plugin_spec() {
+  unset BEE_PLUGIN_NAME
+  unset BEE_PLUGIN_VERSION
+  unset BEE_PLUGIN_LICENSE
+  unset BEE_PLUGIN_HOMEPAGE
+  unset BEE_PLUGIN_AUTHORS
+  unset BEE_PLUGIN_SUMMARY
+  unset BEE_PLUGIN_SOURCE
+  unset BEE_PLUGIN_TAG
+}
+
+bee_help_info=("info | show plugin spec info")
+info() {
+  for spec in $(resolve_plugin_specs "$1"); do
+    source "${spec}"
+    echo "name: | ${BEE_PLUGIN_NAME}
+version: | ${BEE_PLUGIN_VERSION}
+license: | ${BEE_PLUGIN_LICENSE}
+homepage: | ${BEE_PLUGIN_HOMEPAGE}
+authors: | ${BEE_PLUGIN_AUTHORS}
+summary: | ${BEE_PLUGIN_SUMMARY}
+source: | ${BEE_PLUGIN_SOURCE}
+tag: | ${BEE_PLUGIN_TAG}" | column -s '|' -t
+    unload_plugin_spec
   done
 }
 
-# TODO: remove when expired (Dec 2020)
-bee_migration_0390() {
-  if [[ "$2" == "README.md" || "$2" == "*" ]]; then
-    log_warn "$1 doesn't support plugin versions yet, please consider updating the plugin"
-    echo "."
-  else
-    echo "$2"
-  fi
+bee_help_install=(
+  "install | install all enabled plugins"
+  "install <plugins> | install plugins"
+)
+install() {
+  for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
+    source "${specs}"
+    local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+    if [[ -d "${path}" ]]; then
+      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
+    else
+      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}" \
+        git -c advice.detachedHead=false clone --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+    fi
+    unload_plugin_spec
+  done
 }
 
 source_plugins() {
-  for plugin in $(resolve_plugins $@); do
-    local plugin_id="${plugin%:*}"
-    local plugin_name="${plugin_id%:*}"
-    local plugin_version="${plugin_id##*:}"
-    local plugin_path="${plugin##*:}"
+  for spec in $(resolve_plugin_specs "$@"); do
+    source "${spec}"
+    local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
+    unload_plugin_spec
+    if [[ -f "${path}" ]]; then
+      source "${path}"
+    fi
+  done
+}
 
-    # TODO: remove when expired
-    plugin_version="$(bee_migration_0390 "${plugin_name}" "${plugin_version}")"
+bee_help_plugins=("plugins | list all plugins")
+plugins() {
+  for cache in $(resolve_registry_caches); do
+    local plugins=("${cache}"/*/)
+    if [[ -d "${plugins}" ]]; then
+      basename -a "${plugins[@]}"
+    fi
+  done
+}
 
-    source "${plugin_path}/${plugin_version}/${plugin_name}.sh"
+bee_help_deps=("deps | list dependencies of enabled plugins")
+deps() {
+  missing=()
+  local specs="$(resolve_plugin_specs "${PLUGINS[@]}")"
+  for spec in ${specs}; do
+    source "${spec}"
+    local plugin_id="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+    local deps_func="${BEE_PLUGIN_NAME}::_deps"
+    unload_plugin_spec
+    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+      local dependencies=($(${deps_func} | tr ' ' '\n'))
+      local status=""
+      for dep in "${dependencies[@]}"; do
+        local found_dep=false
+        for s in ${specs}; do
+          source "${s}"
+          if [[ "${BEE_PLUGIN_NAME}" == "${dep}" || "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" == "${dep}" ]]; then
+            found_dep=true
+            break
+          fi
+          unload_plugin_spec
+        done
+
+        if [[ ${found_dep} == true ]]; then
+          status+=" \033[32m${dep}\033[0m"
+        else
+          status+=" \033[31m${dep}\033[0m"
+          missing+=("${dep}")
+        fi
+      done
+
+      echo -e "${plugin_id} =>${status}"
+    fi
+  done
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    log_warn "Missing dependencies:"
+    echo "${missing[*]}" | sort -u
+  fi
+}
+
+bee_help_res=("res <plugins> | copy plugin resources into resources dir")
+res() {
+  for spec in $(resolve_plugin_specs "$@"); do
+    source "${spec}"
+    local resources_dir="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/resources"
+    if [[ -d "${resources_dir}" ]]; then
+      local target_dir="${BEE_RESOURCES}/${BEE_PLUGIN_NAME}"
+      echo "Copying resources into ${target_dir}"
+      mkdir -p "${target_dir}"
+      cp -r "${resources_dir}/". "${target_dir}/"
+    fi
+    unload_plugin_spec
   done
 }
 
@@ -113,9 +250,9 @@ update() {
 
 bee_help_version=("version | show the current bee version")
 version() {
-  local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   local local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "bee ${local_version}"
+  local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   if [[ -n "${remote_version}" ]]; then
     echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
@@ -154,12 +291,12 @@ new_bee() {
 new_plugin() {
   source_plugins "$@"
   local template=""
-  for plugin in $(resolve_plugins "$@"); do
-    local plugin_id="${plugin%:*}"
-    local plugin_name="${plugin_id%:*}"
-    local new_func="${plugin_name}::_new"
+  for spec in $(resolve_plugin_specs "$@"); do
+    source "${spec}"
+    local new_func="${BEE_PLUGIN_NAME}::_new"
+    unload_plugin_spec
     if [[ $(command -v "${new_func}") == "${new_func}" ]]; then
-      template+="$("${plugin_name}::_new")\n\n"
+      template+="$("${new_func}")\n\n"
     fi
   done
   if [[ -n "${template}" ]]; then
@@ -194,85 +331,22 @@ commands() {
     || true
 }
 
-bee_help_plugins=("plugins | list all plugins")
-plugins() {
-  for path in "${BEE_PLUGINS[@]}"; do
-    for plugin in "${path}"/*/; do
-      if [[ -d "${plugin}" ]]; then
-        basename "${plugin}"
-      fi
-    done
-  done
-}
-
-bee_help_deps=("deps | list dependencies of enabled plugins")
-deps() {
-  missing=()
-  local plugin_ids="$(resolve_plugin_ids "${PLUGINS[@]}")"
-  for plugin_id in ${plugin_ids}; do
-    local plugin_name="${plugin_id%:*}"
-    local deps_func="${plugin_name}::_deps"
-    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-      local dependencies=($(${deps_func} | tr ' ' '\n'))
-      local status=""
-      for dep in "${dependencies[@]}"; do
-        local found_dep=false
-        for p in ${plugin_ids}; do
-          if [[ "${p}" == "${dep}" ]] || [[ "${p%:*}" == "${dep}" ]]; then
-            found_dep=true
-            break
-          fi
-        done
-
-        if [[ ${found_dep} == true ]]; then
-          status+=" \033[32m${dep}\033[0m"
-        else
-          status+=" \033[31m${dep}\033[0m"
-          missing+=("${dep}")
-        fi
-      done
-
-      echo -e "${plugin_id} =>${status}"
-    fi
-  done
-
-  if [[ ${#missing[@]} -gt 0 ]]; then
-    log_warn "Missing dependencies:"
-    echo "${missing[*]}" | sort -u
-  fi
-}
-
-bee_help_res=("res <plugins> | copy plugin resources into resources dir")
-res() {
-  for plugin in $(resolve_plugins "$@"); do
-    local plugin_id="${plugin%:*}"
-    local plugin_name="${plugin_id%:*}"
-    local plugin_version="${plugin_id##*:}"
-    local plugin_path="${plugin##*:}"
-    local resources_dir="${plugin_path}/${plugin_version}/resources"
-    if [[ -d "${resources_dir}" ]]; then
-      local target_dir="${BEE_RESOURCES}/${plugin_name}"
-      echo "Copying resources into ${target_dir}"
-      mkdir -p "${target_dir}"
-      cp -r "${resources_dir}/". "${target_dir}/"
-    fi
-  done
-}
-
 bee_help_changelog=(
   "changelog | show bee changelog"
   "changelog <plugin> | show changelog for plugin"
 )
 changelog() {
   if (( $# == 1 )); then
-    local plugin=$(resolve_plugins $1)
-    local plugin_path="${plugin##*:}"
-    local log="${plugin_path}/CHANGELOG.md"
-    if [[ -f "${log}" ]]; then
-      less "${log}"
-    else
-      echo "Changelog for $1 doesn't exit"
-    fi
+    for spec in $(resolve_plugin_specs "$1"); do
+      source "${spec}"
+      local log="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/CHANGELOG.md"
+      unload_plugin_spec
+      if [[ -f "${log}" ]]; then
+        less "${log}"
+      else
+        echo "Changelog for $1 doesn't exit"
+      fi
+    done
   else
     less "${BEE_SYSTEM_HOME}/CHANGELOG.md"
   fi
@@ -297,7 +371,6 @@ uninstall() {
     rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
     rm -rf /usr/local/opt/bee/
     rm -rf "${HOME}/.bee/caches"
-    echo "complete"
   fi
 }
 
@@ -328,16 +401,17 @@ help_bee() {
 }
 
 help_plugin() {
-  local plugin=$(resolve_plugins $1)
-  local plugin_id="${plugin%:*}"
-  local plugin_version="${plugin_id##*:}"
-  local plugin_path="${plugin##*:}"
-  local readme="${plugin_path}/${plugin_version}/README.md"
-  if [[ -f "${readme}" ]]; then
-    less "${readme}"
-  else
-    echo "Help for $1 doesn't exit"
-  fi
+
+  for spec in $(resolve_plugin_specs "$1"); do
+    source "${spec}"
+    local readme="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/README.md"
+    unload_plugin_spec
+    if [[ -f "${readme}" ]]; then
+      less "${readme}"
+    else
+      echo "Help for $1 doesn't exit"
+    fi
+  done
 }
 
 bee_help_help=(
@@ -513,10 +587,6 @@ main() {
       # command not found
       # try loading as a plugin
       source_plugins "${cmd}"
-
-      # TODO if cmd is plugin, add to PLUGINS
-      # bc all PLUGINS will be 'bee install'ed
-
       shift
     fi
 
@@ -531,7 +601,5 @@ main() {
     help
   fi
 }
-
-source "${BEE_HOME}/src/bee_plugins.sh"
 
 main "$@"
