@@ -513,6 +513,10 @@ main() {
       # command not found
       # try loading as a plugin
       source_plugins "${cmd}"
+
+      # TODO if cmd is plugin, add to PLUGINS
+      # bc all PLUGINS will be 'bee install'ed
+
       shift
     fi
 
@@ -527,5 +531,7 @@ main() {
     help
   fi
 }
+
+source "${BEE_HOME}/src/bee_plugins.sh"
 
 main "$@"
