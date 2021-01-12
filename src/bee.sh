@@ -53,10 +53,10 @@ pull() {
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
         pushd "${cache}" > /dev/null
-          git pull
+          git pull -q
         popd > /dev/null
       else
-        git clone "${url}" "${cache}"
+        git clone -q "${url}" "${cache}"
       fi
     fi
   done
@@ -141,14 +141,13 @@ bee_help_install=(
   "install <plugins> | install plugins"
 )
 install() {
+  pull
   for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
-    source "${specs}"
+    source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
-    if [[ -d "${path}" ]]; then
-      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
-    else
-      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}" \
-        git -c advice.detachedHead=false clone --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+    log "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
+    if [[ ! -d "${path}" ]]; then
+      git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
     fi
     unload_plugin_spec
   done
@@ -243,7 +242,7 @@ builtin_commands() {
 bee_help_update=("update | update bee to the latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
-    git pull
+    git pull -q
     log "bee is up-to-date and ready to bzzzz"
   popd > /dev/null
 }
@@ -401,7 +400,6 @@ help_bee() {
 }
 
 help_plugin() {
-
   for spec in $(resolve_plugin_specs "$1"); do
     source "${spec}"
     local readme="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/README.md"
@@ -525,6 +523,9 @@ job_exit() {
 # # main
 # ################################################################################
 
+BEE_INT_TRAPS=()
+BEE_TERM_TRAPS=()
+BEE_EXIT_TRAPS=()
 BEE_CANCELED=false
 BEE_MODE_INTERNAL=0
 BEE_MODE_COMMAND=1
@@ -533,23 +534,23 @@ T=${SECONDS}
 
 bee_int() {
   BEE_CANCELED=true
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
-    job_int
-  fi
+  for t in "${BEE_INT_TRAPS[@]}"; do
+    "$t"
+  done
 }
 
 bee_term() {
   BEE_CANCELED=true
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
-    job_term
-  fi
+  for t in "${BEE_TERM_TRAPS[@]}"; do
+    "$t"
+  done
 }
 
 bee_exit() {
   local exit_code=$?
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
-    job_exit "${exit_code}"
-  fi
+  for t in "${BEE_EXIT_TRAPS[@]}"; do
+    "$t"
+  done
   if [[ ${BEE_SILENT} == false ]] && (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
     if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
       log "bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
