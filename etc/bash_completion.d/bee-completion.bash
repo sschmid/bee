@@ -11,25 +11,31 @@ _bee_completions() {
       "deps" | "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
+      "commands" | "install" | "new" | "res")
+        COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
+        ;;
+
       "changelog" | "info" | "help")
         if (( $COMP_CWORD == 2 )); then
           COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
         fi
         ;;
 
-      "commands" | "install" | "new" | "res")
-        COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
-        ;;
-
       "pull")
         COMPREPLY=($(compgen -W "$(bee log_var BEE_PLUGIN_REGISTRIES[@])" "${lastWord}"))
+        ;;
+
+      "lint")
+        if (( $COMP_CWORD == 2 )); then
+          COMPREPLY=($(compgen -f "${lastWord}"))
+        fi
         ;;
 
       *)
         if [[ $COMP_CWORD == 2 ]]; then
           local plugins="$(bee plugins)"
-          for plugin_name in ${plugins}; do
-            if [[ "${firstWord}" == "${plugin_name}" ]]; then
+          for plugin in ${plugins}; do
+            if [[ "${firstWord}" == "${plugin}" ]]; then
               COMPREPLY=($(compgen -W "$(bee "${firstWord}" commands)" "${lastWord}"))
               return
             fi
@@ -44,4 +50,4 @@ _bee_completions() {
   fi
 }
 
-complete -F _bee_completions bee
+complete -o filenames -F _bee_completions bee

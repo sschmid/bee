@@ -89,9 +89,15 @@ job() {
   BEE_JOB_TITLE="$1"
   shift
   start_spinner
-  BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
-  mkdir -p "${BEE_RESOURCES}/logs"
-  "$@" &> "${BEE_JOB_LOGFILE}"
+
+  if [[ -v BEE_PROJECT ]]; then
+    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
+    mkdir -p "${BEE_RESOURCES}/logs"
+    "$@" &> "${BEE_JOB_LOGFILE}"
+  else
+    "$@" &> /dev/null
+  fi
+
   complete_job
   BEE_JOB_RUNNING=false
 }
@@ -120,6 +126,7 @@ job_exit() {
 
 BEE_REGISTRIES_HOME="${HOME}/.bee/caches/registries"
 BEE_PLUGINS_HOME="${HOME}/.bee/caches/plugins"
+BEE_LINT_HOME="${HOME}/.bee/caches/lint"
 
 resolve_registry_cache() {
   local url="$1"
@@ -127,6 +134,17 @@ resolve_registry_cache() {
     echo "${BEE_REGISTRIES_HOME}/$(dirname "${url#git@}")/$(basename "${url}" .git)"
   elif [[ "${url}" =~ ^file:// ]]; then
     echo "${BEE_REGISTRIES_HOME}/$(basename "${url}")"
+  else
+    log_warn "Unsupported registry url: ${url}"
+  fi
+}
+
+resolve_lint_cache() {
+  local url="$1"
+  if [[ "${url}" =~ ^git@.* ]]; then
+    echo "${BEE_LINT_HOME}/$(dirname "${url#git@}")/$(basename "${url}" .git)"
+  elif [[ "${url}" =~ ^file:// ]]; then
+    echo "${BEE_LINT_HOME}/$(basename "${url}")"
   else
     log_warn "Unsupported registry url: ${url}"
   fi
@@ -213,6 +231,70 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_SUMMARY
   unset BEE_PLUGIN_SOURCE
   unset BEE_PLUGIN_TAG
+}
+
+lint_var() {
+  if [[ ! -v ${1} || -z "${!1}" ]]; then
+    echo -e "\033[31m${1} is required\033[0m"
+  else
+    echo -e "\033[32m${1} ✔︎\033[0m"
+  fi
+}
+
+lint_var_value() {
+  if [[ ! -v ${1} || -z "${!1}" ]]; then
+    echo -e "\033[31m${1} is required\033[0m"
+  else
+    if [[ "${!1}" != "$2" ]]; then
+      echo -e "\033[31m$1 is set to ${!1} but must be $2\033[0m"
+    else
+      echo -e "\033[32m${1} ${!1} ✔︎\033[0m"
+    fi
+  fi
+}
+
+bee_help_lint=("lint <spec> | validate plugin specification")
+lint() {
+  local spec="$1"
+  source "${spec}"
+
+  lint_var_value BEE_PLUGIN_NAME "$(basename "$(dirname "$(dirname "${spec}")")")"
+  lint_var_value BEE_PLUGIN_VERSION "$(basename "$(dirname "${spec}")")"
+  lint_var BEE_PLUGIN_LICENSE
+  lint_var BEE_PLUGIN_HOMEPAGE
+  lint_var BEE_PLUGIN_AUTHORS
+  lint_var BEE_PLUGIN_SUMMARY
+  lint_var BEE_PLUGIN_SOURCE
+  lint_var BEE_PLUGIN_TAG
+
+  if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" ]]; then
+    local cache="$(resolve_lint_cache "${BEE_PLUGIN_SOURCE}")"
+    if [[ -n "${cache}" ]]; then
+      if [[ -d "${cache}" ]]; then
+        pushd "${cache}" > /dev/null
+          job "BEE_PLUGIN_SOURCE" git fetch || true
+        popd > /dev/null
+      else
+        job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${cache}" || true
+      fi
+      if [[ -d "${cache}" ]]; then
+        pushd "${cache}" > /dev/null
+          if ! git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
+            echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
+          else
+            echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
+          fi
+        popd > /dev/null
+      else
+        echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
+      fi
+    else
+      echo -e "\033[31mBEE_PLUGIN_SOURCE ${BEE_PLUGIN_SOURCE}\033[0m"
+      echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
+    fi
+  fi
+
+  unload_plugin_spec
 }
 
 bee_help_info=("info | show plugin spec info")
@@ -588,7 +670,6 @@ main() {
         ;;
     esac
   done
-
   shift $(( OPTIND - 1 ))
 
   if (( $# > 0 )); then
