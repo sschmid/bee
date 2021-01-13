@@ -318,13 +318,15 @@ bee_help_install=(
   "install <plugins> | install plugins"
 )
 install() {
-  pull
+  pull || true
   for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
-    log "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
     if [[ ! -d "${path}" ]]; then
-      git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}" \
+        git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+    else
+      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
     fi
     unload_plugin_spec
   done
