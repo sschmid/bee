@@ -68,6 +68,13 @@ resolve_file() {
 BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 BEE_RESOURCES=.bee
 
+# TODO: remove when expired (Dec 2020)
+bee_migration_0390() {
+  IFS=$' \n\t'
+  BEE_HOME=BEE_HOME="${HOME}/.bee/caches/bee/0.38.0"
+}
+bee_migration_0390
+
 if [[ ! -f "${HOME}/.beerc" ]]; then
   echo '#!/usr/bin/env bash
 BEE_PLUGIN_REGISTRIES=(
@@ -79,7 +86,7 @@ source "${HOME}/.beerc"
 # TODO: remove when expired (Dec 2020)
 bee_migration_0370() {
   if [[ -f bee.sh ]]; then
-    log_warn "bee.sh is deprecated." "Please see CHANGELOG.md and apply the required actions!"
+    # log_warn "bee.sh is deprecated." "Please see CHANGELOG.md and apply the required actions!"
     source bee.sh
     BEE_PROJECT="${PROJECT}"
     BEE_RESOURCES="${RESOURCES:-${BEE_RESOURCES}}"
