@@ -520,7 +520,7 @@ changelog() {
       if [[ -f "${log}" ]]; then
         less "${log}"
       else
-        echo "Changelog for $1 doesn't exit"
+        echo "Changelog for $1 doesn't exist"
       fi
     done
   else
@@ -584,7 +584,7 @@ help_plugin() {
     if [[ -f "${readme}" ]]; then
       less "${readme}"
     else
-      echo "Help for $1 doesn't exit"
+      echo "Help for $1 doesn't exist"
     fi
   done
 }
