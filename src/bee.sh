@@ -231,6 +231,7 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_SUMMARY
   unset BEE_PLUGIN_SOURCE
   unset BEE_PLUGIN_TAG
+  unset BEE_PLUGIN_DEPENDENCIES
 }
 
 lint_var() {
@@ -266,6 +267,12 @@ lint() {
   lint_var BEE_PLUGIN_SUMMARY
   lint_var BEE_PLUGIN_SOURCE
   lint_var BEE_PLUGIN_TAG
+
+  if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[@]} ✔︎\033[0m"
+  else
+    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES no dependencies ✔︎\033[0m"
+  fi
 
   if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" ]]; then
     local cache="$(resolve_lint_cache "${BEE_PLUGIN_SOURCE}")"
@@ -355,42 +362,16 @@ plugins() {
 
 bee_help_deps=("deps | list dependencies of enabled plugins")
 deps() {
-  missing=()
-  local specs="$(resolve_plugin_specs "${PLUGINS[@]}")"
-  for spec in ${specs}; do
+  local all_deps=()
+  for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
     source "${spec}"
-    local plugin_id="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-    local deps_func="${BEE_PLUGIN_NAME}::_deps"
-    unload_plugin_spec
-    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-      local dependencies=($(${deps_func} | tr ' ' '\n'))
-      local status=""
-      for dep in "${dependencies[@]}"; do
-        local found_dep=false
-        for s in ${specs}; do
-          source "${s}"
-          if [[ "${BEE_PLUGIN_NAME}" == "${dep}" || "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" == "${dep}" ]]; then
-            found_dep=true
-            break
-          fi
-          unload_plugin_spec
-        done
-
-        if [[ ${found_dep} == true ]]; then
-          status+=" \033[32m${dep}\033[0m"
-        else
-          status+=" \033[31m${dep}\033[0m"
-          missing+=("${dep}")
-        fi
-      done
-
-      echo -e "${plugin_id} =>${status}"
+    if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+      all_deps+=("${BEE_PLUGIN_DEPENDENCIES[@]}")
     fi
+    unload_plugin_spec
   done
-
-  if [[ ${#missing[@]} -gt 0 ]]; then
-    log_warn "Missing dependencies:"
-    echo "${missing[*]}" | sort -u
+  if [[ ${#all_deps[@]} -gt 0 ]]; then
+    echo "${all_deps[@]}" | tr ' ' '\n'| sort -u
   fi
 }
 

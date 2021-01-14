@@ -8,10 +8,10 @@ _bee_completions() {
     COMPREPLY=($(compgen -W "${words}" "${firstWord}"))
   else
     case "${firstWord}" in
-      "deps" | "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
+      "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
-      "commands" | "install" | "new" | "res")
+      "commands" | "deps" | "install" | "new" | "res")
         COMPREPLY=($(compgen -W "$(bee plugins)" "${lastWord}"))
         ;;
 
