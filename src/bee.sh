@@ -416,9 +416,9 @@ update() {
 bee_help_version=("version | show the current bee version")
 version() {
   local local_version="$(cat "${BEE_HOME}/version.txt")"
-  echo "bee ${local_version}"
+  echo "${local_version}"
   local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
-  if [[ -n "${remote_version}" ]]; then
+  if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
     echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
 }
