@@ -325,8 +325,14 @@ bee_help_install=(
   "install <plugins> | install plugins"
 )
 install() {
+  local plugins=("${@-"${PLUGINS[@]}"}")
+  local dependencies=($(deps "${plugins}"))
+  if [[ ${#dependencies[@]} -gt 0 ]]; then
+    plugins+=("${dependencies[@]}")
+  fi
+  plugins=($(echo "${plugins[@]}" | tr ' ' '\n' | sort -u))
   pull || true
-  for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
+  for spec in $(resolve_plugin_specs "${plugins[@]}"); do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
     if [[ ! -d "${path}" ]]; then
@@ -371,7 +377,7 @@ deps() {
     unload_plugin_spec
   done
   if [[ ${#all_deps[@]} -gt 0 ]]; then
-    echo "${all_deps[@]}" | tr ' ' '\n'| sort -u
+    echo "${all_deps[@]}" | tr ' ' '\n' | sort -u
   fi
 }
 
