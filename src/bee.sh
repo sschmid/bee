@@ -228,7 +228,7 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_LICENSE
   unset BEE_PLUGIN_HOMEPAGE
   unset BEE_PLUGIN_AUTHORS
-  unset BEE_PLUGIN_SUMMARY
+  unset BEE_PLUGIN_INFO
   unset BEE_PLUGIN_SOURCE
   unset BEE_PLUGIN_TAG
   unset BEE_PLUGIN_DEPENDENCIES
@@ -264,7 +264,7 @@ lint() {
   lint_var BEE_PLUGIN_LICENSE
   lint_var BEE_PLUGIN_HOMEPAGE
   lint_var BEE_PLUGIN_AUTHORS
-  lint_var BEE_PLUGIN_SUMMARY
+  lint_var BEE_PLUGIN_INFO
   lint_var BEE_PLUGIN_SOURCE
   lint_var BEE_PLUGIN_TAG
 
@@ -313,11 +313,22 @@ version: | ${BEE_PLUGIN_VERSION}
 license: | ${BEE_PLUGIN_LICENSE}
 homepage: | ${BEE_PLUGIN_HOMEPAGE}
 authors: | ${BEE_PLUGIN_AUTHORS}
-summary: | ${BEE_PLUGIN_SUMMARY}
+summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
 tag: | ${BEE_PLUGIN_TAG}" | column -s '|' -t
     unload_plugin_spec
   done
+}
+
+plugins_with_dependencies() {
+  if (( $# > 0 )); then
+    local plugins=("$@")
+    local dependencies=($(deps "${plugins[@]}"))
+    if [[ ${#dependencies[@]} -gt 0 ]]; then
+      plugins+=("${dependencies[@]}")
+    fi
+    echo "${plugins[@]}" | tr ' ' '\n' | sort -u
+  fi
 }
 
 bee_help_install=(
@@ -325,13 +336,8 @@ bee_help_install=(
   "install <plugins> | install plugins"
 )
 install() {
-  local plugins=("${@-"${PLUGINS[@]}"}")
-  local dependencies=($(deps "${plugins}"))
-  if [[ ${#dependencies[@]} -gt 0 ]]; then
-    plugins+=("${dependencies[@]}")
-  fi
-  plugins=($(echo "${plugins[@]}" | tr ' ' '\n' | sort -u))
   pull || true
+  local plugins=($(plugins_with_dependencies "${@-"${PLUGINS[@]}"}"))
   for spec in $(resolve_plugin_specs "${plugins[@]}"); do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
@@ -356,20 +362,66 @@ source_plugins() {
   done
 }
 
-bee_help_plugins=("plugins | list all plugins")
+bee_help_plugins=("plugins [-a(ll) -v(ersion) -i(info)] | list all plugins")
 plugins() {
-  for cache in $(resolve_registry_caches); do
-    local plugins=("${cache}"/*/)
-    if [[ -d "${plugins}" ]]; then
-      basename -a "${plugins[@]}"
-    fi
+  local show_all=false
+  local show_version=false
+  local show_info=false
+  while getopts ":avi" arg; do
+    case $arg in
+      a) show_all=true ;;
+      v) show_version=true ;;
+      i) show_info=true ;;
+      *)
+        echo "Invalid option -${OPTARG}"
+        exit 1
+        ;;
+    esac
   done
+  shift $(( OPTIND - 1 ))
+
+  local list=""
+  if [[ "${show_all}" == false ]]; then
+    local plugins=($(plugins_with_dependencies "${PLUGINS[@]}"))
+    for spec in $(resolve_plugin_specs "${plugins[@]}"); do
+      source "${spec}"
+      list+="${BEE_PLUGIN_NAME}"
+      if [[ "${show_version}" == true ]]; then
+        list+=":${BEE_PLUGIN_VERSION}"
+      fi
+      if [[ "${show_info}" == true ]]; then
+        list+=" | ${BEE_PLUGIN_INFO}"
+      fi
+      list+="\n"
+      unload_plugin_spec
+    done
+  else
+    for cache in $(resolve_registry_caches); do
+      local plugins=("${cache}"/*/)
+      if [[ -d "${plugins}" ]]; then
+        plugins=($(basename -a "${plugins[@]}"))
+        for spec in $(resolve_plugin_specs "${plugins[@]}"); do
+          source "${spec}"
+          list+="${BEE_PLUGIN_NAME}"
+          if [[ "${show_version}" == true ]]; then
+            list+=":${BEE_PLUGIN_VERSION}"
+          fi
+          if [[ "${show_info}" == true ]]; then
+            list+=" | ${BEE_PLUGIN_INFO}"
+          fi
+          list+="\n"
+          unload_plugin_spec
+        done
+      fi
+    done
+  fi
+  echo -ne "${list}" | column -s '|' -t
 }
 
 bee_help_deps=("deps | list dependencies of enabled plugins")
 deps() {
   local all_deps=()
-  for spec in $(resolve_plugin_specs "${@-"${PLUGINS[@]}"}"); do
+  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
     source "${spec}"
     if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
       all_deps+=("${BEE_PLUGIN_DEPENDENCIES[@]}")
@@ -646,7 +698,7 @@ main() {
   trap bee_exit EXIT
 
   if [[ -v PLUGINS ]]; then
-    source_plugins "${PLUGINS[@]}"
+    source_plugins $(plugins_with_dependencies "${PLUGINS[@]}")
   fi
 
   while getopts ":sv" arg; do
