@@ -329,17 +329,21 @@ bee_help_deps=(
   "deps | list dependencies of enabled plugins"
   "deps <plugins> | list dependencies of plugins"
 )
+declare -A deps_cache=()
 deps() {
   local all_deps=()
   for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
-    source "${spec}"
-    if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-      local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
-      unload_plugin_spec
-      all_deps+=("${dependencies[@]}")
-      all_deps+=($(deps "${dependencies[@]}"))
-    else
-      unload_plugin_spec
+    if [[ ! -v deps_cache["${spec}"] ]]; then
+      deps_cache["${spec}"]=true
+      source "${spec}"
+      if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+        unload_plugin_spec
+        all_deps+=("${dependencies[@]}")
+        all_deps+=($(deps "${dependencies[@]}"))
+      else
+        unload_plugin_spec
+      fi
     fi
   done
   if [[ ${#all_deps[@]} -gt 0 ]]; then
