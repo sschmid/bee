@@ -55,8 +55,9 @@ log_var() {
 resolve_file() {
   local current_dir="${PWD}"
   local path="$1"
+  local link
   while [[ -L "${path}" ]]; do
-    local link="$(readlink "${path}")"
+    link="$(readlink "${path}")"
     cd "$(dirname "${path}")"
     cd "$(dirname "${link}")"
     path="${link}"

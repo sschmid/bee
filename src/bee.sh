@@ -68,7 +68,7 @@ start_spinner() {
 }
 
 stop_spinner() {
-  if (( ${BEE_SPINNER_PID} != 0 )); then
+  if (( BEE_SPINNER_PID != 0 )); then
     kill ${BEE_SPINNER_PID} || true
     BEE_SPINNER_PID=0
   fi
@@ -114,7 +114,7 @@ job_term() {
 
 job_exit() {
   local exit_code=$1
-  if (( ${exit_code} != 0 )); then
+  if (( exit_code != 0 )); then
     stop_spinner
     echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"
   fi
@@ -161,13 +161,14 @@ bee_help_pull=(
   "pull <urls> | update plugin registries"
 )
 pull() {
+  local cache
   for url in "${@-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
-    local cache="$(resolve_registry_cache "${url}")"
+    cache="$(resolve_registry_cache "${url}")"
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null
+        pushd "${cache}" > /dev/null || exit 1
           git pull -q
-        popd > /dev/null
+        popd > /dev/null || exit 1
       else
         git clone -q "${url}" "${cache}"
       fi
@@ -273,29 +274,30 @@ lint() {
   lint_var BEE_PLUGIN_TAG
 
   if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[@]} ✔︎\033[0m"
+    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[*]} ✔︎\033[0m"
   else
     echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES no dependencies ✔︎\033[0m"
   fi
 
+  local cache
   if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" ]]; then
-    local cache="$(resolve_lint_cache "${BEE_PLUGIN_SOURCE}")"
+    cache="$(resolve_lint_cache "${BEE_PLUGIN_SOURCE}")"
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null
+        pushd "${cache}" > /dev/null || exit 1
           job "BEE_PLUGIN_SOURCE" git fetch || true
-        popd > /dev/null
+        popd > /dev/null || exit 1
       else
         job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${cache}" || true
       fi
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null
+        pushd "${cache}" > /dev/null || exit 1
           if ! git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
           else
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
           fi
-        popd > /dev/null
+        popd > /dev/null || exit 1
       else
         echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
       fi
@@ -320,7 +322,7 @@ authors: | ${BEE_PLUGIN_AUTHORS}
 summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
 tag: | ${BEE_PLUGIN_TAG}
-dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
+dependencies: | ${BEE_PLUGIN_DEPENDENCIES[*]:-"none"}" | column -s '|' -t
     unload_plugin_spec
   done
 }
@@ -499,17 +501,19 @@ builtin_commands() {
 
 bee_help_update=("update | update bee to the latest version")
 update() {
-  pushd "${BEE_SYSTEM_HOME}" > /dev/null
+  pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
     git pull -q
     log "bee is up-to-date and ready to bzzzz"
-  popd > /dev/null
+  popd > /dev/null || exit 1
 }
 
 bee_help_version=("version | show the current bee version")
 version() {
-  local local_version="$(cat "${BEE_HOME}/version.txt")"
+  local local_version
+  local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "${local_version}"
-  local remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
+  local remote_version
+  remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
   if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
     echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
@@ -530,10 +534,11 @@ new_bee() {
     echo ".beerc already exists"
     exit 1
   else
-    local local_version="$(cat "${BEE_HOME}/version.txt")"
+    local local_version
+    local_version="$(cat "${BEE_HOME}/version.txt")"
     {
       echo '#!/usr/bin/env bash'
-      echo "BEE_PROJECT=\"$(basename ${PWD})\""
+      echo "BEE_PROJECT=\"$(basename "${PWD}")\""
       echo "BEE_VERSION=${local_version}"
       echo 'PLUGINS=()'
       echo ""
@@ -614,7 +619,7 @@ uninstall() {
   if [[ ${BEE_SILENT} == false ]]; then
     echo "You're about to uninstall bee from your system."
     echo "Do you want to continue? (yes | no)"
-    read a
+    read -r a
     if [[ "${a}" == "yes" ]]; then
       rm -f /usr/local/bin/bee
       rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
@@ -644,7 +649,8 @@ help_bee() {
     done
   done
 
-  local local_version="$(cat "${BEE_HOME}/version.txt")"
+  local local_version
+  local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "🐝 bee ${local_version} - plugin-based bash automation"
   echo ""
   echo "usage: bee [-s(ilent) -v(erbose)] <command> [<args>]"
@@ -723,11 +729,11 @@ bee_exit() {
   for t in "${BEE_EXIT_TRAPS[@]}"; do
     "$t"
   done
-  if [[ ${BEE_SILENT} == false ]] && (( ${BEE_MODE} == ${BEE_MODE_COMMAND} )); then
-    if (( ${exit_code} == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
-      log "bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
+  if [[ ${BEE_SILENT} == false ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
+    if (( exit_code == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
+      log "bzzzz ($(( SECONDS - T )) seconds)"
     else
-      log "❌ bzzzz ($(( ${SECONDS} - ${T} )) seconds)"
+      log "❌ bzzzz ($(( SECONDS - T )) seconds)"
     fi
   fi
 }
