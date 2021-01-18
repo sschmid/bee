@@ -166,9 +166,9 @@ pull() {
     cache="$(resolve_registry_cache "${url}")"
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null || exit 1
+        pushd "${cache}" > /dev/null
           git pull -q
-        popd > /dev/null || exit 1
+        popd > /dev/null
       else
         git clone -q "${url}" "${cache}"
       fi
@@ -284,20 +284,20 @@ lint() {
     cache="$(resolve_lint_cache "${BEE_PLUGIN_SOURCE}")"
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null || exit 1
+        pushd "${cache}" > /dev/null
           job "BEE_PLUGIN_SOURCE" git fetch || true
-        popd > /dev/null || exit 1
+        popd > /dev/null
       else
         job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${cache}" || true
       fi
       if [[ -d "${cache}" ]]; then
-        pushd "${cache}" > /dev/null || exit 1
+        pushd "${cache}" > /dev/null
           if ! git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
           else
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
           fi
-        popd > /dev/null || exit 1
+        popd > /dev/null
       else
         echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
       fi
@@ -501,10 +501,10 @@ builtin_commands() {
 
 bee_help_update=("update | update bee to the latest version")
 update() {
-  pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
+  pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull -q
     log "bee is up-to-date and ready to bzzzz"
-  popd > /dev/null || exit 1
+  popd > /dev/null
 }
 
 bee_help_version=("version | show the current bee version")
