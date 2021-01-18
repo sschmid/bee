@@ -194,9 +194,11 @@ resolve_plugin_specs() {
           local versions=("${plugin_path}"/*/)
           if [[ -d "${versions}" ]]; then
             plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
-            found=true
-            echo "${plugin_path}/${plugin_version}/plugin.sh"
-            break
+            if [[ -f "${plugin_path}/${plugin_version}/plugin.sh" ]]; then
+              found=true
+              echo "${plugin_path}/${plugin_version}/plugin.sh"
+              break
+            fi
           fi
         fi
       done
@@ -204,9 +206,11 @@ resolve_plugin_specs() {
       for cache in "${caches[@]}"; do
         local plugin_path="${cache}/${plugin_name}"
         if [[ -d "${plugin_path}/${plugin_version}" ]]; then
-          found=true
-          echo "${plugin_path}/${plugin_version}/plugin.sh"
-          break
+          if [[ -f "${plugin_path}/${plugin_version}/plugin.sh" ]]; then
+            found=true
+            echo "${plugin_path}/${plugin_version}/plugin.sh"
+            break
+          fi
         fi
       done
     fi
@@ -315,14 +319,43 @@ homepage: | ${BEE_PLUGIN_HOMEPAGE}
 authors: | ${BEE_PLUGIN_AUTHORS}
 summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
-tag: | ${BEE_PLUGIN_TAG}" | column -s '|' -t
+tag: | ${BEE_PLUGIN_TAG}
+dependencies: | ${BEE_PLUGIN_DEPENDENCIES:-"none"}" | column -s '|' -t
     unload_plugin_spec
   done
 }
 
+bee_help_deps=(
+  "deps | list dependencies of enabled plugins"
+  "deps <plugins> | list dependencies of plugins"
+)
+deps() {
+  local all_deps=()
+  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
+    source "${spec}"
+    if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+      local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+      unload_plugin_spec
+      all_deps+=("${dependencies[@]}")
+      all_deps+=($(deps "${dependencies[@]}"))
+    else
+      unload_plugin_spec
+    fi
+  done
+  if [[ ${#all_deps[@]} -gt 0 ]]; then
+    echo "${all_deps[@]}" | tr ' ' '\n' | sort -u
+  fi
+}
+
 plugins_with_dependencies() {
   if (( $# > 0 )); then
-    local plugins=("$@")
+    local plugins=()
+    for spec in $(resolve_plugin_specs "$@"); do
+      source "${spec}"
+      plugins+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
+      unload_plugin_spec
+    done
+
     local dependencies=($(deps "${plugins[@]}"))
     if [[ ${#dependencies[@]} -gt 0 ]]; then
       plugins+=("${dependencies[@]}")
@@ -373,7 +406,7 @@ plugins() {
       v) show_version=true ;;
       i) show_info=true ;;
       *)
-        echo "Invalid option -${OPTARG}"
+        log_error "Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
@@ -416,21 +449,6 @@ plugins() {
     done
   fi
   echo -ne "${list}" | column -s '|' -t
-}
-
-bee_help_deps=("deps | list dependencies of enabled plugins")
-deps() {
-  local all_deps=()
-  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
-    source "${spec}"
-    if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-      all_deps+=("${BEE_PLUGIN_DEPENDENCIES[@]}")
-    fi
-    unload_plugin_spec
-  done
-  if [[ ${#all_deps[@]} -gt 0 ]]; then
-    echo "${all_deps[@]}" | tr ' ' '\n' | sort -u
-  fi
 }
 
 bee_help_res=("res <plugins> | copy plugin resources into resources dir")
@@ -706,7 +724,7 @@ main() {
       s) BEE_SILENT=true ;;
       v) set -x ;;
       *)
-        echo "Invalid option -${OPTARG}"
+        log_error "Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
