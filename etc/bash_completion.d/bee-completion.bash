@@ -11,7 +11,7 @@ _bee_completions() {
       "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
-      "commands" | "deps" | "install" | "new" | "res")
+      "commands" | "deps" | "depstree" | "install" | "new" | "res")
         COMPREPLY=($(compgen -W "$(bee plugins -a)" "${lastWord}"))
         ;;
 

@@ -351,6 +351,30 @@ deps() {
   fi
 }
 
+bee_help_depstree=(
+  "depstree | list dependencies hierarchy of enabled plugins"
+  "depstree <plugins> | list dependencies hierarchy of plugins"
+)
+depstree_indent=""
+depstree() {
+  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
+    if [[ ! -v deps_cache["${spec}"] ]]; then
+      deps_cache["${spec}"]=true
+      source "${spec}"
+      echo "${depstree_indent}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+      depstree_indent+="  "
+      if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+        unload_plugin_spec
+        depstree "${dependencies[@]}"
+      else
+        unload_plugin_spec
+      fi
+      depstree_indent="${depstree_indent:0:-2}"
+    fi
+  done
+}
+
 plugins_with_dependencies() {
   local plugins=()
   for spec in $(resolve_plugin_specs "$@"); do
@@ -404,7 +428,7 @@ plugins() {
       v) show_version=true ;;
       i) show_info=true ;;
       *)
-        log_error "Invalid option -${OPTARG}"
+        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
@@ -722,7 +746,7 @@ main() {
       s) BEE_SILENT=true ;;
       v) set -x ;;
       *)
-        log_error "Invalid option -${OPTARG}"
+        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
