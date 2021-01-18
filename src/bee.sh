@@ -718,7 +718,7 @@ main() {
     if [[ $(command -v "${cmd}") != *"${cmd}" ]]; then
       # command not found
       # try loading as a plugin
-      source_plugins "${cmd}"
+      source_plugins $(plugins_with_dependencies "${cmd}")
       shift
     fi
 
