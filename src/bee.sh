@@ -320,7 +320,7 @@ authors: | ${BEE_PLUGIN_AUTHORS}
 summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
 tag: | ${BEE_PLUGIN_TAG}
-dependencies: | ${BEE_PLUGIN_DEPENDENCIES:-"none"}" | column -s '|' -t
+dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
     unload_plugin_spec
   done
 }
