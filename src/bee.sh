@@ -348,20 +348,14 @@ deps() {
 }
 
 plugins_with_dependencies() {
-  if (( $# > 0 )); then
-    local plugins=()
-    for spec in $(resolve_plugin_specs "$@"); do
-      source "${spec}"
-      plugins+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
-      unload_plugin_spec
-    done
-
-    local dependencies=($(deps "${plugins[@]}"))
-    if [[ ${#dependencies[@]} -gt 0 ]]; then
-      plugins+=("${dependencies[@]}")
-    fi
-    echo "${plugins[@]}" | tr ' ' '\n' | sort -u
-  fi
+  local plugins=()
+  for spec in $(resolve_plugin_specs "$@"); do
+    source "${spec}"
+    plugins+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
+    unload_plugin_spec
+  done
+  plugins+=($(deps "${plugins[@]}"))
+  echo "${plugins[@]}" | tr ' ' '\n' | sort -u
 }
 
 bee_help_install=(
