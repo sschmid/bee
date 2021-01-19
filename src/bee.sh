@@ -376,20 +376,27 @@ bee_help_install=(
   "install | install all enabled plugins"
   "install <plugins> | install plugins"
 )
+declare -A install_cache=()
 install() {
   pull || true
   local plugins=($(plugins_with_dependencies ${@:-"${PLUGINS[@]}"}))
   for spec in $(resolve_plugin_specs "${plugins[@]}"); do
-    source "${spec}"
-    local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
-    if [[ ! -d "${path}" ]]; then
-      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}" \
-        git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
-    else
-      job "Installing ${BEE_PLUGIN_NAME} ${BEE_PLUGIN_VERSION}"
+    if [[ ! -v install_cache["${spec}"] ]]; then
+      install_cache["${spec}"]=true
+      source "${spec}"
+      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+      if [[ ! -d "${path}" ]]; then
+        {
+          git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+          echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
+        } &
+      else
+        echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+      fi
+      unload_plugin_spec
     fi
-    unload_plugin_spec
   done
+  wait
 }
 
 source_plugins() {
