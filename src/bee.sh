@@ -149,13 +149,14 @@ pull() {
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
         pushd "${cache}" > /dev/null
-          git pull -q
+          git pull -q &
         popd > /dev/null
       else
-        git clone -q "${url}" "${cache}"
+        git clone -q "${url}" "${cache}" &
       fi
     fi
   done
+  wait
 }
 
 ################################################################################
