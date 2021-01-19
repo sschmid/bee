@@ -199,13 +199,13 @@ resolve_plugin_specs() {
       done
     fi
 
-    if [[ ${found} == false ]]; then
+    if [[ "${found}" == false ]]; then
       found_all=false
       log_warn "Could not find plugin ${plugin}"
     fi
   done
 
-  if [[ ${found_all} == false ]]; then
+  if [[ "${found_all}" == false ]]; then
     exit 1
   fi
 }
@@ -599,7 +599,7 @@ changelog() {
 
 bee_help_uninstall=("uninstall | uninstall bee from your system")
 uninstall() {
-  if [[ ${BEE_SILENT} == false ]]; then
+  if [[ "${BEE_SILENT}" == false ]]; then
     echo "You're about to uninstall bee from your system."
     echo "Do you want to continue? (yes | no)"
     read -r a
@@ -686,7 +686,7 @@ T=${SECONDS}
 
 bee_int() {
   BEE_CANCELED=true
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
     job_int
   fi
   for t in "${BEE_INT_TRAPS[@]}"; do
@@ -696,7 +696,7 @@ bee_int() {
 
 bee_term() {
   BEE_CANCELED=true
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
     job_term
   fi
   for t in "${BEE_TERM_TRAPS[@]}"; do
@@ -706,14 +706,14 @@ bee_term() {
 
 bee_exit() {
   local exit_code=$?
-  if [[ ${BEE_JOB_RUNNING} == true ]]; then
+  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
     job_exit "${exit_code}"
   fi
   for t in "${BEE_EXIT_TRAPS[@]}"; do
     "$t"
   done
-  if [[ ${BEE_SILENT} == false ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
-    if (( exit_code == 0 )) && [[ ${BEE_CANCELED} == false ]]; then
+  if [[ "${BEE_SILENT}" == false ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
+    if (( exit_code == 0 )) && [[ "${BEE_CANCELED}" == false ]]; then
       log "bzzzz ($(( SECONDS - T )) seconds)"
     else
       log "❌ bzzzz ($(( SECONDS - T )) seconds)"

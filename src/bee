@@ -18,13 +18,13 @@ IFS=$'\n\t'
 BEE_SILENT=false
 
 log() {
-  if [[ ${BEE_SILENT} == false ]]; then
+  if [[ "${BEE_SILENT}" == false ]]; then
     echo "🐝 $*"
   fi
 }
 
 log_info() {
-  if [[ ${BEE_SILENT} == false ]]; then
+  if [[ "${BEE_SILENT}" == false ]]; then
     echo ""
     echo "################################################################################"
     echo "🐝 $*"
