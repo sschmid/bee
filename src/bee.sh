@@ -178,9 +178,10 @@ resolve_plugin_specs() {
           local versions=("${plugin_path}"/*/)
           if [[ -d "${versions}" ]]; then
             plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
-            if [[ -f "${plugin_path}/${plugin_version}/plugin.sh" ]]; then
+            plugin_path="${plugin_path}/${plugin_version}/plugin.sh"
+            if [[ -f "${plugin_path}" ]]; then
               found=true
-              echo "${plugin_path}/${plugin_version}/plugin.sh"
+              echo "${plugin_path}"
               break
             fi
           fi
@@ -188,13 +189,11 @@ resolve_plugin_specs() {
       done
     else
       for cache in "${caches[@]}"; do
-        local plugin_path="${cache}/${plugin_name}"
-        if [[ -d "${plugin_path}/${plugin_version}" ]]; then
-          if [[ -f "${plugin_path}/${plugin_version}/plugin.sh" ]]; then
-            found=true
-            echo "${plugin_path}/${plugin_version}/plugin.sh"
-            break
-          fi
+        local plugin_path="${cache}/${plugin_name}/${plugin_version}/plugin.sh"
+        if [[ -f "${plugin_path}" ]]; then
+          found=true
+          echo "${plugin_path}"
+          break
         fi
       done
     fi
@@ -317,7 +316,7 @@ bee_help_deps=(
 declare -A deps_cache=()
 deps() {
   local all_deps=()
-  for spec in $(resolve_plugin_specs "${@:-"${PLUGINS[@]}"}"); do
+  for spec in $(resolve_plugin_specs ${@:-"${PLUGINS[@]}"}); do
     if [[ ! -v deps_cache["${spec}"] ]]; then
       deps_cache["${spec}"]=true
       source "${spec}"
@@ -342,7 +341,7 @@ bee_help_depstree=(
 )
 depstree_indent=""
 depstree() {
-  for spec in $(resolve_plugin_specs "${@:-"${PLUGINS[@]}"}"); do
+  for spec in $(resolve_plugin_specs ${@:-"${PLUGINS[@]}"}); do
     if [[ ! -v deps_cache["${spec}"] ]]; then
       deps_cache["${spec}"]=true
       source "${spec}"
@@ -368,7 +367,9 @@ plugins_with_dependencies() {
     unload_plugin_spec
   done
   plugins+=($(deps "${plugins[@]}"))
-  echo "${plugins[*]}" | sort -u
+  if [[ ${#plugins[@]} -gt 0 ]]; then
+    echo "${plugins[*]}" | sort -u
+  fi
 }
 
 bee_help_install=(
@@ -377,7 +378,7 @@ bee_help_install=(
 )
 install() {
   pull || true
-  local plugins=($(plugins_with_dependencies "${@:-"${PLUGINS[@]}"}"))
+  local plugins=($(plugins_with_dependencies ${@:-"${PLUGINS[@]}"}))
   for spec in $(resolve_plugin_specs "${plugins[@]}"); do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
