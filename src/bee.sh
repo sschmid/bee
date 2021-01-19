@@ -23,27 +23,7 @@ require() {
 # job
 ################################################################################
 
-BEE_SPINNER_FRAMES=(
-  '🐝'
-  ' 🐝'
-  '  🐝'
-  '   🐝'
-  '    🐝'
-  '     🐝'
-  '      🐝'
-  '       🐝'
-  '        🐝'
-  '         🐝'
-  '        🐝'
-  '       🐝'
-  '      🐝'
-  '     🐝'
-  '    🐝'
-  '   🐝'
-  '  🐝'
-  ' 🐝'
-  '🐝'
-)
+BEE_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
 BEE_SPINNER_INTERVAL=0.1
 
 BEE_SPINNER_PID=0
@@ -128,32 +108,33 @@ BEE_REGISTRIES_HOME="${HOME}/.bee/caches/registries"
 BEE_PLUGINS_HOME="${HOME}/.bee/caches/plugins"
 BEE_LINT_HOME="${HOME}/.bee/caches/lint"
 
-resolve_registry_cache() {
+build_local_registry_path() {
   local url="$1"
   if [[ "${url}" =~ ^git@.* ]]; then
-    echo "${BEE_REGISTRIES_HOME}/$(dirname "${url#git@}")/$(basename "${url}" .git)"
+    echo "$(dirname "${url#git@}")/$(basename "${url}" .git)"
   elif [[ "${url}" =~ ^file:// ]]; then
-    echo "${BEE_REGISTRIES_HOME}/$(basename "${url}")"
-  else
-    log_warn "Unsupported registry url: ${url}"
-  fi
-}
-
-resolve_lint_cache() {
-  local url="$1"
-  if [[ "${url}" =~ ^git@.* ]]; then
-    echo "${BEE_LINT_HOME}/$(dirname "${url#git@}")/$(basename "${url}" .git)"
-  elif [[ "${url}" =~ ^file:// ]]; then
-    echo "${BEE_LINT_HOME}/$(basename "${url}")"
+    echo "$(basename "${url}")"
   else
     log_warn "Unsupported registry url: ${url}"
   fi
 }
 
 resolve_registry_caches() {
-  for url in "${BEE_PLUGIN_REGISTRIES[@]}"; do
-    resolve_registry_cache "${url}"
+  local path
+  for url in "$@"; do
+    path="$(build_local_registry_path "${url}")"
+    if [[ -n "${path}" ]]; then
+      echo "${BEE_REGISTRIES_HOME}/${path}"
+    fi
   done
+}
+
+resolve_lint_cache() {
+  local path
+  path="$(build_local_registry_path "$1")"
+  if [[ -n "${path}" ]]; then
+    echo "${BEE_LINT_HOME}/${path}"
+  fi
 }
 
 bee_help_pull=(
@@ -162,8 +143,8 @@ bee_help_pull=(
 )
 pull() {
   local cache
-  for url in "${@-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
-    cache="$(resolve_registry_cache "${url}")"
+  for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
+    cache="$(resolve_registry_caches "${url}")"
     if [[ -n "${cache}" ]]; then
       if [[ -d "${cache}" ]]; then
         pushd "${cache}" > /dev/null
@@ -181,7 +162,7 @@ pull() {
 ################################################################################
 
 resolve_plugin_specs() {
-  local caches=($(resolve_registry_caches))
+  local caches=($(resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"))
   local found_all=true
   for plugin in "$@"; do
     local plugin_name="${plugin%:*}"
@@ -322,7 +303,7 @@ authors: | ${BEE_PLUGIN_AUTHORS}
 summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
 tag: | ${BEE_PLUGIN_TAG}
-dependencies: | ${BEE_PLUGIN_DEPENDENCIES[*]:-"none"}" | column -s '|' -t
+dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
     unload_plugin_spec
   done
 }
@@ -334,7 +315,7 @@ bee_help_deps=(
 declare -A deps_cache=()
 deps() {
   local all_deps=()
-  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
+  for spec in $(resolve_plugin_specs "${@:-"${PLUGINS[@]}"}"); do
     if [[ ! -v deps_cache["${spec}"] ]]; then
       deps_cache["${spec}"]=true
       source "${spec}"
@@ -349,7 +330,7 @@ deps() {
     fi
   done
   if [[ ${#all_deps[@]} -gt 0 ]]; then
-    echo "${all_deps[@]}" | tr ' ' '\n' | sort -u
+    echo "${all_deps[*]}" | sort -u
   fi
 }
 
@@ -359,7 +340,7 @@ bee_help_depstree=(
 )
 depstree_indent=""
 depstree() {
-  for spec in $(resolve_plugin_specs ${@-"${PLUGINS[@]}"}); do
+  for spec in $(resolve_plugin_specs "${@:-"${PLUGINS[@]}"}"); do
     if [[ ! -v deps_cache["${spec}"] ]]; then
       deps_cache["${spec}"]=true
       source "${spec}"
@@ -385,7 +366,7 @@ plugins_with_dependencies() {
     unload_plugin_spec
   done
   plugins+=($(deps "${plugins[@]}"))
-  echo "${plugins[@]}" | tr ' ' '\n' | sort -u
+  echo "${plugins[*]}" | sort -u
 }
 
 bee_help_install=(
@@ -394,7 +375,7 @@ bee_help_install=(
 )
 install() {
   pull || true
-  local plugins=($(plugins_with_dependencies "${@-"${PLUGINS[@]}"}"))
+  local plugins=($(plugins_with_dependencies "${@:-"${PLUGINS[@]}"}"))
   for spec in $(resolve_plugin_specs "${plugins[@]}"); do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
@@ -453,7 +434,7 @@ plugins() {
       unload_plugin_spec
     done
   else
-    for cache in $(resolve_registry_caches); do
+    for cache in $(resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"); do
       local plugins=("${cache}"/*/)
       if [[ -d "${plugins}" ]]; then
         plugins=($(basename -a "${plugins[@]}"))
@@ -641,11 +622,11 @@ uninstall() {
 ################################################################################
 
 help_bee() {
-  local commands=""
+  local commands=()
   for help_var in $(compgen -v bee_help_); do
     help_var+="[@]"
     for entry in "${!help_var}"; do
-      commands+="  ${entry}\n"
+      commands+=("  ${entry}")
     done
   done
 
@@ -655,7 +636,7 @@ help_bee() {
   echo ""
   echo "usage: bee [-s(ilent) -v(erbose)] <command> [<args>]"
   echo ""
-  echo -e "${commands}" | column -s '|' -t
+  echo -e "${commands[*]}" | column -s '|' -t
   echo ""
   echo "EXAMPLE"
   echo "  bee slack::message"
