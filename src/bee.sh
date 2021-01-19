@@ -342,19 +342,26 @@ bee_help_depstree=(
 depstree_indent=""
 depstree() {
   for spec in $(resolve_plugin_specs ${@:-"${PLUGINS[@]}"}); do
+    source "${spec}"
+    echo "${depstree_indent}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
     if [[ ! -v deps_cache["${spec}"] ]]; then
       deps_cache["${spec}"]=true
-      source "${spec}"
-      echo "${depstree_indent}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-      depstree_indent+="  "
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+        depstree_indent="${depstree_indent/'├'/'|'}"
+        depstree_indent="${depstree_indent//'─'/' '}├── "
         local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
         unload_plugin_spec
         depstree "${dependencies[@]}"
+        if [[ "${#depstree_indent}" -ge 8 ]]; then
+          depstree_indent="${depstree_indent:0:-8}├── "
+        else
+          depstree_indent=""
+        fi
       else
         unload_plugin_spec
       fi
-      depstree_indent="${depstree_indent:0:-2}"
+    else
+      unload_plugin_spec
     fi
   done
 }
