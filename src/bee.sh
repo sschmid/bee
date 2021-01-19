@@ -71,12 +71,13 @@ job() {
   start_spinner
 
   if [[ -v BEE_PROJECT ]]; then
-    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
     mkdir -p "${BEE_RESOURCES}/logs"
-    "$@" &> "${BEE_JOB_LOGFILE}"
+    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
   else
-    "$@" &> /dev/null
+    BEE_JOB_LOGFILE=/dev/null
   fi
+
+  "$@" &> "${BEE_JOB_LOGFILE}"
 
   complete_job
   BEE_JOB_RUNNING=false
