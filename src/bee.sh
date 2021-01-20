@@ -287,7 +287,7 @@ lint() {
           job "BEE_PLUGIN_SOURCE" git fetch || true
         popd > /dev/null
       else
-        job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${cache}" || true
+        job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${BEE_LINT_CACHE_RESULT}" || true
       fi
       if [[ -d "${BEE_LINT_CACHE_RESULT}" ]]; then
         pushd "${BEE_LINT_CACHE_RESULT}" > /dev/null
