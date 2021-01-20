@@ -7,7 +7,7 @@
 assert_file() {
   local file="${!1}"
   if [[ ! -f "${file}" ]]; then
-    echo "❌ ASSERT $1: file not found: ${file}" >&2
+    echo "🔴 ASSERT $1: file not found: ${file}" >&2
     exit 1
   fi
 }
@@ -764,7 +764,7 @@ bee_exit() {
     if (( exit_code == 0 )) && [[ "${BEE_CANCELED}" == false ]]; then
       log "bzzzz ($(( SECONDS - T )) seconds)"
     else
-      log "❌ bzzzz ($(( SECONDS - T )) seconds)"
+      log "🔴 bzzzz ($(( SECONDS - T )) seconds)"
     fi
   fi
 }

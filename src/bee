@@ -33,11 +33,11 @@ log_info() {
 }
 
 log_warn() {
-  echo "⚠️ WARNING: $*" >&2
+  echo "🟠 WARNING: $*" >&2
 }
 
 log_error() {
-  echo "❌ ERROR: $*" >&2
+  echo "🔴 ERROR: $*" >&2
 }
 
 log_func() {
