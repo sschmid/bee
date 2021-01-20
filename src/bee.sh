@@ -436,10 +436,12 @@ source_plugins() {
   for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
+    local plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
     unload_plugin_spec
-    if [[ -f "${path}" ]]; then
-      source "${path}"
+    if [[ ! -f "${path}" ]]; then
+      install "${plugin}"
     fi
+    source "${path}"
   done
 }
 
