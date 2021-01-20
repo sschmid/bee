@@ -154,6 +154,7 @@ bee_help_pull=(
   "pull <urls> | update plugin registries"
 )
 pull() {
+  log "Pulling registries"
   for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
     resolve_registry_caches "${url}"
     if [[ -n "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
@@ -179,7 +180,7 @@ resolve_plugin_specs() {
   BEE_PLUGIN_SPECS_RESULT=()
   resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
   for plugin in "$@"; do
-    if [[ ! -v BEE_PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
+    if [[ ! -v BEE_PLUGIN_SPECS_CACHE["${plugin}"] || "${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}" == false ]]; then
       local plugin_name="${plugin%:*}"
       local plugin_version="${plugin##*:}"
       local found=false
@@ -215,8 +216,10 @@ resolve_plugin_specs() {
       fi
 
       if [[ "${found}" == false ]]; then
+        if [[ ! -v BEE_PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
+          log_warn "Could not find plugin ${plugin}"
+        fi
         BEE_PLUGIN_SPECS_CACHE["${plugin}"]=false
-        log_warn "Could not find plugin ${plugin}"
       fi
     elif [[ "${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}" != false ]]; then
       BEE_PLUGIN_SPECS_RESULT+=("${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}")
