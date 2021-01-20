@@ -215,9 +215,10 @@ resolve_plugin_specs() {
       fi
 
       if [[ "${found}" == false ]]; then
+        BEE_PLUGIN_SPECS_CACHE["${plugin}"]=false
         log_warn "Could not find plugin ${plugin}"
       fi
-    else
+    elif [[ "${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}" != false ]]; then
       BEE_PLUGIN_SPECS_RESULT+=("${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}")
     fi
   done
