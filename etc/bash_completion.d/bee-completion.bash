@@ -25,7 +25,7 @@ _bee_completions() {
         COMPREPLY=($(compgen -W "$(bee log_var BEE_PLUGIN_REGISTRIES[@])" "${lastWord}"))
         ;;
 
-      "lint")
+      "hash" | "lint")
         if (( $COMP_CWORD == 2 )); then
           COMPREPLY=($(compgen -f "${lastWord}"))
         fi
