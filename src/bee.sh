@@ -314,7 +314,9 @@ info() {
   resolve_plugin_specs "$1"
   for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    echo "name: | ${BEE_PLUGIN_NAME}
+    echo "from: | ${spec}
+last modified: | $(stat -f "%Sm" "${spec}")
+name: | ${BEE_PLUGIN_NAME}
 version: | ${BEE_PLUGIN_VERSION}
 license: | ${BEE_PLUGIN_LICENSE}
 homepage: | ${BEE_PLUGIN_HOMEPAGE}
