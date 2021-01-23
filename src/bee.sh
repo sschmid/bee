@@ -153,21 +153,25 @@ bee_help_pull=(
   "pull | update all plugin registries"
   "pull <urls> | update plugin registries"
 )
+pull_cache=false
 pull() {
-  log "Pulling registries"
-  for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
-    resolve_registry_caches "${url}"
-    if [[ -n "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
-      if [[ -d "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
-        pushd "${BEE_REGISTRY_CACHES_RESULT}" > /dev/null
-          git pull -q &
-        popd > /dev/null
-      else
-        git clone -q "${url}" "${BEE_REGISTRY_CACHES_RESULT}" &
+  if [[ "${pull_cache}" == false ]]; then
+    pull_cache=true
+    log "Pulling registries"
+    for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
+      resolve_registry_caches "${url}"
+      if [[ -n "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
+        if [[ -d "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
+          pushd "${BEE_REGISTRY_CACHES_RESULT}" > /dev/null
+            git pull -q &
+          popd > /dev/null
+        else
+          git clone -q "${url}" "${BEE_REGISTRY_CACHES_RESULT}" &
+        fi
       fi
-    fi
-  done
-  wait
+    done
+    wait
+  fi
 }
 
 ################################################################################
