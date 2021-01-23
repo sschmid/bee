@@ -240,6 +240,37 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
+validate_plugin() {
+  local plugin="$1"
+  local path="$2"
+  local sha256="$3"
+  hash "${path}" > /dev/null
+  if [[ "${sha256}" != "${BEE_HASH_RESULT}" ]]; then
+    log_warn "${plugin} SHA256 mismatch." "Deleting ${path}"
+    rm -rf "${path}"
+  fi
+}
+
+bee_help_hash=("hash <path> | generate hash for a plugin")
+BEE_HASH_RESULT=""
+hash() {
+  local path="$1"
+  local hashes=()
+  pushd "${path}" > /dev/null
+    shopt -s globstar
+    for p in **/*; do
+      if [[ -f "$p" ]]; then
+        local hash="$(shasum -a 256 "$p")"
+        echo "${hash}"
+        hashes+=("${hash// */}")
+      fi
+    done
+  popd > /dev/null
+  local all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
+  echo "${all}"
+  BEE_HASH_RESULT="${all// */}"
+}
+
 lint_var() {
   if [[ ! -v ${1} || -z "${!1}" ]]; then
     echo -e "\033[31m${1} is required\033[0m"
@@ -258,23 +289,6 @@ lint_var_value() {
       echo -e "\033[32m${1} ${!1} ✔︎\033[0m"
     fi
   fi
-}
-
-bee_help_hash=("hash <path> | generate hash for a plugin")
-hash() {
-  local path="$1"
-  local hashes=()
-  pushd "${path}" > /dev/null
-    shopt -s globstar
-    for p in **/*; do
-      if [[ -f "$p" ]]; then
-        local hash="$(shasum -a 256 "$p")"
-        hashes+=("${hash// */}")
-      fi
-    done
-  popd > /dev/null
-  local all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
-  echo "${all// */}"
 }
 
 bee_help_lint=("lint <spec> | validate plugin specification")
@@ -314,7 +328,8 @@ lint() {
         pushd "${BEE_LINT_CACHE_RESULT}" > /dev/null
           if git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
-            lint_var_value BEE_PLUGIN_SHA256 "$(hash .)"
+            hash . > /dev/null
+            lint_var_value BEE_PLUGIN_SHA256 "${BEE_HASH_RESULT}"
           else
             echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
             echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_TAG failed)\033[0m"
@@ -457,9 +472,11 @@ install() {
         {
           git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
           echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
+          validate_plugin "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" "${path}" "${BEE_PLUGIN_SHA256}"
         } &
       else
         echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+        validate_plugin "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" "${path}" "${BEE_PLUGIN_SHA256}"
       fi
       unload_plugin_spec
     fi
@@ -477,7 +494,9 @@ source_plugins() {
     if [[ ! -f "${path}" ]]; then
       install "${plugin}"
     fi
-    source "${path}"
+    if [[ -f "${path}" ]]; then
+      source "${path}"
+    fi
   done
 }
 
