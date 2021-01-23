@@ -236,6 +236,7 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_INFO
   unset BEE_PLUGIN_SOURCE
   unset BEE_PLUGIN_TAG
+  unset BEE_PLUGIN_SHA256
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
@@ -259,6 +260,23 @@ lint_var_value() {
   fi
 }
 
+bee_help_hash=("hash <path> | generate hash for a plugin")
+hash() {
+  local path="$1"
+  local hashes=()
+  pushd "${path}" > /dev/null
+    shopt -s globstar
+    for p in **/*; do
+      if [[ -f "$p" ]]; then
+        local hash="$(shasum -a 256 "$p")"
+        hashes+=("${hash// */}")
+      fi
+    done
+  popd > /dev/null
+  local all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
+  echo "${all// */}"
+}
+
 bee_help_lint=("lint <spec> | validate plugin specification")
 lint() {
   local spec="$1"
@@ -272,6 +290,7 @@ lint() {
   lint_var BEE_PLUGIN_INFO
   lint_var BEE_PLUGIN_SOURCE
   lint_var BEE_PLUGIN_TAG
+  lint_var BEE_PLUGIN_SHA256
 
   if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
     echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[*]} ✔︎\033[0m"
@@ -279,7 +298,9 @@ lint() {
     echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES no dependencies ✔︎\033[0m"
   fi
 
-  if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" ]]; then
+  if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -v BEE_PLUGIN_SHA256 &&
+        -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" && -n "${BEE_PLUGIN_SHA256}"
+      ]]; then
     resolve_lint_cache "${BEE_PLUGIN_SOURCE}"
     if [[ -n "${BEE_LINT_CACHE_RESULT}" ]]; then
       if [[ -d "${BEE_LINT_CACHE_RESULT}" ]]; then
@@ -291,18 +312,22 @@ lint() {
       fi
       if [[ -d "${BEE_LINT_CACHE_RESULT}" ]]; then
         pushd "${BEE_LINT_CACHE_RESULT}" > /dev/null
-          if ! git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
-            echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
-          else
+          if git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
+            lint_var_value BEE_PLUGIN_SHA256 "$(hash .)"
+          else
+            echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
+            echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_TAG failed)\033[0m"
           fi
         popd > /dev/null
       else
         echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
+        echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_SOURCE failed)\033[0m"
       fi
     else
       echo -e "\033[31mBEE_PLUGIN_SOURCE ${BEE_PLUGIN_SOURCE}\033[0m"
       echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
+      echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_SOURCE failed)\033[0m"
     fi
   fi
 
@@ -324,6 +349,7 @@ authors: | ${BEE_PLUGIN_AUTHORS}
 summary: | ${BEE_PLUGIN_INFO}
 source: | ${BEE_PLUGIN_SOURCE}
 tag: | ${BEE_PLUGIN_TAG}
+sha256: | ${BEE_PLUGIN_SHA256}
 dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
     unload_plugin_spec
   done
