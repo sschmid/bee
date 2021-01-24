@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/sschmid/bee/master/readme/bee-header.png" alt="bee bash automation">
+    <img src="https://raw.githubusercontent.com/sschmid/bee/logo/readme/bee-header.png" alt="bee bash automation">
 </p>
 
 # 🐝 bee - plugin-based bash automation
