@@ -149,10 +149,7 @@ resolve_lint_cache() {
   fi
 }
 
-bee_help_pull=(
-  "pull | update all plugin registries"
-  "pull <urls> | update plugin registries"
-)
+bee_help_pull=("pull [<urls>] | update plugin registries")
 PULL_CACHE=false
 pull() {
   if [[ "${PULL_CACHE}" == false ]]; then
@@ -343,7 +340,7 @@ lint() {
   unload_plugin_spec
 }
 
-bee_help_info=("info | show plugin spec info")
+bee_help_info=("info <plugin> | show plugin spec info")
 info() {
   resolve_plugin_specs "$1"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
@@ -364,10 +361,7 @@ dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
   done
 }
 
-bee_help_depstree=(
-  "depstree | list dependencies hierarchy of enabled plugins"
-  "depstree <plugins> | list dependencies hierarchy of plugins"
-)
+bee_help_depstree=("depstree [<plugins>] | list dependencies hierarchy")
 declare -A DEPSTREE_CACHE=()
 DEPSTREE_INDENT=""
 depstree() {
@@ -442,11 +436,7 @@ plugins_with_dependencies() {
   fi
 }
 
-bee_help_install=(
-  "install | install all enabled plugins"
-  "install <plugins> | install plugins"
-)
-
+bee_help_install=("install [<plugins>] | install plugins")
 declare -A INSTALL_CACHE=()
 install() {
   pull || true
@@ -495,7 +485,7 @@ source_plugins() {
   done
 }
 
-bee_help_plugins=("plugins [-a(ll) -v(ersion) -i(info)] | list all plugins")
+bee_help_plugins=("plugins [-a(ll) -v(ersion) -i(nfo)] | list all plugins")
 plugins() {
   local show_all=false
   local show_version=false
@@ -663,10 +653,7 @@ new() {
   fi
 }
 
-bee_help_commands=(
-  "commands | list all commands of enabled plugins"
-  "commands <search> | list search result of enabled plugins"
-)
+bee_help_commands=("commands [<search>] | list commands of enabled plugins")
 commands() {
   compgen -A function \
     | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
@@ -674,10 +661,7 @@ commands() {
     || true
 }
 
-bee_help_changelog=(
-  "changelog | show bee changelog"
-  "changelog <plugin> | show changelog for plugin"
-)
+bee_help_changelog=("changelog [<plugin>] | show changelog")
 changelog() {
   if (( $# == 1 )); then
     resolve_plugin_specs "$1"
@@ -759,10 +743,7 @@ help_plugin() {
   done
 }
 
-bee_help_help=(
-  "help | show bee usage"
-  "help <plugin> | show help for plugin"
-)
+bee_help_help=("help [<plugin>] | show usage")
 help() {
   if (( $# == 1 )); then
     help_plugin "$@"
