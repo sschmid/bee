@@ -244,17 +244,6 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
-validate_plugin() {
-  local plugin="$1"
-  local path="$2"
-  local sha256="$3"
-  hash "${path}" > /dev/null
-  if [[ "${sha256}" != "${BEE_HASH_RESULT}" ]]; then
-    log_warn "${plugin} SHA256 mismatch." "Deleting ${path}"
-    rm -rf "${path}"
-  fi
-}
-
 bee_help_hash=("hash <path> | generate hash for a plugin")
 BEE_HASH_RESULT=""
 hash() {
@@ -473,19 +462,25 @@ install() {
       source "${spec}"
       local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       if [[ ! -d "${path}" ]]; then
-        {
-          git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
-          echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
-          validate_plugin "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" "${path}" "${BEE_PLUGIN_SHA256}"
-        } &
+        git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+        echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
+        hash "${path}" > /dev/null
+        if [[ "${BEE_HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
+          rm -rf "${path}"
+        fi
       else
         echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-        validate_plugin "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}" "${path}" "${BEE_PLUGIN_SHA256}"
+        hash "${path}" > /dev/null
+        if [[ "${BEE_HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
+          "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
+          "Consider deleting ${path} and install again."
+        fi
       fi
       unload_plugin_spec
     fi
   done
-  wait
 }
 
 source_plugins() {
