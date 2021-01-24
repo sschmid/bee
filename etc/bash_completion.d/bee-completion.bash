@@ -11,11 +11,11 @@ _bee_completions() {
       "donate" | "plugins" | "uninstall" | "update" | "version" | "wiki")
         ;;
 
-      "commands" | "deps" | "depstree" | "install" | "new" | "res")
+      "commands" | "depstree" | "install" | "new" | "res")
         COMPREPLY=($(compgen -W "$(bee plugins -a)" "${lastWord}"))
         ;;
 
-      "changelog" | "info" | "help")
+      "changelog" | "help" | "info")
         if (( $COMP_CWORD == 2 )); then
           COMPREPLY=($(compgen -W "$(bee plugins -a)" "${lastWord}"))
         fi
