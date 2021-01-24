@@ -70,9 +70,36 @@ BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 BEE_RESOURCES=.bee
 
 # TODO: remove when expired (Dec 2020)
+bee_migration_0390_sub() {
+  if [[ -f .beerc ]]; then
+    source .beerc
+    if [[ -v BEE_VERSION ]]; then
+      local version=${BEE_VERSION//./}
+      version="${version#0}"
+      if (( version <= 380 )); then
+        echo "${version}"
+        return
+      fi
+    fi
+  fi
+}
+
 bee_migration_0390() {
-  IFS=$' \n\t'
-  BEE_HOME=BEE_HOME="${HOME}/.bee/caches/bee/0.38.0"
+  if [[ -f bee.sh ]]; then
+    BEE_VERSION="0.36.0"
+  else
+    local version="$(bee_migration_0390_sub)"
+    if [[ -n "${version}" ]]; then
+      BEE_VERSION="${version}"
+    fi
+  fi
+
+  if [[ -v BEE_VERSION ]]; then
+    IFS=$' \n\t'
+    BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
+  else
+    BEE_HOME="${BEE_SYSTEM_HOME}"
+  fi
 }
 bee_migration_0390
 
@@ -87,7 +114,6 @@ source "${HOME}/.beerc"
 # TODO: remove when expired (Dec 2020)
 bee_migration_0370() {
   if [[ -f bee.sh ]]; then
-    # log_warn "bee.sh is deprecated." "Please see CHANGELOG.md and apply the required actions!"
     source bee.sh
     BEE_PROJECT="${PROJECT}"
     BEE_RESOURCES="${RESOURCES:-${BEE_RESOURCES}}"
