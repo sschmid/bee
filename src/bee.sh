@@ -129,23 +129,23 @@ build_local_registry_path() {
   fi
 }
 
-BEE_REGISTRY_CACHES_RESULT=()
+REGISTRY_CACHES_RESULT=()
 resolve_registry_caches() {
-  BEE_REGISTRY_CACHES_RESULT=()
+  REGISTRY_CACHES_RESULT=()
   for url in "$@"; do
     build_local_registry_path "${url}"
     if [[ -n "${LOCAL_REGISTRY_PATH_RESULT}" ]]; then
-      BEE_REGISTRY_CACHES_RESULT+=("${BEE_REGISTRIES_HOME}/${LOCAL_REGISTRY_PATH_RESULT}")
+      REGISTRY_CACHES_RESULT+=("${BEE_REGISTRIES_HOME}/${LOCAL_REGISTRY_PATH_RESULT}")
     fi
   done
 }
 
-BEE_LINT_CACHE_RESULT=""
+LINT_CACHE_RESULT=""
 resolve_lint_cache() {
-  BEE_LINT_CACHE_RESULT=""
+  LINT_CACHE_RESULT=""
   build_local_registry_path "$1"
   if [[ -n "${LOCAL_REGISTRY_PATH_RESULT}" ]]; then
-    BEE_LINT_CACHE_RESULT="${BEE_LINT_HOME}/${LOCAL_REGISTRY_PATH_RESULT}"
+    LINT_CACHE_RESULT="${BEE_LINT_HOME}/${LOCAL_REGISTRY_PATH_RESULT}"
   fi
 }
 
@@ -153,20 +153,20 @@ bee_help_pull=(
   "pull | update all plugin registries"
   "pull <urls> | update plugin registries"
 )
-pull_cache=false
+PULL_CACHE=false
 pull() {
-  if [[ "${pull_cache}" == false ]]; then
-    pull_cache=true
+  if [[ "${PULL_CACHE}" == false ]]; then
+    PULL_CACHE=true
     log "Pulling registries"
     for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
       resolve_registry_caches "${url}"
-      if [[ -n "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
-        if [[ -d "${BEE_REGISTRY_CACHES_RESULT}" ]]; then
-          pushd "${BEE_REGISTRY_CACHES_RESULT}" > /dev/null
+      if [[ -n "${REGISTRY_CACHES_RESULT}" ]]; then
+        if [[ -d "${REGISTRY_CACHES_RESULT}" ]]; then
+          pushd "${REGISTRY_CACHES_RESULT}" > /dev/null
             git pull -q &
           popd > /dev/null
         else
-          git clone -q "${url}" "${BEE_REGISTRY_CACHES_RESULT}" &
+          git clone -q "${url}" "${REGISTRY_CACHES_RESULT}" &
         fi
       fi
     done
@@ -178,19 +178,19 @@ pull() {
 # plugins
 ################################################################################
 
-declare -A BEE_PLUGIN_SPECS_CACHE=()
-BEE_PLUGIN_SPECS_RESULT=()
+declare -A PLUGIN_SPECS_CACHE=()
+PLUGIN_SPECS_RESULT=()
 resolve_plugin_specs() {
-  BEE_PLUGIN_SPECS_RESULT=()
+  PLUGIN_SPECS_RESULT=()
   resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
   for plugin in "$@"; do
-    if [[ ! -v BEE_PLUGIN_SPECS_CACHE["${plugin}"] || "${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}" == false ]]; then
+    if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] || "${PLUGIN_SPECS_CACHE["${plugin}"]}" == false ]]; then
       local plugin_name="${plugin%:*}"
       local plugin_version="${plugin##*:}"
       local found=false
       if [[ "${plugin_name}" == "${plugin_version}" ]]; then
         # find latest
-        for cache in "${BEE_REGISTRY_CACHES_RESULT[@]}"; do
+        for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
           local plugin_path="${cache}/${plugin_name}"
           if [[ -d "${plugin_path}" ]]; then
             local versions=("${plugin_path}"/*/)
@@ -199,34 +199,34 @@ resolve_plugin_specs() {
               plugin_path="${plugin_path}/${plugin_version}/plugin.sh"
               if [[ -f "${plugin_path}" ]]; then
                 found=true
-                BEE_PLUGIN_SPECS_RESULT+=("${plugin_path}")
-                BEE_PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
-                BEE_PLUGIN_SPECS_CACHE["${plugin_name}:${plugin_version}"]="${plugin_path}"
+                PLUGIN_SPECS_RESULT+=("${plugin_path}")
+                PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
+                PLUGIN_SPECS_CACHE["${plugin_name}:${plugin_version}"]="${plugin_path}"
                 break
               fi
             fi
           fi
         done
       else
-        for cache in "${BEE_REGISTRY_CACHES_RESULT[@]}"; do
+        for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
           local plugin_path="${cache}/${plugin_name}/${plugin_version}/plugin.sh"
           if [[ -f "${plugin_path}" ]]; then
             found=true
-            BEE_PLUGIN_SPECS_RESULT+=("${plugin_path}")
-            BEE_PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
+            PLUGIN_SPECS_RESULT+=("${plugin_path}")
+            PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
             break
           fi
         done
       fi
 
       if [[ "${found}" == false ]]; then
-        if [[ ! -v BEE_PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
+        if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
           log_warn "Could not find plugin ${plugin}"
         fi
-        BEE_PLUGIN_SPECS_CACHE["${plugin}"]=false
+        PLUGIN_SPECS_CACHE["${plugin}"]=false
       fi
-    elif [[ "${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}" != false ]]; then
-      BEE_PLUGIN_SPECS_RESULT+=("${BEE_PLUGIN_SPECS_CACHE["${plugin}"]}")
+    elif [[ "${PLUGIN_SPECS_CACHE["${plugin}"]}" != false ]]; then
+      PLUGIN_SPECS_RESULT+=("${PLUGIN_SPECS_CACHE["${plugin}"]}")
     fi
   done
 }
@@ -245,8 +245,9 @@ unload_plugin_spec() {
 }
 
 bee_help_hash=("hash <path> | generate hash for a plugin")
-BEE_HASH_RESULT=""
+HASH_RESULT=""
 hash() {
+  HASH_RESULT=""
   local path="$1"
   local hashes=()
   pushd "${path}" > /dev/null
@@ -261,7 +262,7 @@ hash() {
   popd > /dev/null
   local all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
   echo "${all}"
-  BEE_HASH_RESULT="${all// */}"
+  HASH_RESULT="${all// */}"
 }
 
 lint_var() {
@@ -309,20 +310,20 @@ lint() {
         -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" && -n "${BEE_PLUGIN_SHA256}"
       ]]; then
     resolve_lint_cache "${BEE_PLUGIN_SOURCE}"
-    if [[ -n "${BEE_LINT_CACHE_RESULT}" ]]; then
-      if [[ -d "${BEE_LINT_CACHE_RESULT}" ]]; then
-        pushd "${BEE_LINT_CACHE_RESULT}" > /dev/null
+    if [[ -n "${LINT_CACHE_RESULT}" ]]; then
+      if [[ -d "${LINT_CACHE_RESULT}" ]]; then
+        pushd "${LINT_CACHE_RESULT}" > /dev/null
           job "BEE_PLUGIN_SOURCE" git fetch || true
         popd > /dev/null
       else
-        job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${BEE_LINT_CACHE_RESULT}" || true
+        job "BEE_PLUGIN_SOURCE" git clone "${BEE_PLUGIN_SOURCE}" "${LINT_CACHE_RESULT}" || true
       fi
-      if [[ -d "${BEE_LINT_CACHE_RESULT}" ]]; then
-        pushd "${BEE_LINT_CACHE_RESULT}" > /dev/null
+      if [[ -d "${LINT_CACHE_RESULT}" ]]; then
+        pushd "${LINT_CACHE_RESULT}" > /dev/null
           if git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
             hash . > /dev/null
-            lint_var_value BEE_PLUGIN_SHA256 "${BEE_HASH_RESULT}"
+            lint_var_value BEE_PLUGIN_SHA256 "${HASH_RESULT}"
           else
             echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
             echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_TAG failed)\033[0m"
@@ -345,7 +346,7 @@ lint() {
 bee_help_info=("info | show plugin spec info")
 info() {
   resolve_plugin_specs "$1"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     echo "from: | ${spec}
 last modified: | $(stat -f "%Sm" "${spec}")
@@ -367,26 +368,26 @@ bee_help_depstree=(
   "depstree | list dependencies hierarchy of enabled plugins"
   "depstree <plugins> | list dependencies hierarchy of plugins"
 )
-declare -A depstree_cache=()
-depstree_indent=""
+declare -A DEPSTREE_CACHE=()
+DEPSTREE_INDENT=""
 depstree() {
   resolve_plugin_specs ${@:-"${PLUGINS[@]}"}
-  local specs=("${BEE_PLUGIN_SPECS_RESULT[@]}")
+  local specs=("${PLUGIN_SPECS_RESULT[@]}")
   for spec in "${specs[@]}"; do
     source "${spec}"
-    echo "${depstree_indent}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-    if [[ ! -v depstree_cache["${spec}"] ]]; then
-      depstree_cache["${spec}"]=true
+    echo "${DEPSTREE_INDENT}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+    if [[ ! -v DEPSTREE_CACHE["${spec}"] ]]; then
+      DEPSTREE_CACHE["${spec}"]=true
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-        depstree_indent="${depstree_indent/'├'/'|'}"
-        depstree_indent="${depstree_indent//'─'/' '}├── "
+        DEPSTREE_INDENT="${DEPSTREE_INDENT/'├'/'|'}"
+        DEPSTREE_INDENT="${DEPSTREE_INDENT//'─'/' '}├── "
         local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
         unload_plugin_spec
         depstree "${dependencies[@]}"
-        if [[ "${#depstree_indent}" -ge 8 ]]; then
-          depstree_indent="${depstree_indent:0:-8}├── "
+        if [[ "${#DEPSTREE_INDENT}" -ge 8 ]]; then
+          DEPSTREE_INDENT="${DEPSTREE_INDENT:0:-8}├── "
         else
-          depstree_indent=""
+          DEPSTREE_INDENT=""
         fi
       else
         unload_plugin_spec
@@ -397,14 +398,14 @@ depstree() {
   done
 }
 
-declare -A deps_cache=()
+declare -A DEPS_CACHE=()
 DEPS_RESULT=()
 deps_recursive() {
   resolve_plugin_specs "$@"
-  local specs=("${BEE_PLUGIN_SPECS_RESULT[@]}")
+  local specs=("${PLUGIN_SPECS_RESULT[@]}")
   for spec in "${specs[@]}"; do
-    if [[ ! -v deps_cache["${spec}"] ]]; then
-      deps_cache["${spec}"]=true
+    if [[ ! -v DEPS_CACHE["${spec}"] ]]; then
+      DEPS_CACHE["${spec}"]=true
       source "${spec}"
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
         local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
@@ -422,20 +423,20 @@ PLUGINS_WITH_DEPENDENCIES_RESULT=()
 plugins_with_dependencies() {
   PLUGINS_WITH_DEPENDENCIES_RESULT=()
   resolve_plugin_specs "$@"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     PLUGINS_WITH_DEPENDENCIES_RESULT+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
     unload_plugin_spec
   done
 
-  deps_cache=()
+  DEPS_CACHE=()
   DEPS_RESULT=()
   deps_recursive "$@"
   if [[ "${#DEPS_RESULT[@]}" -gt 0 ]]; then
     DEPS_RESULT=($(echo "${DEPS_RESULT[*]}" | sort -u))
+    PLUGINS_WITH_DEPENDENCIES_RESULT+=("${DEPS_RESULT[@]}")
   fi
 
-  PLUGINS_WITH_DEPENDENCIES_RESULT+=("${DEPS_RESULT[@]}")
   if [[ ${#PLUGINS_WITH_DEPENDENCIES_RESULT[@]} -gt 0 ]]; then
     PLUGINS_WITH_DEPENDENCIES_RESULT=($(echo "${PLUGINS_WITH_DEPENDENCIES_RESULT[*]}" | sort -u))
   fi
@@ -445,28 +446,29 @@ bee_help_install=(
   "install | install all enabled plugins"
   "install <plugins> | install plugins"
 )
-declare -A install_cache=()
+
+declare -A INSTALL_CACHE=()
 install() {
   pull || true
   plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
   resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
-    if [[ ! -v install_cache["${spec}"] ]]; then
-      install_cache["${spec}"]=true
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
+    if [[ ! -v INSTALL_CACHE["${spec}"] ]]; then
+      INSTALL_CACHE["${spec}"]=true
       source "${spec}"
       local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       if [[ ! -d "${path}" ]]; then
         git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
         echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
         hash "${path}" > /dev/null
-        if [[ "${BEE_HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
           log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
           rm -rf "${path}"
         fi
       else
         echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
         hash "${path}" > /dev/null
-        if [[ "${BEE_HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
           log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
           "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
           "Consider deleting ${path} and install again."
@@ -479,7 +481,7 @@ install() {
 
 source_plugins() {
   resolve_plugin_specs "$@"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
     local plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
@@ -515,7 +517,7 @@ plugins() {
   if [[ "${show_all}" == false ]]; then
     plugins_with_dependencies "${PLUGINS[@]}"
     resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
-    for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+    for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${spec}"
       list+="${BEE_PLUGIN_NAME}"
       if [[ "${show_version}" == true ]]; then
@@ -529,12 +531,12 @@ plugins() {
     done
   else
     resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
-    for cache in "${BEE_REGISTRY_CACHES_RESULT[@]}"; do
+    for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
       local plugins=("${cache}"/*/)
       if [[ -d "${plugins}" ]]; then
         plugins=($(basename -a "${plugins[@]}"))
         resolve_plugin_specs "${plugins[@]}"
-        for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+        for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
           source "${spec}"
           list+="${BEE_PLUGIN_NAME}"
           if [[ "${show_version}" == true ]]; then
@@ -555,7 +557,7 @@ plugins() {
 bee_help_res=("res <plugins> | copy plugin resources into resources dir")
 res() {
   resolve_plugin_specs "$@"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     local resources_dir="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/resources"
     if [[ -d "${resources_dir}" ]]; then
@@ -632,7 +634,7 @@ new_plugin() {
   source_plugins "$@"
   local template=""
   resolve_plugin_specs "$@"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     local new_func="${BEE_PLUGIN_NAME}::_new"
     unload_plugin_spec
@@ -679,7 +681,7 @@ bee_help_changelog=(
 changelog() {
   if (( $# == 1 )); then
     resolve_plugin_specs "$1"
-    for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+    for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${spec}"
       local log="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/CHANGELOG.md"
       unload_plugin_spec
@@ -745,7 +747,7 @@ help_bee() {
 
 help_plugin() {
   resolve_plugin_specs "$1"
-  for spec in "${BEE_PLUGIN_SPECS_RESULT[@]}"; do
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
     local readme="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/README.md"
     unload_plugin_spec
