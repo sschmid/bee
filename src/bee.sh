@@ -363,40 +363,6 @@ dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
   done
 }
 
-bee_help_deps=(
-  "deps | list dependencies of enabled plugins"
-  "deps <plugins> | list dependencies of plugins"
-)
-declare -A deps_cache=()
-DEPS_RESULT=()
-deps() {
-  DEPS_RESULT=()
-  deps_cache=()
-  deps_recursive ${@:-"${PLUGINS[@]}"}
-  if [[ "${#DEPS_RESULT[@]}" -gt 0 ]]; then
-    DEPS_RESULT=($(echo "${DEPS_RESULT[*]}" | sort -u))
-  fi
-}
-
-deps_recursive() {
-  resolve_plugin_specs "$@"
-  local specs=("${BEE_PLUGIN_SPECS_RESULT[@]}")
-  for spec in "${specs[@]}"; do
-    if [[ ! -v deps_cache["${spec}"] ]]; then
-      deps_cache["${spec}"]=true
-      source "${spec}"
-      if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
-        unload_plugin_spec
-        DEPS_RESULT+=("${dependencies[@]}")
-        deps_recursive "${dependencies[@]}"
-      else
-        unload_plugin_spec
-      fi
-    fi
-  done
-}
-
 bee_help_depstree=(
   "depstree | list dependencies hierarchy of enabled plugins"
   "depstree <plugins> | list dependencies hierarchy of plugins"
@@ -431,6 +397,27 @@ depstree() {
   done
 }
 
+declare -A deps_cache=()
+DEPS_RESULT=()
+deps_recursive() {
+  resolve_plugin_specs "$@"
+  local specs=("${BEE_PLUGIN_SPECS_RESULT[@]}")
+  for spec in "${specs[@]}"; do
+    if [[ ! -v deps_cache["${spec}"] ]]; then
+      deps_cache["${spec}"]=true
+      source "${spec}"
+      if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
+        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+        unload_plugin_spec
+        DEPS_RESULT+=("${dependencies[@]}")
+        deps_recursive "${dependencies[@]}"
+      else
+        unload_plugin_spec
+      fi
+    fi
+  done
+}
+
 PLUGINS_WITH_DEPENDENCIES_RESULT=()
 plugins_with_dependencies() {
   PLUGINS_WITH_DEPENDENCIES_RESULT=()
@@ -440,7 +427,14 @@ plugins_with_dependencies() {
     PLUGINS_WITH_DEPENDENCIES_RESULT+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
     unload_plugin_spec
   done
-  deps "${plugins[@]}"
+
+  deps_cache=()
+  DEPS_RESULT=()
+  deps_recursive "$@"
+  if [[ "${#DEPS_RESULT[@]}" -gt 0 ]]; then
+    DEPS_RESULT=($(echo "${DEPS_RESULT[*]}" | sort -u))
+  fi
+
   PLUGINS_WITH_DEPENDENCIES_RESULT+=("${DEPS_RESULT[@]}")
   if [[ ${#PLUGINS_WITH_DEPENDENCIES_RESULT[@]} -gt 0 ]]; then
     PLUGINS_WITH_DEPENDENCIES_RESULT=($(echo "${PLUGINS_WITH_DEPENDENCIES_RESULT[*]}" | sort -u))
