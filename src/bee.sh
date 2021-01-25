@@ -633,6 +633,32 @@ changelog() {
   fi
 }
 
+bee_help_outdated=("outdated | list outdated plugin versions")
+outdated() {
+  pull || true
+  resolve_plugin_specs "${PLUGINS[@]}"
+  local specs=("${PLUGIN_SPECS_RESULT[@]}")
+  for spec in "${specs[@]}"; do
+    source "${spec}"
+    local plugin_name="${BEE_PLUGIN_NAME}"
+    local current_plugin_version_str="${BEE_PLUGIN_VERSION}"
+    local current_plugin_version=${current_plugin_version_str//./}
+    current_plugin_version="${current_plugin_version#0}"
+    unload_plugin_spec
+    resolve_plugin_specs "${plugin_name}"
+    for s in "${PLUGIN_SPECS_RESULT[@]}"; do
+      source "${s}"
+      local latest_plugin_version_str="${BEE_PLUGIN_VERSION}"
+      local latest_plugin_version=${latest_plugin_version_str//./}
+      latest_plugin_version="${latest_plugin_version#0}"
+      unload_plugin_spec
+      if (( latest_plugin_version > current_plugin_version )); then
+        echo "${plugin_name}:${current_plugin_version_str} => ${plugin_name}:${latest_plugin_version_str}"
+      fi
+    done
+  done
+}
+
 bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
 uninstall() {
   if (( $# == 0 )); then
