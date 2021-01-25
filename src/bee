@@ -140,7 +140,23 @@ else
   fi
 fi
 
+assert_min_bee_version() {
+  local system_version_str
+  system_version_str="$(cat "${BEE_SYSTEM_HOME}/version.txt")"
+  local system_version=${system_version_str//./}
+  system_version="${system_version#0}"
+
+  local version=${BEE_VERSION//./}
+  version="${version#0}"
+  if (( version > system_version )); then
+    log_error "The specified bee version (${BEE_VERSION}) is higher than the installed version (${system_version_str})!" \
+    "Please run 'bee update' to update bee to the latest version and try again."
+    exit 1
+  fi
+}
+
 if [[ -v BEE_VERSION ]]; then
+  assert_min_bee_version
   BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
   if [[ ! -d "${BEE_HOME}" ]]; then
     git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" git@github.com:sschmid/bee.git "${BEE_HOME}"
