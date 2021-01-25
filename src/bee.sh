@@ -485,7 +485,7 @@ source_plugins() {
   done
 }
 
-bee_help_plugins=("plugins [-a(ll) -v(ersion) -i(nfo)] | list all plugins")
+bee_help_plugins=("plugins [-a -v -i] | list (a)ll plugins with (v)ersion and (i)nfo")
 plugins() {
   local show_all=false
   local show_version=false
@@ -560,45 +560,6 @@ res() {
   done
 }
 
-# ################################################################################
-# # commands
-# ################################################################################
-
-builtin_commands() {
-  local commands=("$(compgen -v bee_help_)")
-  echo "${commands[@]//bee_help_/}"
-}
-
-bee_help_update=("update | update bee to the latest version")
-update() {
-  pushd "${BEE_SYSTEM_HOME}" > /dev/null
-    git pull -q
-    log "bee is up-to-date and ready to bzzzz"
-  popd > /dev/null
-}
-
-bee_help_version=("version | show the current bee version")
-version() {
-  local local_version
-  local_version="$(cat "${BEE_HOME}/version.txt")"
-  echo "${local_version}"
-  local remote_version
-  remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
-  if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
-    echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
-  fi
-}
-
-bee_help_wiki=("wiki | open wiki")
-wiki() {
-  open "https://github.com/sschmid/bee/wiki"
-}
-
-bee_help_donate=("donate | bee is free, but powered by your donations")
-donate() {
-  open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
-}
-
 new_bee() {
   if [[ -f .beerc ]]; then
     echo ".beerc already exists"
@@ -653,14 +614,6 @@ new() {
   fi
 }
 
-bee_help_commands=("commands [<search>] | list commands of enabled plugins")
-commands() {
-  compgen -A function \
-    | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
-    | grep --color=never -- "$*" \
-    || true
-}
-
 bee_help_changelog=("changelog [<plugin>] | show changelog")
 changelog() {
   if (( $# == 1 )); then
@@ -680,26 +633,104 @@ changelog() {
   fi
 }
 
-bee_help_uninstall=("uninstall | uninstall bee from your system")
+bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
 uninstall() {
-  if [[ "${BEE_SILENT}" == false ]]; then
-    echo "You're about to uninstall bee from your system."
-    echo "Do you want to continue? (yes | no)"
-    read -r a
-    if [[ "${a}" == "yes" ]]; then
+  if (( $# == 0 )); then
+    if [[ "${BEE_SILENT}" == false ]]; then
+      echo "You're about to uninstall bee from your system."
+      echo "Do you want to continue? (yes | no)"
+      read -r a
+      if [[ "${a}" == "yes" ]]; then
+        rm -f /usr/local/bin/bee
+        rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
+        rm -rf /usr/local/opt/bee/
+        rm -rf "${HOME}/.bee/caches"
+        echo "Uninstalled bee"
+        echo "Thanks for using bee"
+      fi
+    else
       rm -f /usr/local/bin/bee
       rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
       rm -rf /usr/local/opt/bee/
       rm -rf "${HOME}/.bee/caches"
-      echo "Uninstalled bee"
-      echo "Thanks for using bee"
     fi
   else
-    rm -f /usr/local/bin/bee
-    rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
-    rm -rf /usr/local/opt/bee/
-    rm -rf "${HOME}/.bee/caches"
+    local uninstall_deps=false
+    while getopts ":d" arg; do
+      case $arg in
+        d) uninstall_deps=true ;;
+        *)
+          log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+          exit 1
+          ;;
+      esac
+    done
+    shift $(( OPTIND - 1 ))
+
+    if [[ "${uninstall_deps}" == false ]]; then
+      resolve_plugin_specs "$@"
+    else
+      plugins_with_dependencies "$@"
+      resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
+    fi
+
+    for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
+      source "${spec}"
+      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+      if [[ -d "${path}" ]]; then
+        echo "Uninstalling ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+        rm -rf "${path}"
+      fi
+      unload_plugin_spec
+    done
   fi
+}
+
+# ################################################################################
+# # commands
+# ################################################################################
+
+builtin_commands() {
+  local commands=("$(compgen -v bee_help_)")
+  echo "${commands[@]//bee_help_/}"
+}
+
+bee_help_update=("update | update bee to the latest version")
+update() {
+  pushd "${BEE_SYSTEM_HOME}" > /dev/null
+    git pull -q
+    log "bee is up-to-date and ready to bzzzz"
+  popd > /dev/null
+}
+
+bee_help_version=("version | show the current bee version")
+version() {
+  local local_version
+  local_version="$(cat "${BEE_HOME}/version.txt")"
+  echo "${local_version}"
+  local remote_version
+  remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt)"
+  if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
+    echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
+  fi
+}
+
+bee_help_wiki=("wiki | open wiki")
+wiki() {
+  open "https://github.com/sschmid/bee/wiki"
+}
+
+bee_help_donate=("donate | bee is free, but powered by your donations")
+donate() {
+  open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
+}
+
+bee_help_commands=("commands [<search>] | list commands of enabled plugins")
+commands() {
+  compgen -A function \
+    | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
+    | grep --color=never -- "$*" \
+    || true
 }
 
 ################################################################################
