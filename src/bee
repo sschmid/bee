@@ -106,7 +106,7 @@ bee_migration_0390
 if [[ ! -f "${HOME}/.beerc" ]]; then
   echo '#!/usr/bin/env bash
 BEE_PLUGIN_REGISTRIES=(
-  git@github.com:sschmid/bee-plugins.git
+  git@github.com:sschmid/bee-hub.git
 )' > "${HOME}/.beerc"
 fi
 source "${HOME}/.beerc"
