@@ -353,18 +353,18 @@ info() {
   resolve_plugin_specs "$1"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    echo "from: | ${spec}
-last modified: | $(stat -f "%Sm" "${spec}")
-name: | ${BEE_PLUGIN_NAME}
-version: | ${BEE_PLUGIN_VERSION}
-license: | ${BEE_PLUGIN_LICENSE}
-homepage: | ${BEE_PLUGIN_HOMEPAGE}
-authors: | ${BEE_PLUGIN_AUTHORS}
-summary: | ${BEE_PLUGIN_INFO}
-source: | ${BEE_PLUGIN_SOURCE}
-tag: | ${BEE_PLUGIN_TAG}
-sha256: | ${BEE_PLUGIN_SHA256}
-dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
+    echo "from:             ${spec}
+last modified:    $(date -r "${spec}")
+name:             ${BEE_PLUGIN_NAME}
+version:          ${BEE_PLUGIN_VERSION}
+license:          ${BEE_PLUGIN_LICENSE}
+homepage:         ${BEE_PLUGIN_HOMEPAGE}
+authors:          ${BEE_PLUGIN_AUTHORS}
+summary:          ${BEE_PLUGIN_INFO}
+source:           ${BEE_PLUGIN_SOURCE}
+tag:              ${BEE_PLUGIN_TAG}
+sha256:           ${BEE_PLUGIN_SHA256}
+dependencies:     ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}"
     unload_plugin_spec
   done
 }
