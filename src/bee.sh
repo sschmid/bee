@@ -197,7 +197,10 @@ resolve_plugin_specs() {
           if [[ -d "${plugin_path}" ]]; then
             local versions=("${plugin_path}"/*/)
             if [[ -d "${versions}" ]]; then
-              plugin_version="$(basename -a "${versions[@]}" | sort -V | tail -n 1)"
+              for ((i=0; i<${#versions[@]}; i++)); do
+                versions[i]="$(basename ${versions[i]})"
+              done
+              plugin_version="$(echo "${versions[*]}" | sort -V | tail -n 1)"
               plugin_path="${plugin_path}/${plugin_version}/plugin.sh"
               if [[ -f "${plugin_path}" ]]; then
                 found=true
@@ -529,7 +532,9 @@ plugins() {
     for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
       local plugins=("${cache}"/*/)
       if [[ -d "${plugins}" ]]; then
-        plugins=($(basename -a "${plugins[@]}"))
+        for ((i=0; i<${#plugins[@]}; i++)); do
+          plugins[i]="$(basename ${plugins[i]})"
+        done
         resolve_plugin_specs "${plugins[@]}"
         for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
           source "${spec}"
