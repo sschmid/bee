@@ -198,7 +198,7 @@ resolve_plugin_specs() {
             local versions=("${plugin_path}"/*/)
             if [[ -d "${versions}" ]]; then
               for ((i=0; i<${#versions[@]}; i++)); do
-                versions[i]="$(basename ${versions[i]})"
+                versions[i]="$(basename "${versions[i]}")"
               done
               plugin_version="$(echo "${versions[*]}" | sort -V | tail -n 1)"
               plugin_path="${plugin_path}/${plugin_version}/plugin.sh"
@@ -259,13 +259,15 @@ hash() {
     shopt -s globstar
     for p in **/*; do
       if [[ -f "$p" ]]; then
-        local hash="$(shasum -a 256 "$p")"
+        local hash
+        hash="$(shasum -a 256 "$p")"
         echo "${hash}"
         hashes+=("${hash// */}")
       fi
     done
   popd > /dev/null
-  local all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
+  local all
+  all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
   echo "${all}"
   HASH_RESULT="${all// */}"
 }
@@ -533,7 +535,7 @@ plugins() {
       local plugins=("${cache}"/*/)
       if [[ -d "${plugins}" ]]; then
         for ((i=0; i<${#plugins[@]}; i++)); do
-          plugins[i]="$(basename ${plugins[i]})"
+          plugins[i]="$(basename "${plugins[i]}")"
         done
         resolve_plugin_specs "${plugins[@]}"
         for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
