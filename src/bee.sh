@@ -63,7 +63,7 @@ complete_job() {
   echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
 }
 
-bee_help_job=("job <title> <command> | run a command as a job")
+bee_help_job=("job <title> <command>" "run a command as a job")
 job() {
   BEE_JOB_RUNNING=true
   BEE_JOB_TITLE="$1"
@@ -149,7 +149,7 @@ resolve_lint_cache() {
   fi
 }
 
-bee_help_pull=("pull [<urls>] | update plugin registries")
+bee_help_pull=("pull [<urls>]" "update plugin registries")
 PULL_CACHE=false
 pull() {
   if [[ "${PULL_CACHE}" == false ]]; then
@@ -241,7 +241,7 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
-bee_help_hash=("hash <path> | generate hash for a plugin")
+bee_help_hash=("hash <path>" "generate hash for a plugin")
 HASH_RESULT=""
 hash() {
   HASH_RESULT=""
@@ -282,7 +282,7 @@ lint_var_value() {
   fi
 }
 
-bee_help_lint=("lint <spec> | validate plugin specification")
+bee_help_lint=("lint <spec>" "validate plugin specification")
 lint() {
   local spec="$1"
   source "${spec}"
@@ -340,7 +340,7 @@ lint() {
   unload_plugin_spec
 }
 
-bee_help_info=("info <plugin> | show plugin spec info")
+bee_help_info=("info <plugin>" "show plugin spec info")
 info() {
   resolve_plugin_specs "$1"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
@@ -361,7 +361,7 @@ dependencies: | ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}" | column -s '|' -t
   done
 }
 
-bee_help_depstree=("depstree [<plugins>] | list dependencies hierarchy")
+bee_help_depstree=("depstree [<plugins>]" "list dependencies hierarchy")
 declare -A DEPSTREE_CACHE=()
 DEPSTREE_INDENT=""
 depstree() {
@@ -436,7 +436,7 @@ plugins_with_dependencies() {
   fi
 }
 
-bee_help_install=("install [<plugins>] | install plugins")
+bee_help_install=("install [<plugins>]" "install plugins")
 declare -A INSTALL_CACHE=()
 install() {
   pull || true
@@ -485,7 +485,7 @@ source_plugins() {
   done
 }
 
-bee_help_plugins=("plugins [-a -v -i] | list (a)ll plugins with (v)ersion and (i)nfo")
+bee_help_plugins=("plugins [-a -v -i]" "list (a)ll plugins with (v)ersion and (i)nfo")
 plugins() {
   local show_all=false
   local show_version=false
@@ -544,7 +544,7 @@ plugins() {
   echo -ne "${list}" | column -s '|' -t
 }
 
-bee_help_res=("res <plugins> | copy plugin resources into resources dir")
+bee_help_res=("res <plugins>" "copy plugin resources into resources dir")
 res() {
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
@@ -602,10 +602,8 @@ new_plugin() {
   fi
 }
 
-bee_help_new=(
-  "new | create new .beerc"
-  "new <plugins> | show code templates for plugins"
-)
+bee_help_new=("new" "create new .beerc")
+bee_help_new_plugin=("new <plugins>" "show code templates for plugins")
 new() {
   if (( $# == 0 )); then
     new_bee
@@ -614,7 +612,7 @@ new() {
   fi
 }
 
-bee_help_changelog=("changelog [<plugin>] | show changelog")
+bee_help_changelog=("changelog [<plugin>]" "show changelog")
 changelog() {
   if (( $# == 1 )); then
     resolve_plugin_specs "$1"
@@ -633,7 +631,7 @@ changelog() {
   fi
 }
 
-bee_help_outdated=("outdated | list outdated plugin versions")
+bee_help_outdated=("outdated" "list outdated plugin versions")
 outdated() {
   pull || true
   resolve_plugin_specs "${PLUGINS[@]}"
@@ -659,7 +657,7 @@ outdated() {
   done
 }
 
-bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
+bee_help_uninstall=("uninstall [-d <plugins>]" "uninstall bee or plugins with (d)ependencies")
 uninstall() {
   if (( $# == 0 )); then
     if [[ "${BEE_SILENT}" == false ]]; then
@@ -721,7 +719,7 @@ builtin_commands() {
   echo "${commands[@]//bee_help_/}"
 }
 
-bee_help_update=("update | update bee to the latest version")
+bee_help_update=("update" "update bee to the latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull -q
@@ -729,7 +727,7 @@ update() {
   popd > /dev/null
 }
 
-bee_help_version=("version | show the current bee version")
+bee_help_version=("version" "show the current bee version")
 version() {
   local local_version
   local_version="$(cat "${BEE_HOME}/version.txt")"
@@ -741,17 +739,17 @@ version() {
   fi
 }
 
-bee_help_wiki=("wiki | open wiki")
+bee_help_wiki=("wiki" "open wiki")
 wiki() {
   open "https://github.com/sschmid/bee/wiki"
 }
 
-bee_help_donate=("donate | bee is free, but powered by your donations")
+bee_help_donate=("donate" "bee is free, but powered by your donations")
 donate() {
   open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
-bee_help_commands=("commands [<search>] | list commands of enabled plugins")
+bee_help_commands=("commands [<search>]" "list commands of enabled plugins")
 commands() {
   compgen -A function \
     | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
@@ -764,13 +762,16 @@ commands() {
 ################################################################################
 
 help_bee() {
-  local commands=()
-  for help_var in $(compgen -v bee_help_); do
+  local help_entries=($(compgen -v bee_help_))
+  local pad=0
+  for help_var in "${help_entries[@]}"; do
     help_var+="[@]"
-    for entry in "${!help_var}"; do
-      commands+=("  ${entry}")
-    done
+    local entry=("${!help_var}")
+    if (( "${#entry}" > pad )); then
+      pad="${#entry}"
+    fi
   done
+  (( pad += 4 ))
 
   local local_version
   local_version="$(cat "${BEE_HOME}/version.txt")"
@@ -778,7 +779,10 @@ help_bee() {
   echo ""
   echo "usage: bee [-s(ilent) -v(erbose)] <command> [<args>]"
   echo ""
-  echo -e "${commands[*]}" | column -s '|' -t
+  for help_var in "${help_entries[@]}"; do
+    help_var+="[@]"
+    printf "  %-${pad}s%s\n" "${!help_var}"
+  done
   echo ""
   echo "EXAMPLE"
   echo "  bee slack::message"
@@ -800,7 +804,7 @@ help_plugin() {
   done
 }
 
-bee_help_help=("help [<plugin>] | show usage")
+bee_help_help=("help [<plugin>]" "show usage")
 help() {
   if (( $# == 1 )); then
     help_plugin "$@"
