@@ -115,8 +115,13 @@ build_local_registry_path() {
   local url="$1"
   LOCAL_REGISTRY_PATH_RESULT=""
   if [[ ! -v LOCAL_REGISTRY_PATH_CACHE["${url}"] ]]; then
-    if [[ "${url}" =~ ^git@.* ]]; then
-      LOCAL_REGISTRY_PATH_RESULT="$(dirname "${url#git@}")/$(basename "${url}" .git)"
+    if [[ "${url}" =~ ^https:// ]]; then
+      LOCAL_REGISTRY_PATH_RESULT="$(dirname "${url#https://}")/$(basename "${url}" .git)"
+      LOCAL_REGISTRY_PATH_CACHE["${url}"]="${LOCAL_REGISTRY_PATH_RESULT}"
+    elif [[ "${url}" =~ ^git@ ]]; then
+      local path="${url#git@}"
+      path="${path//://}"
+      LOCAL_REGISTRY_PATH_RESULT="$(dirname "${path}")/$(basename "${url}" .git)"
       LOCAL_REGISTRY_PATH_CACHE["${url}"]="${LOCAL_REGISTRY_PATH_RESULT}"
     elif [[ "${url}" =~ ^file:// ]]; then
       LOCAL_REGISTRY_PATH_RESULT="$(basename "${url}")"
