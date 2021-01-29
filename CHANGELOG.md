@@ -281,6 +281,7 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - `ios::archive`: quiet xcodebuild
 - `ios::export`: quiet xcodebuild
 - Fix printing files in plugins folder
+
 ## [0.2.0] - 2018-10-01
 ### Added
 - bee bash completion
