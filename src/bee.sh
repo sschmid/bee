@@ -180,6 +180,19 @@ pull() {
 # plugins
 ################################################################################
 
+BEE_GIT_MODE="https"
+BEE_PLUGIN_SOURCE=""
+
+set_plugin_source() {
+  if [[ "${BEE_GIT_MODE}" == "https" ]]; then
+    BEE_PLUGIN_SOURCE="${BEE_PLUGIN_SOURCE_HTTPS}"
+  elif [[ "${BEE_GIT_MODE}" == "ssh" ]]; then
+    BEE_PLUGIN_SOURCE="${BEE_PLUGIN_SOURCE_SSH}"
+  else
+    BEE_PLUGIN_SOURCE=""
+  fi
+}
+
 declare -A PLUGIN_SPECS_CACHE=()
 PLUGIN_SPECS_RESULT=()
 resolve_plugin_specs() {
@@ -243,6 +256,8 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_HOMEPAGE
   unset BEE_PLUGIN_AUTHORS
   unset BEE_PLUGIN_INFO
+  unset BEE_PLUGIN_SOURCE_HTTPS
+  unset BEE_PLUGIN_SOURCE_SSH
   unset BEE_PLUGIN_SOURCE
   unset BEE_PLUGIN_TAG
   unset BEE_PLUGIN_SHA256
@@ -296,6 +311,7 @@ bee_help_lint=("lint <spec> | validate plugin specification")
 lint() {
   local spec="$1"
   source "${spec}"
+  set_plugin_source
 
   lint_var_value BEE_PLUGIN_NAME "$(basename "$(dirname "$(dirname "${spec}")")")"
   lint_var_value BEE_PLUGIN_VERSION "$(basename "$(dirname "${spec}")")"
@@ -303,7 +319,8 @@ lint() {
   lint_var BEE_PLUGIN_HOMEPAGE
   lint_var BEE_PLUGIN_AUTHORS
   lint_var BEE_PLUGIN_INFO
-  lint_var BEE_PLUGIN_SOURCE
+  lint_var BEE_PLUGIN_SOURCE_HTTPS
+  lint_var BEE_PLUGIN_SOURCE_SSH
   lint_var BEE_PLUGIN_TAG
   lint_var BEE_PLUGIN_SHA256
 
@@ -355,18 +372,19 @@ info() {
   resolve_plugin_specs "$1"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    echo "from:             ${spec}
-last modified:    $(date -r "${spec}")
-name:             ${BEE_PLUGIN_NAME}
-version:          ${BEE_PLUGIN_VERSION}
-license:          ${BEE_PLUGIN_LICENSE}
-homepage:         ${BEE_PLUGIN_HOMEPAGE}
-authors:          ${BEE_PLUGIN_AUTHORS}
-summary:          ${BEE_PLUGIN_INFO}
-source:           ${BEE_PLUGIN_SOURCE}
-tag:              ${BEE_PLUGIN_TAG}
-sha256:           ${BEE_PLUGIN_SHA256}
-dependencies:     ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}"
+    echo "from:              ${spec}
+last modified:     $(date -r "${spec}")
+name:              ${BEE_PLUGIN_NAME}
+version:           ${BEE_PLUGIN_VERSION}
+license:           ${BEE_PLUGIN_LICENSE}
+homepage:          ${BEE_PLUGIN_HOMEPAGE}
+authors:           ${BEE_PLUGIN_AUTHORS}
+summary:           ${BEE_PLUGIN_INFO}
+source (https):    ${BEE_PLUGIN_SOURCE_HTTPS}
+source (ssh):      ${BEE_PLUGIN_SOURCE_SSH}
+tag:               ${BEE_PLUGIN_TAG}
+sha256:            ${BEE_PLUGIN_SHA256}
+dependencies:      ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}"
     unload_plugin_spec
   done
 }
@@ -456,6 +474,7 @@ install() {
     if [[ ! -v INSTALL_CACHE["${spec}"] ]]; then
       INSTALL_CACHE["${spec}"]=true
       source "${spec}"
+      set_plugin_source
       local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       if [[ ! -d "${path}" ]]; then
         git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
@@ -788,7 +807,7 @@ help_bee() {
   local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "🐝 bee ${local_version} - plugin-based bash automation"
   echo ""
-  echo "usage: bee [-s(ilent) -v(erbose)] <command> [<args>]"
+  echo "usage: bee [-s(ilent) -v(erbose) -p(ssh)] <command> [<args>]"
   echo ""
   echo -e "${commands[*]}" | column -s '|' -t
   echo ""
@@ -881,10 +900,11 @@ main() {
     source_plugins "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
   fi
 
-  while getopts ":sv" arg; do
+  while getopts ":svp" arg; do
     case $arg in
       s) BEE_SILENT=true ;;
       v) set -x ;;
+      p) BEE_GIT_MODE="ssh" ;;
       *)
         log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
         exit 1
