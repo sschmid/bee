@@ -41,7 +41,7 @@ bee_spinner() {
 }
 
 start_spinner() {
-  tput civis
+  tput civis &> /dev/null || true
   stty -echo
   bee_spinner &
   BEE_SPINNER_PID=$!
@@ -54,7 +54,7 @@ stop_spinner() {
   fi
   if [[ -t 1 ]]; then
     stty echo
-    tput cnorm
+    tput cnorm &> /dev/null || true
   fi
 }
 
