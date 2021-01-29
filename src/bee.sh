@@ -467,6 +467,18 @@ plugins_with_dependencies() {
 bee_help_install=("install [<plugins>] | install plugins")
 declare -A INSTALL_CACHE=()
 install() {
+  local force=false
+  while getopts ":f" arg; do
+    case $arg in
+      f) force=true ;;
+      *)
+        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+        exit 1
+        ;;
+    esac
+  done
+  shift $(( OPTIND - 1 ))
+
   pull || true
   plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
   resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
@@ -481,8 +493,14 @@ install() {
         echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
         hash "${path}" > /dev/null
         if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
-          rm -rf "${path}"
+          if [[ "${force}" == false ]]; then
+            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
+            rm -rf "${path}"
+          else
+            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
+            "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
+            "Consider deleting ${path} and install again."
+          fi
         fi
       else
         echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
