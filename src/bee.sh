@@ -913,11 +913,6 @@ main() {
   trap bee_term TERM
   trap bee_exit EXIT
 
-  if [[ -v PLUGINS ]]; then
-    plugins_with_dependencies "${PLUGINS[@]}"
-    source_plugins "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
-  fi
-
   while getopts ":svp" arg; do
     case $arg in
       s) BEE_SILENT=true ;;
@@ -930,6 +925,11 @@ main() {
     esac
   done
   shift $(( OPTIND - 1 ))
+
+  if [[ -v PLUGINS ]]; then
+    plugins_with_dependencies "${PLUGINS[@]}"
+    source_plugins "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
+  fi
 
   if (( $# > 0 )); then
     local cmd=("$@")
