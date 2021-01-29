@@ -792,12 +792,20 @@ version() {
 
 bee_help_wiki=("wiki | open wiki")
 wiki() {
-  open "https://github.com/sschmid/bee/wiki"
+  if command -v open; then
+    open "https://github.com/sschmid/bee/wiki"
+  else
+    echo "https://github.com/sschmid/bee/wiki"
+  fi
 }
 
 bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
-  open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
+  if command -v open; then
+    open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
+  else
+    echo "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
+  fi
 }
 
 bee_help_commands=("commands [<search>] | list commands of enabled plugins")
