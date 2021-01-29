@@ -159,7 +159,7 @@ if [[ -v BEE_VERSION ]]; then
   assert_min_bee_version
   BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
   if [[ ! -d "${BEE_HOME}" ]]; then
-    git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" git@github.com:sschmid/bee.git "${BEE_HOME}"
+    git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" https://github.com/sschmid/bee.git "${BEE_HOME}"
   fi
 else
   BEE_HOME="${BEE_SYSTEM_HOME}"
