@@ -264,6 +264,14 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
+sha256() {
+  if command -v shasum &> /dev/null; then
+    shasum -a 256 "$@"
+  else
+    sha256sum "$@"
+  fi
+}
+
 bee_help_hash=("hash <path> | generate hash for a plugin")
 HASH_RESULT=""
 hash() {
@@ -275,14 +283,14 @@ hash() {
     for p in **/*; do
       if [[ -f "$p" ]]; then
         local hash
-        hash="$(shasum -a 256 "$p")"
+        hash="$(sha256 "$p")"
         echo "${hash}"
         hashes+=("${hash// */}")
       fi
     done
   popd > /dev/null
   local all
-  all="$(echo "${hashes[*]}" | sort | shasum -a 256)"
+  all="$(echo "${hashes[*]}" | sort | sha256)"
   echo "${all}"
   HASH_RESULT="${all// */}"
 }
@@ -792,7 +800,7 @@ version() {
 
 bee_help_wiki=("wiki | open wiki")
 wiki() {
-  if command -v open; then
+  if command -v open &> /dev/null; then
     open "https://github.com/sschmid/bee/wiki"
   else
     echo "https://github.com/sschmid/bee/wiki"
@@ -801,7 +809,7 @@ wiki() {
 
 bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
-  if command -v open; then
+  if command -v open &> /dev/null; then
     open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
   else
     echo "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
