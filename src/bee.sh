@@ -1,6 +1,37 @@
 #!/usr/bin/env bash
 
 # ################################################################################
+# # compatibility
+# ################################################################################
+
+sha256_compat() {
+  if command -v shasum &> /dev/null; then
+    shasum -a 256 "$@"
+  elif command -v sha256sum &> /dev/null; then
+    sha256sum "$@"
+  else
+    echo "🔴 ${FUNCNAME[0]}: couldn't find a command to do sha 256" >&2
+    exit 1
+  fi
+}
+
+pbcopy_compat(){
+  if command -v pbcopy &> /dev/null; then
+    pbcopy "$@"
+  else
+    return 1
+  fi
+}
+
+open_compat(){
+  if command -v open &> /dev/null; then
+    open "$@"
+  else
+    echo "$@"
+  fi
+}
+
+# ################################################################################
 # # utils
 # ################################################################################
 
@@ -13,10 +44,10 @@ assert_file() {
 }
 
 require() {
-  command -v "$1" &> /dev/null || {
+  if ! command -v "$1" &> /dev/null; then
     log_error "$1 not found! $1 is required."
     exit 1
-  }
+  fi
 }
 
 ################################################################################
@@ -264,14 +295,6 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
-sha256() {
-  if command -v shasum &> /dev/null; then
-    shasum -a 256 "$@"
-  else
-    sha256sum "$@"
-  fi
-}
-
 bee_help_hash=("hash <path> | generate hash for a plugin")
 HASH_RESULT=""
 hash() {
@@ -283,14 +306,14 @@ hash() {
     for p in **/*; do
       if [[ -f "$p" ]]; then
         local hash
-        hash="$(sha256 "$p")"
+        hash="$(sha256_compat "$p")"
         echo "${hash}"
         hashes+=("${hash// */}")
       fi
     done
   popd > /dev/null
   local all
-  all="$(echo "${hashes[*]}" | sort | sha256)"
+  all="$(echo "${hashes[*]}" | sort | sha256_compat)"
   echo "${all}"
   HASH_RESULT="${all// */}"
 }
@@ -480,7 +503,7 @@ install() {
     case $arg in
       f) force=true ;;
       *)
-        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
@@ -551,7 +574,7 @@ plugins() {
       v) show_version=true ;;
       i) show_info=true ;;
       *)
-        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
@@ -647,15 +670,14 @@ new_plugin() {
     local new_func="${BEE_PLUGIN_NAME}::_new"
     unload_plugin_spec
     if [[ $(command -v "${new_func}") == "${new_func}" ]]; then
-      template+="$("${new_func}")\n\n"
+      template+="\n$("${new_func}")\n"
     fi
   done
   if [[ -n "${template}" ]]; then
-    echo -e "${template}"
-    command -v pbcopy &> /dev/null && {
-      echo -e "${template}" | pbcopy
-      echo "(template has been copied to clipboard, please paste into your .beerc)"
-    }
+    echo -ne "${template/'\n'/}"
+    if echo -ne "${template/'\n'/}" | pbcopy_compat; then
+      echo -e "\n(template has been copied to clipboard, please paste into your .beerc)"
+    fi
   fi
 }
 
@@ -743,7 +765,7 @@ uninstall() {
       case $arg in
         d) uninstall_deps=true ;;
         *)
-          log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+          log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
           exit 1
           ;;
       esac
@@ -800,20 +822,12 @@ version() {
 
 bee_help_wiki=("wiki | open wiki")
 wiki() {
-  if command -v open &> /dev/null; then
-    open "https://github.com/sschmid/bee/wiki"
-  else
-    echo "https://github.com/sschmid/bee/wiki"
-  fi
+  open_compat "https://github.com/sschmid/bee/wiki"
 }
 
 bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
-  if command -v open &> /dev/null; then
-    open "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
-  else
-    echo "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
-  fi
+  open_compat "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
 bee_help_commands=("commands [<search>] | list commands of enabled plugins")
@@ -935,7 +949,7 @@ main() {
       v) set -x ;;
       p) BEE_GIT_MODE="ssh" ;;
       *)
-        log_error "${FUNCNAME[0]} Invalid option -${OPTARG}"
+        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
         exit 1
         ;;
     esac
