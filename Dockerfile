@@ -5,6 +5,6 @@ COPY etc/ etc/
 COPY CHANGELOG.md LICENSE.txt version.txt ./
 COPY .bashrc /root/
 RUN ln -s /usr/local/opt/bee/src/bee /usr/local/bin/bee
-RUN apk add --no-cache util-linux git
+RUN apk add --no-cache git
 WORKDIR /project
 CMD ["bash"]
