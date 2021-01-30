@@ -111,7 +111,7 @@ job() {
 
   if [[ -v BEE_PROJECT ]]; then
     mkdir -p "${BEE_RESOURCES}/logs"
-    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-$(uuidgen).log"
+    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-${RANDOM}${RANDOM}.log"
   else
     BEE_JOB_LOGFILE=/dev/null
   fi
