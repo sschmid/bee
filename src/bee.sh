@@ -792,7 +792,7 @@ version() {
   local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "${local_version}"
   local remote_version
-  remote_version="$(curl -fsL https://raw.githubusercontent.com/sschmid/bee/master/version.txt &> /dev/null)"
+  remote_version="$(wget -qO- https://raw.githubusercontent.com/sschmid/bee/master/version.txt 2> /dev/null)"
   if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
     echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
