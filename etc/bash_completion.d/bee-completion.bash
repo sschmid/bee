@@ -35,7 +35,7 @@ _bee_completions() {
         if [[ $COMP_CWORD == 2 ]]; then
           local plugins="$(bee plugins -a)"
           for plugin in ${plugins}; do
-            if [[ "${firstWord}" == "${plugin}" ]]; then
+            if [[ "${firstWord}" == "${plugin}" || "${firstWord%:*}" == "${plugin}" ]]; then
               COMPREPLY=($(compgen -W "$(bee "${firstWord}" commands)" "${lastWord}"))
               return
             fi
