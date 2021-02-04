@@ -506,18 +506,6 @@ plugins_with_dependencies() {
 bee_help_install=("install [<plugins>]|install plugins")
 declare -A INSTALL_CACHE=()
 install() {
-  local force=false
-  while getopts ":f" arg; do
-    case $arg in
-      f) force=true ;;
-      *)
-        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
-        exit 1
-        ;;
-    esac
-  done
-  shift $(( OPTIND - 1 ))
-
   pull || true
   plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
   resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
@@ -532,7 +520,7 @@ install() {
         echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
         hash "${path}" > /dev/null
         if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-          if [[ "${force}" == false ]]; then
+          if [[ "${BEE_FORCE}" == false ]]; then
             log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
             rm -rf "${path}"
           else
@@ -907,6 +895,7 @@ BEE_CANCELED=false
 BEE_MODE_INTERNAL=0
 BEE_MODE_COMMAND=1
 BEE_MODE=${BEE_MODE_INTERNAL}
+BEE_FORCE=false
 T=${SECONDS}
 
 bee_int() {
@@ -951,10 +940,11 @@ main() {
   trap bee_term TERM
   trap bee_exit EXIT
 
-  while getopts ":svp" arg; do
+  while getopts ":svfp" arg; do
     case $arg in
       s) BEE_SILENT=true ;;
       v) set -x ;;
+      f) BEE_FORCE=true ;;
       p) BEE_GIT_MODE="ssh" ;;
       *)
         log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
