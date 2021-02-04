@@ -385,6 +385,7 @@ lint() {
         pushd "${LINT_CACHE_RESULT}" > /dev/null
           if git show-ref -q --tags --verify -- "refs/tags/${BEE_PLUGIN_TAG}"; then
             echo -e "\033[32mBEE_PLUGIN_TAG ${BEE_PLUGIN_TAG} ✔︎\033[0m"
+            git checkout -q "${BEE_PLUGIN_TAG}"
             hash . > /dev/null
             lint_var_value BEE_PLUGIN_SHA256 "${HASH_RESULT}"
           else
