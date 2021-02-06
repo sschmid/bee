@@ -589,7 +589,7 @@ plugins() {
         list+=":${BEE_PLUGIN_VERSION}"
       fi
       if [[ "${show_info}" == true ]]; then
-        list+= "|${BEE_PLUGIN_INFO}"
+        list+="|${BEE_PLUGIN_INFO}"
       fi
       list+="\n"
       unload_plugin_spec
