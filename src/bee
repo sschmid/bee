@@ -88,7 +88,8 @@ bee_migration_0390() {
   if [[ -f bee.sh ]]; then
     BEE_VERSION="0.36.0"
   else
-    local version="$(bee_migration_0390_sub)"
+    local version
+    version="$(bee_migration_0390_sub)"
     if [[ -n "${version}" ]]; then
       BEE_VERSION="${version}"
     fi
