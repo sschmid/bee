@@ -407,14 +407,27 @@ lint() {
   unload_plugin_spec
 }
 
-bee_help_info=("info <plugin> | show plugin spec info")
+bee_help_info=("info [-r] <plugin> | show (r)aw plugin spec info")
 info() {
+  local show_raw=false
+  while getopts ":r" arg; do
+    case $arg in
+      r) show_raw=true ;;
+      *)
+        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
+        exit 1
+        ;;
+    esac
+  done
+  shift $(( OPTIND - 1 ))
+
   resolve_plugin_specs "$1"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
-    source "${spec}"
-    echo "from:              ${spec}
-last modified:     $(date -r "${spec}")
-name:              ${BEE_PLUGIN_NAME}
+      echo "from:              ${spec}"
+      echo "last modified:     $(date -r "${spec}")"
+    if [[ "${show_raw}" == false ]]; then
+      source "${spec}"
+      echo "name:              ${BEE_PLUGIN_NAME}
 version:           ${BEE_PLUGIN_VERSION}
 license:           ${BEE_PLUGIN_LICENSE}
 homepage:          ${BEE_PLUGIN_HOMEPAGE}
@@ -425,7 +438,10 @@ source (ssh):      ${BEE_PLUGIN_SOURCE_SSH}
 tag:               ${BEE_PLUGIN_TAG}
 sha256:            ${BEE_PLUGIN_SHA256}
 dependencies:      ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}"
-    unload_plugin_spec
+      unload_plugin_spec
+    else
+      cat "${spec}"
+    fi
   done
 }
 
