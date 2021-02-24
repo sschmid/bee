@@ -145,6 +145,7 @@ job_exit() {
 ################################################################################
 
 BEE_REGISTRIES_HOME="${HOME}/.bee/caches/registries"
+BEE_REGISTRIES_TS="${HOME}/.bee/caches/registries/.ts"
 BEE_PLUGINS_HOME="${HOME}/.bee/caches/plugins"
 BEE_LINT_HOME="${HOME}/.bee/caches/lint"
 
@@ -194,10 +195,18 @@ resolve_lint_cache() {
 }
 
 bee_help_pull=("pull [<urls>] | update plugin registries")
-PULL_CACHE=false
 pull() {
-  if [[ "${PULL_CACHE}" == false ]]; then
-    PULL_CACHE=true
+  local ts
+  if [[ "${BEE_FORCE}" == true ]]; then
+    ts=0
+  elif [[ -f "${BEE_REGISTRIES_TS}" ]]; then
+    ts="$(cat "${BEE_REGISTRIES_TS}")"
+  else
+    ts=0
+  fi
+  local now
+  now=$(date +"%s")
+  if (( now - ts > 300 )); then
     log "Pulling registries"
     for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
       resolve_registry_caches "${url}"
@@ -212,6 +221,7 @@ pull() {
       fi
     done
     wait
+    echo "${now}" > "${BEE_REGISTRIES_TS}"
   fi
 }
 
