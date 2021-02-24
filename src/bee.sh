@@ -556,6 +556,26 @@ install() {
   done
 }
 
+bee_help_reinstall=("reinstall [<plugins>] | reinstall plugins")
+reinstall() {
+  plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
+  resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
+  for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
+    if [[ ! -v INSTALL_CACHE["${spec}"] ]]; then
+      INSTALL_CACHE["${spec}"]=true
+      source "${spec}"
+      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+      if [[ -d "${path}" ]]; then
+        echo "Uninstalling ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+        rm -rf "${path}"
+      fi
+      unload_plugin_spec
+    fi
+  done
+  INSTALL_CACHE=()
+  install "$@"
+}
+
 source_plugins() {
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
@@ -739,10 +759,16 @@ outdated() {
       local latest_plugin_version_str="${BEE_PLUGIN_VERSION}"
       local latest_plugin_version=${latest_plugin_version_str//./}
       latest_plugin_version="${latest_plugin_version#0}"
-      unload_plugin_spec
       if (( latest_plugin_version > current_plugin_version )); then
         echo "${plugin_name}:${current_plugin_version_str} => ${plugin_name}:${latest_plugin_version_str}"
+      else
+        local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+        hash "${path}" > /dev/null
+        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+          echo "${plugin_name}:${current_plugin_version_str} => SHA256 mismatch! Use 'bee reinstall ${plugin_name}:${current_plugin_version_str}' to reinstall"
+        fi
       fi
+      unload_plugin_spec
     done
   done
 }
