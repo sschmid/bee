@@ -541,29 +541,32 @@ install() {
       INSTALL_CACHE["${spec}"]=true
       source "${spec}"
       set_plugin_source
-      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
-      if [[ ! -d "${path}" ]]; then
-        git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
-        echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
-      else
-        echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-      fi
-      hash "${path}" > /dev/null
-      if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-        if [[ "${BEE_FORCE}" == false ]]; then
-          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}" \
-            "Use 'bee -f install' to install anyway and proceed at your own risk." \
-            "Use 'bee info -r ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}' to inspect the plugin spec."
-          rm -rf "${path}"
+      {
+        local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+        if [[ ! -d "${path}" ]]; then
+          git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
+          echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
         else
-          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
-          "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
-          "Consider deleting ${path} and install again."
+          echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
         fi
-      fi
+        hash "${path}" > /dev/null
+        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+          if [[ "${BEE_FORCE}" == false ]]; then
+            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}" \
+              "Use 'bee -f install' to install anyway and proceed at your own risk." \
+              "Use 'bee info -r ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}' to inspect the plugin spec."
+            rm -rf "${path}"
+          else
+            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
+            "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
+            "Consider deleting ${path} and install again."
+          fi
+        fi
+      } &
       unload_plugin_spec
     fi
   done
+  wait
 }
 
 bee_help_reinstall=("reinstall [<plugins>] | reinstall plugins")
