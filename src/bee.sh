@@ -535,21 +535,17 @@ install() {
       if [[ ! -d "${path}" ]]; then
         git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
         echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
-        hash "${path}" > /dev/null
-        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-          if [[ "${BEE_FORCE}" == false ]]; then
-            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}"
-            rm -rf "${path}"
-          else
-            log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
-            "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
-            "Consider deleting ${path} and install again."
-          fi
-        fi
       else
         echo "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-        hash "${path}" > /dev/null
-        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+      fi
+      hash "${path}" > /dev/null
+      if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+        if [[ "${BEE_FORCE}" == false ]]; then
+          log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}" \
+            "Use 'bee -f install' to install anyway and proceed at your own risk." \
+            "Use 'bee info -r ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}' to inspect the plugin spec."
+          rm -rf "${path}"
+        else
           log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." \
           "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
           "Consider deleting ${path} and install again."
@@ -868,7 +864,7 @@ help_bee() {
   local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "🐝 bee ${local_version} - plugin-based bash automation"
   echo ""
-  echo "usage: bee [-s(ilent) -v(erbose) -p(ssh)] <command> [<args>]"
+  echo "usage: bee [-s(ilent) -v(erbose) -f(orce) -p(ssh)] <command> [<args>]"
   echo ""
   echo -e "${commands[*]}" | column_compat
   echo ""
