@@ -15,21 +15,17 @@ IFS=$'\n\t'
 # log
 ################################################################################
 
-BEE_SILENT=false
+declare -i BEE_SILENT=0
 
 log() {
-  if [[ "${BEE_SILENT}" == false ]]; then
-    echo "🐝 $*"
-  fi
+  [[ ${BEE_SILENT} -eq 0 ]] && echo "🐝 $*"
 }
 
 log_info() {
-  if [[ "${BEE_SILENT}" == false ]]; then
-    echo ""
-    echo "################################################################################"
-    echo "🐝 $*"
-    echo "################################################################################"
-  fi
+  [[ ${BEE_SILENT} -ne 0 ]] && return
+  echo "################################################################################"
+  echo "🐝 $*"
+  echo "################################################################################"
 }
 
 log_warn() {
@@ -134,20 +130,17 @@ bee_migration_0380
 
 if [[ -v BEE_RC ]]; then
   source "${BEE_RC}"
-else
-  if [[ -f .beerc ]]; then
-    BEE_RC=.beerc
-    source "${BEE_RC}"
-  fi
+elif [[ -f .beerc ]]; then
+  BEE_RC=.beerc
+  source "${BEE_RC}"
 fi
 
 assert_min_bee_version() {
-  local system_version_str
+  local system_version_str system_version version
   system_version_str="$(cat "${BEE_SYSTEM_HOME}/version.txt")"
-  local system_version=${system_version_str//./}
+  system_version=${system_version_str//./}
   system_version="${system_version#0}"
-
-  local version=${BEE_VERSION//./}
+  version=${BEE_VERSION//./}
   version="${version#0}"
   if (( version > system_version )); then
     log_error "The specified bee version (${BEE_VERSION}) is higher than the installed version (${system_version_str})!" \
@@ -159,9 +152,8 @@ assert_min_bee_version() {
 if [[ -v BEE_VERSION ]]; then
   assert_min_bee_version
   BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
-  if [[ ! -d "${BEE_HOME}" ]]; then
+  [[ ! -d "${BEE_HOME}" ]] &&
     git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" https://github.com/sschmid/bee.git "${BEE_HOME}"
-  fi
 else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi

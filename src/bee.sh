@@ -789,7 +789,7 @@ outdated() {
 bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
 uninstall() {
   if (( $# == 0 )); then
-    if [[ "${BEE_SILENT}" == false ]]; then
+    if [[ ${BEE_SILENT} -eq 0 ]]; then
       echo "You're about to uninstall bee from your system."
       echo "Do you want to continue? (yes | no)"
       read -r a
@@ -908,8 +908,8 @@ help_bee() {
   echo -e "${commands[*]}" | column_compat
   echo ""
   echo "EXAMPLE"
-  echo "  bee slack::message"
   echo "  bee version::bump_minor"
+  echo "  bee unity::execute_method Build"
   echo "  bee ios::upload"
 }
 
@@ -978,7 +978,7 @@ bee_exit() {
   for t in "${BEE_EXIT_TRAPS[@]}"; do
     "$t"
   done
-  if [[ "${BEE_SILENT}" == false ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
+  if [[ ${BEE_SILENT} -eq 0 ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
     if (( exit_code == 0 )) && [[ "${BEE_CANCELED}" == false ]]; then
       log "bzzzz ($(( SECONDS - T )) seconds)"
     else
@@ -994,7 +994,7 @@ main() {
 
   while getopts ":svfp" arg; do
     case $arg in
-      s) BEE_SILENT=true ;;
+      s) BEE_SILENT=1 ;;
       v) set -x ;;
       f) BEE_FORCE=true ;;
       p) BEE_GIT_MODE="ssh" ;;
