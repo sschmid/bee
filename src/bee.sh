@@ -62,11 +62,11 @@ require() {
 # job
 ################################################################################
 
-BEE_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
+declare -a BEE_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
 BEE_SPINNER_INTERVAL=0.1
 
-BEE_SPINNER_PID=0
-BEE_JOB_RUNNING=false
+declare -i BEE_SPINNER_PID=0
+declare -i BEE_JOB_RUNNING=0
 BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
@@ -87,7 +87,7 @@ start_spinner() {
 }
 
 stop_spinner() {
-  if (( BEE_SPINNER_PID != 0 )); then
+  if [[ ${BEE_SPINNER_PID} -ne 0 ]]; then
     kill ${BEE_SPINNER_PID} || true
     BEE_SPINNER_PID=0
   fi
@@ -102,9 +102,9 @@ complete_job() {
   echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
 }
 
-bee_help_job=("job <title> <command> | run a command as a job")
+declare -a bee_help_job=("job <title> <command> | run a command as a job")
 job() {
-  BEE_JOB_RUNNING=true
+  BEE_JOB_RUNNING=1
   BEE_JOB_TITLE="$1"
   shift
   start_spinner
@@ -119,7 +119,7 @@ job() {
   "$@" &> "${BEE_JOB_LOGFILE}"
 
   complete_job
-  BEE_JOB_RUNNING=false
+  BEE_JOB_RUNNING=0
 }
 
 job_int() {
@@ -133,8 +133,8 @@ job_term() {
 }
 
 job_exit() {
-  local exit_code=$1
-  if (( exit_code != 0 )); then
+  local -i exit_code=$1
+  if [[ ${exit_code} -ne 0 ]]; then
     stop_spinner
     echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"
   fi
@@ -174,7 +174,7 @@ build_local_registry_path() {
   fi
 }
 
-REGISTRY_CACHES_RESULT=()
+declare -a REGISTRY_CACHES_RESULT=()
 resolve_registry_caches() {
   REGISTRY_CACHES_RESULT=()
   for url in "$@"; do
@@ -194,18 +194,13 @@ resolve_lint_cache() {
   fi
 }
 
-bee_help_pull=("pull [<urls>] | update plugin registries")
+declare -a bee_help_pull=("pull [<urls>] | update plugin registries")
 pull() {
-  local ts
-  if [[ "${BEE_FORCE}" == true ]]; then
-    ts=0
-  elif [[ -f "${BEE_REGISTRIES_TS}" ]]; then
-    ts="$(cat "${BEE_REGISTRIES_TS}")"
-  else
-    ts=0
-  fi
-  local now
+  local -i ts=0 now
   now=$(date +"%s")
+  if [[ ${BEE_FORCE} -eq 0 && -f "${BEE_REGISTRIES_TS}" ]]; then
+    ts=$(cat "${BEE_REGISTRIES_TS}")
+  fi
   if (( now - ts > 300 )); then
     log "Pulling registries"
     for url in "${@:-"${BEE_PLUGIN_REGISTRIES[@]}"}"; do
@@ -243,21 +238,24 @@ set_plugin_source() {
 }
 
 declare -A PLUGIN_SPECS_CACHE=()
-PLUGIN_SPECS_RESULT=()
+declare -a PLUGIN_SPECS_RESULT=()
 resolve_plugin_specs() {
   PLUGIN_SPECS_RESULT=()
   resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
+  local plugin_name plugin_version plugin_path
+  local -a versions
+  local -i found=0
   for plugin in "$@"; do
-    if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] || "${PLUGIN_SPECS_CACHE["${plugin}"]}" == false ]]; then
-      local plugin_name="${plugin%:*}"
-      local plugin_version="${plugin##*:}"
-      local found=false
+    if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] || "${PLUGIN_SPECS_CACHE["${plugin}"]}" == "false" ]]; then
+      plugin_name="${plugin%:*}"
+      plugin_version="${plugin##*:}"
+      found=0
       if [[ "${plugin_name}" == "${plugin_version}" ]]; then
         # find latest
         for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
-          local plugin_path="${cache}/${plugin_name}"
+          plugin_path="${cache}/${plugin_name}"
           if [[ -d "${plugin_path}" ]]; then
-            local versions=("${plugin_path}"/*/)
+            versions=("${plugin_path}"/*/)
             if [[ -d "${versions}" ]]; then
               for ((i=0; i<${#versions[@]}; i++)); do
                 versions[i]="$(basename "${versions[i]}")"
@@ -265,7 +263,7 @@ resolve_plugin_specs() {
               plugin_version="$(echo "${versions[*]}" | sort -V | tail -n 1)"
               plugin_path="${plugin_path}/${plugin_version}/plugin.sh"
               if [[ -f "${plugin_path}" ]]; then
-                found=true
+                found=1
                 PLUGIN_SPECS_RESULT+=("${plugin_path}")
                 PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
                 PLUGIN_SPECS_CACHE["${plugin_name}:${plugin_version}"]="${plugin_path}"
@@ -276,9 +274,9 @@ resolve_plugin_specs() {
         done
       else
         for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
-          local plugin_path="${cache}/${plugin_name}/${plugin_version}/plugin.sh"
+          plugin_path="${cache}/${plugin_name}/${plugin_version}/plugin.sh"
           if [[ -f "${plugin_path}" ]]; then
-            found=true
+            found=1
             PLUGIN_SPECS_RESULT+=("${plugin_path}")
             PLUGIN_SPECS_CACHE["${plugin}"]="${plugin_path}"
             break
@@ -286,13 +284,13 @@ resolve_plugin_specs() {
         done
       fi
 
-      if [[ "${found}" == false ]]; then
+      if [[ ${found} -eq 0 ]]; then
         if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
           log_warn "Could not find plugin ${plugin}"
         fi
-        PLUGIN_SPECS_CACHE["${plugin}"]=false
+        PLUGIN_SPECS_CACHE["${plugin}"]="false"
       fi
-    elif [[ "${PLUGIN_SPECS_CACHE["${plugin}"]}" != false ]]; then
+    elif [[ "${PLUGIN_SPECS_CACHE["${plugin}"]}" != "false" ]]; then
       PLUGIN_SPECS_RESULT+=("${PLUGIN_SPECS_CACHE["${plugin}"]}")
     fi
   done
@@ -313,35 +311,35 @@ unload_plugin_spec() {
   unset BEE_PLUGIN_DEPENDENCIES
 }
 
-bee_help_hash=("hash <path> | generate hash for a plugin")
+declare -a bee_help_hash=("hash <path> | generate hash for a plugin")
 HASH_RESULT=""
 hash() {
   HASH_RESULT=""
-  local path="$1"
-  local hashes=()
+  local path="$1" file_hash all
+  local -a hashes=()
   pushd "${path}" > /dev/null
     shopt -s globstar
-    for p in **/*; do
-      if [[ -f "$p" ]]; then
-        local hash
-        hash="$(sha256_compat "$p")"
-        echo "${hash}"
-        hashes+=("${hash// */}")
+    for f in **/*; do
+      if [[ -f "$f" ]]; then
+        file_hash="$(sha256_compat "$f")"
+        echo "${file_hash}"
+        hashes+=("${file_hash// */}")
       fi
     done
   popd > /dev/null
-  local all
   all="$(echo "${hashes[*]}" | sort | sha256_compat)"
   echo "${all}"
   HASH_RESULT="${all// */}"
 }
 
 lint_var() {
-  if [[ ! -v ${1} || -z "${!1}" ]]; then
-    echo -e "\033[31m${1} is required\033[0m"
-  else
-    echo -e "\033[32m${1} ✔︎\033[0m"
-  fi
+  for var in "$@"; do
+    if [[ ! -v ${var} || -z "${!var}" ]]; then
+      echo -e "\033[31m${var} is required\033[0m"
+    else
+      echo -e "\033[32m${var} ✔︎\033[0m"
+    fi
+  done
 }
 
 lint_var_value() {
@@ -356,7 +354,7 @@ lint_var_value() {
   fi
 }
 
-bee_help_lint=("lint <spec> | validate plugin specification")
+declare -a bee_help_lint=("lint <spec> | validate plugin specification")
 lint() {
   local spec="$1"
   source "${spec}"
@@ -364,14 +362,7 @@ lint() {
 
   lint_var_value BEE_PLUGIN_NAME "$(basename "$(dirname "$(dirname "${spec}")")")"
   lint_var_value BEE_PLUGIN_VERSION "$(basename "$(dirname "${spec}")")"
-  lint_var BEE_PLUGIN_LICENSE
-  lint_var BEE_PLUGIN_HOMEPAGE
-  lint_var BEE_PLUGIN_AUTHORS
-  lint_var BEE_PLUGIN_INFO
-  lint_var BEE_PLUGIN_SOURCE_HTTPS
-  lint_var BEE_PLUGIN_SOURCE_SSH
-  lint_var BEE_PLUGIN_TAG
-  lint_var BEE_PLUGIN_SHA256
+  lint_var BEE_PLUGIN_LICENSE BEE_PLUGIN_HOMEPAGE BEE_PLUGIN_AUTHORS BEE_PLUGIN_INFO BEE_PLUGIN_SOURCE_HTTPS BEE_PLUGIN_SOURCE_SSH BEE_PLUGIN_TAG BEE_PLUGIN_SHA256
 
   if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
     echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[*]} ✔︎\033[0m"
@@ -381,7 +372,8 @@ lint() {
 
   if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -v BEE_PLUGIN_SHA256 &&
         -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" && -n "${BEE_PLUGIN_SHA256}"
-      ]]; then
+      ]]
+  then
     resolve_lint_cache "${BEE_PLUGIN_SOURCE}"
     if [[ -n "${LINT_CACHE_RESULT}" ]]; then
       if [[ -d "${LINT_CACHE_RESULT}" ]]; then
@@ -417,12 +409,12 @@ lint() {
   unload_plugin_spec
 }
 
-bee_help_info=("info [-r] <plugin> | show (r)aw plugin spec info")
+declare -a bee_help_info=("info [-r] <plugin> | show (r)aw plugin spec info")
 info() {
-  local show_raw=false
+  local -i show_raw=0
   while getopts ":r" arg; do
     case $arg in
-      r) show_raw=true ;;
+      r) show_raw=1 ;;
       *)
         log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
         exit 1
@@ -435,7 +427,7 @@ info() {
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       echo "from:              ${spec}"
       echo "last modified:     $(date -r "${spec}")"
-    if [[ "${show_raw}" == false ]]; then
+    if [[ ${show_raw} -eq 0 ]]; then
       source "${spec}"
       echo "name:              ${BEE_PLUGIN_NAME}
 version:           ${BEE_PLUGIN_VERSION}
@@ -455,21 +447,21 @@ dependencies:      ${BEE_PLUGIN_DEPENDENCIES[@]:-"none"}"
   done
 }
 
-bee_help_depstree=("depstree [<plugins>] | list dependencies hierarchy")
+declare -a bee_help_depstree=("depstree [<plugins>] | list dependencies hierarchy")
 declare -A DEPSTREE_CACHE=()
 DEPSTREE_INDENT=""
 depstree() {
   resolve_plugin_specs ${@:-"${PLUGINS[@]}"}
-  local specs=("${PLUGIN_SPECS_RESULT[@]}")
+  local -a specs=("${PLUGIN_SPECS_RESULT[@]}") dependencies
   for spec in "${specs[@]}"; do
     source "${spec}"
     echo "${DEPSTREE_INDENT}${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
     if [[ ! -v DEPSTREE_CACHE["${spec}"] ]]; then
-      DEPSTREE_CACHE["${spec}"]=true
+      DEPSTREE_CACHE["${spec}"]=1
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
         DEPSTREE_INDENT="${DEPSTREE_INDENT/'├'/'|'}"
         DEPSTREE_INDENT="${DEPSTREE_INDENT//'─'/' '}├── "
-        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+        dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
         unload_plugin_spec
         depstree "${dependencies[@]}"
         if [[ "${#DEPSTREE_INDENT}" -ge 8 ]]; then
@@ -487,16 +479,16 @@ depstree() {
 }
 
 declare -A DEPS_CACHE=()
-DEPS_RESULT=()
+declare -a DEPS_RESULT=()
 deps_recursive() {
   resolve_plugin_specs "$@"
-  local specs=("${PLUGIN_SPECS_RESULT[@]}")
+  local -a specs=("${PLUGIN_SPECS_RESULT[@]}") dependencies
   for spec in "${specs[@]}"; do
     if [[ ! -v DEPS_CACHE["${spec}"] ]]; then
-      DEPS_CACHE["${spec}"]=true
+      DEPS_CACHE["${spec}"]=1
       source "${spec}"
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-        local dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
+        dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
         unload_plugin_spec
         DEPS_RESULT+=("${dependencies[@]}")
         deps_recursive "${dependencies[@]}"
@@ -507,7 +499,7 @@ deps_recursive() {
   done
 }
 
-PLUGINS_WITH_DEPENDENCIES_RESULT=()
+declare -a PLUGINS_WITH_DEPENDENCIES_RESULT=()
 plugins_with_dependencies() {
   PLUGINS_WITH_DEPENDENCIES_RESULT=()
   resolve_plugin_specs "$@"
@@ -530,19 +522,20 @@ plugins_with_dependencies() {
   fi
 }
 
-bee_help_install=("install [<plugins>] | install plugins")
+declare -a bee_help_install=("install [<plugins>] | install plugins")
 declare -A INSTALL_CACHE=()
 install() {
   pull || true
+  local path
   plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
   resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     if [[ ! -v INSTALL_CACHE["${spec}"] ]]; then
-      INSTALL_CACHE["${spec}"]=true
+      INSTALL_CACHE["${spec}"]=1
       source "${spec}"
       set_plugin_source
+      path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       {
-        local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
         if [[ ! -d "${path}" ]]; then
           git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_PLUGIN_TAG}" "${BEE_PLUGIN_SOURCE}" "${path}"
           echo -e "\033[32m${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} ✔︎\033[0m"
@@ -551,7 +544,7 @@ install() {
         fi
         hash "${path}" > /dev/null
         if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-          if [[ "${BEE_FORCE}" == false ]]; then
+          if [[ ${BEE_FORCE} -eq 0 ]]; then
             log_warn "${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION} SHA256 mismatch." "Deleting ${path}" \
               "Use 'bee -f install' to install anyway and proceed at your own risk." \
               "Use 'bee info -r ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}' to inspect the plugin spec."
@@ -569,15 +562,16 @@ install() {
   wait
 }
 
-bee_help_reinstall=("reinstall [<plugins>] | reinstall plugins")
+declare -a bee_help_reinstall=("reinstall [<plugins>] | reinstall plugins")
 reinstall() {
+  local path
   plugins_with_dependencies ${@:-"${PLUGINS[@]}"}
   resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     if [[ ! -v INSTALL_CACHE["${spec}"] ]]; then
-      INSTALL_CACHE["${spec}"]=true
+      INSTALL_CACHE["${spec}"]=1
       source "${spec}"
-      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+      path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       if [[ -d "${path}" ]]; then
         echo "Uninstalling ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
         rm -rf "${path}"
@@ -590,31 +584,26 @@ reinstall() {
 }
 
 source_plugins() {
+  local path plugin
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
-    local plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+    path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
+    plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
     unload_plugin_spec
-    if [[ ! -f "${path}" ]]; then
-      install "${plugin}"
-    fi
-    if [[ -f "${path}" ]]; then
-      source "${path}"
-    fi
+    [[ ! -f "${path}" ]] && install "${plugin}"
+    [[ -f "${path}" ]] && source "${path}"
   done
 }
 
-bee_help_plugins=("plugins [-a -v -i] | list (a)ll plugins with (v)ersion and (i)nfo")
+declare -a bee_help_plugins=("plugins [-a -v -i] | list (a)ll plugins with (v)ersion and (i)nfo")
 plugins() {
-  local show_all=false
-  local show_version=false
-  local show_info=false
+  local -i show_all=0 show_version=0 show_info=0
   while getopts ":avi" arg; do
     case $arg in
-      a) show_all=true ;;
-      v) show_version=true ;;
-      i) show_info=true ;;
+      a) show_all=1 ;;
+      v) show_version=1 ;;
+      i) show_info=1 ;;
       *)
         log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
         exit 1
@@ -624,25 +613,22 @@ plugins() {
   shift $(( OPTIND - 1 ))
 
   local list=""
-  if [[ "${show_all}" == false ]]; then
+  local -a plugins
+  if [[ ${show_all} -eq 0 ]]; then
     plugins_with_dependencies "${PLUGINS[@]}"
     resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
     for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${spec}"
       list+="${BEE_PLUGIN_NAME}"
-      if [[ "${show_version}" == true ]]; then
-        list+=":${BEE_PLUGIN_VERSION}"
-      fi
-      if [[ "${show_info}" == true ]]; then
-        list+=" | ${BEE_PLUGIN_INFO}"
-      fi
+      [[ ${show_version} -ne 0 ]] && list+=":${BEE_PLUGIN_VERSION}"
+      [[ ${show_info} -ne 0 ]] && list+=" | ${BEE_PLUGIN_INFO}"
       list+="\n"
       unload_plugin_spec
     done
   else
     resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
     for cache in "${REGISTRY_CACHES_RESULT[@]}"; do
-      local plugins=("${cache}"/*/)
+      plugins=("${cache}"/*/)
       if [[ -d "${plugins}" ]]; then
         for ((i=0; i<${#plugins[@]}; i++)); do
           plugins[i]="$(basename "${plugins[i]}")"
@@ -651,12 +637,8 @@ plugins() {
         for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
           source "${spec}"
           list+="${BEE_PLUGIN_NAME}"
-          if [[ "${show_version}" == true ]]; then
-            list+=":${BEE_PLUGIN_VERSION}"
-          fi
-          if [[ "${show_info}" == true ]]; then
-            list+=" | ${BEE_PLUGIN_INFO}"
-          fi
+          [[ ${show_version} -ne 0 ]] && list+=":${BEE_PLUGIN_VERSION}"
+          [[ ${show_info} -ne 0 ]] && list+=" | ${BEE_PLUGIN_INFO}"
           list+="\n"
           unload_plugin_spec
         done
@@ -666,14 +648,15 @@ plugins() {
   echo -ne "${list}" | column_compat
 }
 
-bee_help_res=("res <plugins> | copy plugin resources into resources dir")
+declare -a bee_help_res=("res <plugins> | copy plugin resources into resources dir")
 res() {
+  local resources_dir target_dir
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    local resources_dir="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/resources"
+    resources_dir="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/resources"
     if [[ -d "${resources_dir}" ]]; then
-      local target_dir="${BEE_RESOURCES}/${BEE_PLUGIN_NAME}"
+      target_dir="${BEE_RESOURCES}/${BEE_PLUGIN_NAME}"
       echo "Copying resources into ${target_dir}"
       mkdir -p "${target_dir}"
       cp -r "${resources_dir}/". "${target_dir}/"
@@ -705,11 +688,11 @@ new_bee() {
 
 new_plugin() {
   source_plugins "$@"
-  local template=""
+  local template="" new_func
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    local new_func="${BEE_PLUGIN_NAME}::_new"
+    new_func="${BEE_PLUGIN_NAME}::_new"
     unload_plugin_spec
     if [[ $(command -v "${new_func}") == "${new_func}" ]]; then
       template+="\n$("${new_func}")\n"
@@ -723,25 +706,26 @@ new_plugin() {
   fi
 }
 
-bee_help_new=(
+declare -a bee_help_new=(
   "new | create new .beerc"
   "new <plugins> | show code templates for plugins"
 )
 new() {
-  if (( $# == 0 )); then
+  if [[ $# -eq 0 ]]; then
     new_bee
   else
     new_plugin "$@"
   fi
 }
 
-bee_help_changelog=("changelog [<plugin>] | show changelog")
+declare -a bee_help_changelog=("changelog [<plugin>] | show changelog")
 changelog() {
-  if (( $# == 1 )); then
+  if [[ $# -eq 1 ]]; then
+    local log
     resolve_plugin_specs "$1"
     for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${spec}"
-      local log="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/CHANGELOG.md"
+      log="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/CHANGELOG.md"
       unload_plugin_spec
       if [[ -f "${log}" ]]; then
         less "${log}"
@@ -754,41 +738,45 @@ changelog() {
   fi
 }
 
-bee_help_outdated=("outdated | list outdated plugin versions")
+declare -a bee_help_outdated=("outdated | list outdated plugin versions")
 outdated() {
   pull || true
   resolve_plugin_specs "${PLUGINS[@]}"
-  local specs=("${PLUGIN_SPECS_RESULT[@]}")
+  local -a specs=("${PLUGIN_SPECS_RESULT[@]}")
+  local plugin_name current_plugin_version_str current_plugin_version latest_plugin_version_str latest_plugin_version path
   for spec in "${specs[@]}"; do
     source "${spec}"
-    local plugin_name="${BEE_PLUGIN_NAME}"
-    local current_plugin_version_str="${BEE_PLUGIN_VERSION}"
-    local current_plugin_version=${current_plugin_version_str//./}
+    plugin_name="${BEE_PLUGIN_NAME}"
+    current_plugin_version_str="${BEE_PLUGIN_VERSION}"
+    current_plugin_version=${current_plugin_version_str//./}
     current_plugin_version="${current_plugin_version#0}"
     unload_plugin_spec
     resolve_plugin_specs "${plugin_name}"
     for s in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${s}"
-      local latest_plugin_version_str="${BEE_PLUGIN_VERSION}"
-      local latest_plugin_version=${latest_plugin_version_str//./}
+      latest_plugin_version_str="${BEE_PLUGIN_VERSION}"
+      latest_plugin_version=${latest_plugin_version_str//./}
       latest_plugin_version="${latest_plugin_version#0}"
-      if (( latest_plugin_version > current_plugin_version )); then
+      if [[ ${latest_plugin_version} -gt ${current_plugin_version} ]]; then
         echo "${plugin_name}:${current_plugin_version_str} => ${plugin_name}:${latest_plugin_version_str}"
       else
-        local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
-        hash "${path}" > /dev/null
-        if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
-          echo "${plugin_name}:${current_plugin_version_str} => SHA256 mismatch! Use 'bee reinstall ${plugin_name}:${current_plugin_version_str}' to reinstall"
-        fi
+        path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+        {
+          hash "${path}" > /dev/null
+          if [[ "${HASH_RESULT}" != "${BEE_PLUGIN_SHA256}" ]]; then
+            echo "${plugin_name}:${current_plugin_version_str} => SHA256 mismatch! Use 'bee reinstall ${plugin_name}:${current_plugin_version_str}' to reinstall"
+          fi
+        } &
       fi
       unload_plugin_spec
     done
   done
+  wait
 }
 
-bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
+declare -a bee_help_uninstall=("uninstall [-d <plugins>] | uninstall bee or plugins with (d)ependencies")
 uninstall() {
-  if (( $# == 0 )); then
+  if [[ $# -eq 0 ]]; then
     if [[ ${BEE_SILENT} -eq 0 ]]; then
       echo "You're about to uninstall bee from your system."
       echo "Do you want to continue? (yes | no)"
@@ -808,10 +796,10 @@ uninstall() {
       rm -rf "${HOME}/.bee/caches"
     fi
   else
-    local uninstall_deps=false
+    local -i uninstall_deps=0
     while getopts ":d" arg; do
       case $arg in
-        d) uninstall_deps=true ;;
+        d) uninstall_deps=1 ;;
         *)
           log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
           exit 1
@@ -820,16 +808,17 @@ uninstall() {
     done
     shift $(( OPTIND - 1 ))
 
-    if [[ "${uninstall_deps}" == false ]]; then
+    if [[ ${uninstall_deps} -eq 0 ]]; then
       resolve_plugin_specs "$@"
     else
       plugins_with_dependencies "$@"
       resolve_plugin_specs "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
     fi
 
+    local path
     for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
       source "${spec}"
-      local path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
+      path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}"
       if [[ -d "${path}" ]]; then
         echo "Uninstalling ${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
         rm -rf "${path}"
@@ -844,11 +833,11 @@ uninstall() {
 # ################################################################################
 
 builtin_commands() {
-  local commands=("$(compgen -v bee_help_)")
+  local -a commands=("$(compgen -v bee_help_)")
   echo "${commands[@]//bee_help_/}"
 }
 
-bee_help_update=("update | update bee to the latest version")
+declare -a bee_help_update=("update | update bee to the latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
     git pull -q
@@ -856,29 +845,28 @@ update() {
   popd > /dev/null
 }
 
-bee_help_version=("version | show the current bee version")
+declare -a bee_help_version=("version | show the current bee version")
 version() {
-  local local_version
+  local local_version remote_version
   local_version="$(cat "${BEE_HOME}/version.txt")"
   echo "${local_version}"
-  local remote_version
   remote_version="$(wget -qO- https://raw.githubusercontent.com/sschmid/bee/master/version.txt 2> /dev/null)"
   if [[ -n "${remote_version}" && "${remote_version}" != "${local_version}" ]]; then
     echo "latest: ${remote_version} (run 'bee update' to update to ${remote_version})"
   fi
 }
 
-bee_help_wiki=("wiki | open wiki")
+declare -a bee_help_wiki=("wiki | open wiki")
 wiki() {
   open_compat "https://github.com/sschmid/bee/wiki"
 }
 
-bee_help_donate=("donate | bee is free, but powered by your donations")
+declare -a bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
   open_compat "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
 }
 
-bee_help_commands=("commands [<search>] | list commands of enabled plugins")
+declare -a bee_help_commands=("commands [<search>] | list commands of enabled plugins")
 commands() {
   compgen -A function \
     | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
@@ -891,7 +879,7 @@ commands() {
 ################################################################################
 
 help_bee() {
-  local commands=()
+  local -a commands=()
   for help_var in $(compgen -v bee_help_); do
     help_var+="[@]"
     for entry in "${!help_var}"; do
@@ -915,9 +903,10 @@ help_bee() {
 
 help_plugin() {
   resolve_plugin_specs "$1"
+  local readme
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
     source "${spec}"
-    local readme="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/README.md"
+    readme="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/README.md"
     unload_plugin_spec
     if [[ -f "${readme}" ]]; then
       less "${readme}"
@@ -927,9 +916,9 @@ help_plugin() {
   done
 }
 
-bee_help_help=("help [<plugin>] | show usage")
+declare -a bee_help_help=("help [<plugin>] | show usage")
 help() {
-  if (( $# == 1 )); then
+  if [[ $# -eq 1 ]]; then
     help_plugin "$@"
   else
     help_bee
@@ -940,46 +929,40 @@ help() {
 # # main
 # ################################################################################
 
-BEE_INT_TRAPS=()
-BEE_TERM_TRAPS=()
-BEE_EXIT_TRAPS=()
-BEE_CANCELED=false
-BEE_MODE_INTERNAL=0
-BEE_MODE_COMMAND=1
-BEE_MODE=${BEE_MODE_INTERNAL}
-BEE_FORCE=false
+declare -a BEE_INT_TRAPS=()
+declare -a BEE_TERM_TRAPS=()
+declare -a BEE_EXIT_TRAPS=()
+declare -i BEE_CANCELED=0
+declare -i BEE_MODE_INTERNAL=0
+declare -i BEE_MODE_COMMAND=1
+declare -i BEE_MODE=${BEE_MODE_INTERNAL}
+declare -i BEE_FORCE=0
 T=${SECONDS}
 
 bee_int() {
-  BEE_CANCELED=true
-  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
-    job_int
-  fi
+  BEE_CANCELED=1
+  [[ ${BEE_JOB_RUNNING} -ne 0 ]] && job_int
   for t in "${BEE_INT_TRAPS[@]}"; do
     "$t"
   done
 }
 
 bee_term() {
-  BEE_CANCELED=true
-  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
-    job_term
-  fi
+  BEE_CANCELED=1
+  [[ ${BEE_JOB_RUNNING} -ne 0 ]] && job_term
   for t in "${BEE_TERM_TRAPS[@]}"; do
     "$t"
   done
 }
 
 bee_exit() {
-  local exit_code=$?
-  if [[ "${BEE_JOB_RUNNING}" == true ]]; then
-    job_exit "${exit_code}"
-  fi
+  local -i exit_code=$?
+  [[ ${BEE_JOB_RUNNING} -ne 0 ]] && job_exit ${exit_code}
   for t in "${BEE_EXIT_TRAPS[@]}"; do
     "$t"
   done
-  if [[ ${BEE_SILENT} -eq 0 ]] && (( BEE_MODE == BEE_MODE_COMMAND )); then
-    if (( exit_code == 0 )) && [[ "${BEE_CANCELED}" == false ]]; then
+  if [[ ${BEE_SILENT} -eq 0 && ${BEE_MODE} -eq ${BEE_MODE_COMMAND} ]]; then
+    if [[ ${exit_code} -eq 0 && ${BEE_CANCELED} -eq 0 ]]; then
       log "bzzzz ($(( SECONDS - T )) seconds)"
     else
       log "🔴 bzzzz ($(( SECONDS - T )) seconds)"
@@ -996,7 +979,7 @@ main() {
     case $arg in
       s) BEE_SILENT=1 ;;
       v) set -x ;;
-      f) BEE_FORCE=true ;;
+      f) BEE_FORCE=1 ;;
       p) BEE_GIT_MODE="ssh" ;;
       *)
         log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
@@ -1011,8 +994,8 @@ main() {
     source_plugins "${PLUGINS_WITH_DEPENDENCIES_RESULT[@]}"
   fi
 
-  if (( $# > 0 )); then
-    local cmd=("$@")
+  if [[ $# -gt 0 ]]; then
+    local -a cmd=("$@")
     if [[ $(command -v "${cmd}") != *"${cmd}" ]]; then
       # command not found
       # try loading as a plugin

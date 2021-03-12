@@ -49,9 +49,7 @@ log_var() {
 ################################################################################
 
 resolve_file() {
-  local current_dir="${PWD}"
-  local path="$1"
-  local link
+  local current_dir="${PWD}" path="$1" link
   while [[ -L "${path}" ]]; do
     link="$(readlink "${path}")"
     cd "$(dirname "${path}")"
@@ -65,14 +63,14 @@ resolve_file() {
 BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 BEE_RESOURCES=.bee
 
-# TODO: remove when expired (Dec 2020)
+# TODO: remove when expired (March 2021)
 bee_migration_0390_sub() {
   if [[ -f .beerc ]]; then
     source .beerc
     if [[ -v BEE_VERSION ]]; then
       local version=${BEE_VERSION//./}
       version="${version#0}"
-      if (( version <= 380 )); then
+      if [[ ${version} -le 380 ]]; then
         echo "${version}"
         return
       fi
@@ -103,7 +101,7 @@ bee_migration_0390
 if [[ ! -f "${HOME}/.beerc" ]]; then
   echo '#!/usr/bin/env bash
 BEE_PLUGIN_REGISTRIES=(
-  https://github.com/sschmid/bee-hub.git
+  https://github.com/sschmid/beehub.git
 )' > "${HOME}/.beerc"
 fi
 source "${HOME}/.beerc"
@@ -142,7 +140,7 @@ assert_min_bee_version() {
   system_version="${system_version#0}"
   version=${BEE_VERSION//./}
   version="${version#0}"
-  if (( version > system_version )); then
+  if [[ ${version} -gt ${system_version} ]]; then
     log_error "The specified bee version (${BEE_VERSION}) is higher than the installed version (${system_version_str})!" \
     "Please run 'bee update' to update bee to the latest version and try again."
     exit 1
