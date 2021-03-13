@@ -459,7 +459,7 @@ depstree() {
     if [[ ! -v DEPSTREE_CACHE["${spec}"] ]]; then
       DEPSTREE_CACHE["${spec}"]=1
       if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-        DEPSTREE_INDENT="${DEPSTREE_INDENT/'├'/'|'}"
+        DEPSTREE_INDENT="${DEPSTREE_INDENT/'├'/'│'}"
         DEPSTREE_INDENT="${DEPSTREE_INDENT//'─'/' '}├── "
         dependencies=("${BEE_PLUGIN_DEPENDENCIES[@]}")
         unload_plugin_spec
@@ -831,6 +831,25 @@ uninstall() {
 # ################################################################################
 # # commands
 # ################################################################################
+
+declare -a bee_help_batch=("batch <commands> | batch multiple commands with one bee call")
+declare BATCH_COMMAND
+declare -a BATCH_ARGS
+batch() {
+  BATCH_COMMAND=""
+  BATCH_ARGS=()
+  for command in "$@"; do
+    set_batch_command "${command}"
+    "${BATCH_COMMAND}" "${BATCH_ARGS[@]}"
+  done
+}
+
+set_batch_command() {
+  local IFS=" "
+  local -a cmd=($@)
+  BATCH_COMMAND="${cmd[0]}"
+  BATCH_ARGS=(${cmd[@]:1})
+}
 
 builtin_commands() {
   local -a commands=("$(compgen -v bee_help_)")

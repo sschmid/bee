@@ -6,7 +6,7 @@ _bee_completions() {
   lastWord="${COMP_WORDS[-1]}"
   if [[ $COMP_CWORD -eq 1 ]]; then
     local words
-    words="$(bee builtin_commands) $(bee plugins -a) $(bee commands)"
+    words="$(bee batch "builtin_commands" "plugins -a" "commands")"
     COMPREPLY=($(compgen -W "${words}" "${firstWord}"))
   else
     case "${firstWord}" in
