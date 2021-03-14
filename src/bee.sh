@@ -364,12 +364,6 @@ lint() {
   lint_var_value BEE_PLUGIN_VERSION "$(basename "$(dirname "${spec}")")"
   lint_var BEE_PLUGIN_LICENSE BEE_PLUGIN_HOMEPAGE BEE_PLUGIN_AUTHORS BEE_PLUGIN_INFO BEE_PLUGIN_SOURCE_HTTPS BEE_PLUGIN_SOURCE_SSH BEE_PLUGIN_TAG BEE_PLUGIN_SHA256
 
-  if [[ -v BEE_PLUGIN_DEPENDENCIES ]]; then
-    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${BEE_PLUGIN_DEPENDENCIES[*]} ✔︎\033[0m"
-  else
-    echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES no dependencies ✔︎\033[0m"
-  fi
-
   if [[ -v BEE_PLUGIN_SOURCE && -v BEE_PLUGIN_TAG && -v BEE_PLUGIN_SHA256 &&
         -n "${BEE_PLUGIN_SOURCE}" && -n "${BEE_PLUGIN_TAG}" && -n "${BEE_PLUGIN_SHA256}"
       ]]
@@ -390,19 +384,32 @@ lint() {
             git checkout -q "${BEE_PLUGIN_TAG}"
             hash . > /dev/null
             lint_var_value BEE_PLUGIN_SHA256 "${HASH_RESULT}"
+
+            source "${BEE_PLUGIN_NAME}.sh"
+            local deps_func="${BEE_PLUGIN_NAME}::_deps" deps="" spec_deps=""
+            [[ $(command -v "${deps_func}") == "${deps_func}" ]] && deps="$(${deps_func})"
+            [[ -v BEE_PLUGIN_DEPENDENCIES ]] && spec_deps="${BEE_PLUGIN_DEPENDENCIES[@]}"
+            if [[ "${spec_deps}" != "${deps}" ]]; then
+              echo -e "\033[31mBEE_PLUGIN_DEPENDENCIES is set to '${spec_deps}' but must be '${deps}'\033[0m"
+            else
+              echo -e "\033[32mBEE_PLUGIN_DEPENDENCIES ${spec_deps} ✔︎\033[0m"
+            fi
           else
             echo -e "\033[31mBEE_PLUGIN_TAG is set to ${BEE_PLUGIN_TAG} but doesn't exist in ${BEE_PLUGIN_SOURCE}\033[0m"
             echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_TAG failed)\033[0m"
+            echo -e "\033[31mBEE_PLUGIN_DEPENDENCIES (BEE_PLUGIN_TAG failed)\033[0m"
           fi
         popd > /dev/null
       else
         echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
         echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_SOURCE failed)\033[0m"
+        echo -e "\033[31mBEE_PLUGIN_DEPENDENCIES (BEE_PLUGIN_SOURCE failed)\033[0m"
       fi
     else
       echo -e "\033[31mBEE_PLUGIN_SOURCE ${BEE_PLUGIN_SOURCE}\033[0m"
       echo -e "\033[31mBEE_PLUGIN_TAG (BEE_PLUGIN_SOURCE failed)\033[0m"
       echo -e "\033[31mBEE_PLUGIN_SHA256 (BEE_PLUGIN_SOURCE failed)\033[0m"
+      echo -e "\033[31mBEE_PLUGIN_DEPENDENCIES (BEE_PLUGIN_SOURCE failed)\033[0m"
     fi
   fi
 
