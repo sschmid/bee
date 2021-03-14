@@ -652,7 +652,7 @@ plugins() {
       fi
     done
   fi
-  echo -ne "${list}" | column_compat
+  echo -ne "${list}" | sort -u | column_compat
 }
 
 declare -a bee_help_res=("res <plugins> | copy plugin resources into resources dir")
