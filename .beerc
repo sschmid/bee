@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 BEE_PROJECT="bee"
-# use system bee
-# BEE_VERSION=0.37.0
-PLUGINS=(changelog git github version)
+PLUGINS=(changelog github version)
 
 source "${BEE_RESOURCES}"/bee.sh
 
