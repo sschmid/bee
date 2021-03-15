@@ -962,6 +962,7 @@ declare -i BEE_CANCELED=0
 declare -i BEE_MODE_INTERNAL=0
 declare -i BEE_MODE_COMMAND=1
 declare -i BEE_MODE=${BEE_MODE_INTERNAL}
+declare -i BEE_SILENT=0
 declare -i BEE_FORCE=0
 T=${SECONDS}
 
