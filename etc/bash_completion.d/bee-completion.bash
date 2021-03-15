@@ -23,6 +23,10 @@ _bee_completions() {
         fi
         ;;
 
+      "batch")
+        COMPREPLY=($(compgen -W "$(bee batch "builtin_commands" "commands")" "${lastWord}"))
+        ;;
+
       "pull")
         COMPREPLY=($(compgen -W "$(bee log_var BEE_PLUGIN_REGISTRIES[@])" "${lastWord}"))
         ;;
