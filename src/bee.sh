@@ -521,7 +521,12 @@ plugins_with_dependencies() {
   deps_recursive "$@"
   if [[ "${#DEPS_RESULT[@]}" -gt 0 ]]; then
     DEPS_RESULT=($(echo "${DEPS_RESULT[*]}" | sort -u))
-    PLUGINS_WITH_DEPENDENCIES_RESULT+=("${DEPS_RESULT[@]}")
+    resolve_plugin_specs "${DEPS_RESULT[@]}"
+    for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
+      source "${spec}"
+      PLUGINS_WITH_DEPENDENCIES_RESULT+=("${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}")
+      unload_plugin_spec
+    done
   fi
 
   if [[ ${#PLUGINS_WITH_DEPENDENCIES_RESULT[@]} -gt 0 ]]; then
@@ -590,16 +595,20 @@ reinstall() {
   install "$@"
 }
 
+declare -A SOURCE_PLUGINS_CACHE=()
 source_plugins() {
   local path plugin
   resolve_plugin_specs "$@"
   for spec in "${PLUGIN_SPECS_RESULT[@]}"; do
-    source "${spec}"
-    path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
-    plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
-    unload_plugin_spec
-    [[ ! -f "${path}" ]] && install "${plugin}"
-    [[ -f "${path}" ]] && source "${path}"
+    if [[ ! -v SOURCE_PLUGINS_CACHE["${spec}"] ]]; then
+      SOURCE_PLUGINS_CACHE["${spec}"]=1
+      source "${spec}"
+      path="${BEE_PLUGINS_HOME}/${BEE_PLUGIN_NAME}/${BEE_PLUGIN_VERSION}/${BEE_PLUGIN_NAME}.sh"
+      plugin="${BEE_PLUGIN_NAME}:${BEE_PLUGIN_VERSION}"
+      unload_plugin_spec
+      [[ ! -f "${path}" ]] && install "${plugin}"
+      [[ -f "${path}" ]] && source "${path}"
+    fi
   done
 }
 
@@ -652,7 +661,7 @@ plugins() {
       fi
     done
   fi
-  echo -ne "${list}" | sort -u | column_compat
+  echo -ne "${list}" | column_compat
 }
 
 declare -a bee_help_res=("res <plugins> | copy plugin resources into resources dir")
