@@ -144,10 +144,30 @@ job_exit() {
 # registries
 ################################################################################
 
-BEE_REGISTRIES_HOME="${HOME}/.bee/caches/registries"
-BEE_REGISTRIES_TS="${HOME}/.bee/caches/registries/.ts"
-BEE_PLUGINS_HOME="${HOME}/.bee/caches/plugins"
-BEE_LINT_HOME="${HOME}/.bee/caches/lint"
+BEE_CACHES="${HOME}/.bee/caches"
+BEE_REGISTRIES_HOME="${BEE_CACHES}/registries"
+BEE_REGISTRIES_TS="${BEE_CACHES}/registries/.ts"
+BEE_PLUGINS_HOME="${BEE_CACHES}/plugins"
+BEE_LINT_HOME="${BEE_CACHES}/lint"
+
+declare -a bee_help_cache=("cache [-d] | show or (d)elete cache")
+cache() {
+  while getopts ":d" arg; do
+    case $arg in
+      d)
+        rm -rf "${BEE_CACHES}"
+        return
+        ;;
+      *)
+        log_error "${FUNCNAME[0]}: Invalid option -${OPTARG}"
+        exit 1
+        ;;
+    esac
+  done
+  shift $(( OPTIND - 1 ))
+
+  [[ $# -eq 0 ]] && echo "${BEE_CACHES}"
+}
 
 declare -A LOCAL_REGISTRY_PATH_CACHE=()
 LOCAL_REGISTRY_PATH_RESULT=""
@@ -801,7 +821,7 @@ uninstall() {
         rm -f /usr/local/bin/bee
         rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
         rm -rf /usr/local/opt/bee/
-        rm -rf "${HOME}/.bee/caches"
+        rm -rf "${BEE_CACHES}"
         echo "Uninstalled bee"
         echo "Thanks for using bee"
       fi
@@ -809,7 +829,7 @@ uninstall() {
       rm -f /usr/local/bin/bee
       rm -f /usr/local/etc/bash_completion.d/bee-completion.bash
       rm -rf /usr/local/opt/bee/
-      rm -rf "${HOME}/.bee/caches"
+      rm -rf "${BEE_CACHES}"
     fi
   else
     local -i uninstall_deps=0
