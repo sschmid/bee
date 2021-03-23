@@ -892,6 +892,14 @@ builtin_commands() {
   echo "${commands[@]//bee_help_/}"
 }
 
+declare -a bee_help_commands=("commands [<search>] | list commands of enabled plugins")
+commands() {
+  compgen -A function \
+    | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
+    | grep --color=never -- "$*" \
+    || true
+}
+
 declare -a bee_help_update=("update | update bee to the latest version")
 update() {
   pushd "${BEE_SYSTEM_HOME}" > /dev/null
@@ -911,6 +919,18 @@ version() {
   fi
 }
 
+declare -a bee_help_switch=("switch <version> | switch to a specific bee version")
+switch() {
+  if [[ $# -eq 0 ]]; then
+    pushd "${BEE_SYSTEM_HOME}" > /dev/null
+      git tag
+    popd > /dev/null
+  else
+    local tag="$1"
+    git checkout "${tag}"
+  fi
+}
+
 declare -a bee_help_wiki=("wiki | open wiki")
 wiki() {
   open_compat "https://github.com/sschmid/bee/wiki"
@@ -919,14 +939,6 @@ wiki() {
 declare -a bee_help_donate=("donate | bee is free, but powered by your donations")
 donate() {
   open_compat "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7WHTWP4GE75Y"
-}
-
-declare -a bee_help_commands=("commands [<search>] | list commands of enabled plugins")
-commands() {
-  compgen -A function \
-    | grep --color=never '^[a-zA-Z]*::[a-zA-Z]' \
-    | grep --color=never -- "$*" \
-    || true
 }
 
 ################################################################################
