@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/sschmid/bee/master/readme/bee-header.png" alt="bee bash automation">
+    <img src="https://raw.githubusercontent.com/sschmid/bee/main/readme/bee-header.png" alt="bee bash automation">
 </p>
 
 # 🐝 bee - plugin-based bash automation
@@ -23,16 +23,17 @@ build and distribute your applications.
 
 ## Extending with Plugins
 
-bee comes with a set of builtin plugins like
-`android`, `changelog`, `doxygen`, `git`, `github`, `ios`, `slack`, `unity`, `version`, and more...
+bee is as a plugin launcher with package management functionality. Plugins are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
+
+You can register your own plugin at beehub by creating a pull request. You can also create your own custom register for your personal or private plugins.
 
 Plugins allow you to customize and personalize bee to fit any requirement.
-Are you missing a task or feature? Create your own plugins and contribute to bee! Share
+Are you missing a task or feature? Create your own plugins and contribute to beehub! Share
 your plugins with the bee community so everyone can start saving time today.
 
 Plugins and commands can easily be discovered with bee's built-in auto-completion! (see [wiki](https://github.com/sschmid/bee/wiki/bee-bash-completion))
 
-[**🐝 Explore plugins**](https://github.com/sschmid/bee/tree/master/plugins)
+[**🐝 Explore plugins**](https://github.com/sschmid/beehub)
 
 
 ## Example
@@ -40,13 +41,11 @@ Plugins and commands can easily be discovered with bee's built-in auto-completio
 ```bash
 release() {
   version::bump_minor
+  changelog::merge
   unity::execute_method BuildIOS
   ios::archive_project
   ios::export
   ios::upload
-  changelog::merge
-  git::commit_release_sync_master
-  git::push_all
   github::create_release
   slack::message "New release $(version::read)"
 }
@@ -57,13 +56,11 @@ $ bee release
 ```
 
 - `version::bump_minor` - bump the minor version
+- `changelog::merge` - merge the latest changes into the changelog
 - `unity::execute_method BuildIOS` - build the Unity project
 - `ios::archive_project` - archive xcode project
 - `ios::export` - export archive
 - `ios::upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
-- `changelog::merge` - merge the latest changes into the changelog
-- `git::commit_release_sync_master` - commit, tag and merge develop into master
-- `git::push_all` - push develop, master and tags
 - `github::create_release` - create a github release and optionally attach artifacts
 - `slack::message` - send a message via slack to notify the team about a new release
 
@@ -71,7 +68,7 @@ $ bee release
 ## Install
 
 ```
-$ bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/master/install)"
+$ bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
 ```
 
 
