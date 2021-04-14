@@ -2,18 +2,20 @@
 BEE_PROJECT="bee"
 PLUGINS=(changelog github version)
 
-source "${BEE_RESOURCES}"/bee.sh
+[[ -f "${HOME}/.bee/user.sh" ]] && source "${HOME}/.bee/user.sh"
 
 # changelog => version
 CHANGELOG_PATH=CHANGELOG.md
 CHANGELOG_CHANGES=CHANGES.md
+CHANGELOG_URL=https://github.com/sschmid/bee
 
 # github => version
 GITHUB_CHANGES=CHANGES.md
 GITHUB_RELEASE_PREFIX="${BEE_PROJECT}-"
 GITHUB_REPO="sschmid/bee"
 GITHUB_ATTACHMENTS_ZIP=()
-source "${HOME}/.bee/github.sh"
 
 # version
 VERSION_PATH=version.txt
+
+source "${BEE_RESOURCES}"/bee.sh

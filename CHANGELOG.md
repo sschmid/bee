@@ -1,3 +1,11 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
 ## [0.38.0] - 2020-12-16
 ### Added
 - Add `macos::notification`
@@ -291,3 +299,49 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - bee
 - plugins and templates
 - install script
+
+[Unreleased]: https://github.com/sschmid/bee/compare/0.38.0...HEAD
+[0.38.0]: https://github.com/sschmid/bee/compare/0.37.3...0.38.0
+[0.37.3]: https://github.com/sschmid/bee/compare/0.37.2...0.37.3
+[0.37.2]: https://github.com/sschmid/bee/compare/0.37.1...0.37.2
+[0.37.1]: https://github.com/sschmid/bee/compare/0.37.0...0.37.1
+[0.37.0]: https://github.com/sschmid/bee/compare/0.36.0...0.37.0
+[0.36.0]: https://github.com/sschmid/bee/compare/0.35.0...0.36.0
+[0.35.0]: https://github.com/sschmid/bee/compare/0.34.0...0.35.0
+[0.34.0]: https://github.com/sschmid/bee/compare/0.33.0...0.34.0
+[0.33.0]: https://github.com/sschmid/bee/compare/0.32.0...0.33.0
+[0.32.0]: https://github.com/sschmid/bee/compare/0.31.0...0.32.0
+[0.31.0]: https://github.com/sschmid/bee/compare/0.30.0...0.31.0
+[0.30.0]: https://github.com/sschmid/bee/compare/0.29.0...0.30.0
+[0.29.0]: https://github.com/sschmid/bee/compare/0.28.1...0.29.0
+[0.28.1]: https://github.com/sschmid/bee/compare/0.28.0...0.28.1
+[0.28.0]: https://github.com/sschmid/bee/compare/0.27.0...0.28.0
+[0.27.0]: https://github.com/sschmid/bee/compare/0.26.0...0.27.0
+[0.26.0]: https://github.com/sschmid/bee/compare/0.25.0...0.26.0
+[0.25.0]: https://github.com/sschmid/bee/compare/0.24.0...0.25.0
+[0.24.0]: https://github.com/sschmid/bee/compare/0.23.0...0.24.0
+[0.23.0]: https://github.com/sschmid/bee/compare/0.22.2...0.23.0
+[0.22.2]: https://github.com/sschmid/bee/compare/0.22.1...0.22.2
+[0.22.1]: https://github.com/sschmid/bee/compare/0.22.0...0.22.1
+[0.22.0]: https://github.com/sschmid/bee/compare/0.21.0...0.22.0
+[0.21.0]: https://github.com/sschmid/bee/compare/0.20.0...0.21.0
+[0.20.0]: https://github.com/sschmid/bee/compare/0.19.0...0.20.0
+[0.19.0]: https://github.com/sschmid/bee/compare/0.18.0...0.19.0
+[0.18.0]: https://github.com/sschmid/bee/compare/0.17.0...0.18.0
+[0.17.0]: https://github.com/sschmid/bee/compare/0.16.0...0.17.0
+[0.16.0]: https://github.com/sschmid/bee/compare/0.15.0...0.16.0
+[0.15.0]: https://github.com/sschmid/bee/compare/0.14.0...0.15.0
+[0.14.0]: https://github.com/sschmid/bee/compare/0.13.0...0.14.0
+[0.13.0]: https://github.com/sschmid/bee/compare/0.12.0...0.13.0
+[0.12.0]: https://github.com/sschmid/bee/compare/0.11.0...0.12.0
+[0.11.0]: https://github.com/sschmid/bee/compare/0.10.0...0.11.0
+[0.10.0]: https://github.com/sschmid/bee/compare/0.9.0...0.10.0
+[0.9.0]: https://github.com/sschmid/bee/compare/0.8.0...0.9.0
+[0.8.0]: https://github.com/sschmid/bee/compare/0.7.0...0.8.0
+[0.7.0]: https://github.com/sschmid/bee/compare/0.6.0...0.7.0
+[0.6.0]: https://github.com/sschmid/bee/compare/0.5.0...0.6.0
+[0.5.0]: https://github.com/sschmid/bee/compare/0.4.0...0.5.0
+[0.4.0]: https://github.com/sschmid/bee/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/sschmid/bee/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/sschmid/bee/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/sschmid/bee/releases/tag/0.1.0
