@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 
 bee::release() {
-  changelog::merge
   local version
   version="$(version::read)"
+  changelog::merge
   git add .
   git commit -am "Release ${version}"
-  git checkout main
-  git pull
-  git merge develop
   git tag "${version}"
-  git checkout develop
   git push origin main
-  git push origin develop
   git push --tags
   log "bzzz... giving GitHub some time to process..."
   sleep 10

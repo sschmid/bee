@@ -6,6 +6,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.39.0] - 2021-04-14
+### Action required
+- Delete `master` branch and use `main` branch
+- Update bee symlink `ln -sf /usr/local/opt/bee/src/bee /usr/local/bin/bee`
+- Update your `~/.beerc` and specify plugin registries
+```sh
+BEE_PLUGIN_REGISTRIES=(
+  https://github.com/sschmid/beehub.git
+)
+```
+
+Plugins have been removed from this repository and moved to their own repositories.
+
+By the time of this release, these plugins are available:
+- https://github.com/sschmid/bee-android
+- https://github.com/sschmid/bee-changelog
+- https://github.com/sschmid/bee-github
+- https://github.com/sschmid/bee-ios
+- https://github.com/sschmid/bee-macos
+- https://github.com/sschmid/bee-sample
+- https://github.com/sschmid/bee-slack
+- https://github.com/sschmid/bee-tree
+- https://github.com/sschmid/bee-unity
+- https://github.com/sschmid/bee-version
+
+bee now functions as a plugin launcher with package management functionality. The plugins above are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
+
+You can register your own plugin at beehub by creating a pull request. You can also create your own custom register for your personal or private plugins.
+
+Please refer to the [README.md](https://github.com/sschmid/bee/blob/main/README.md) for more information.
+
+### Added
+- Add support for external plugin registries (beehub: https://github.com/sschmid/beehub)
+- Add support for plugin versions
+- Load adhoc plugins with all dependencies
+- Prevent sourcing already sourced plugins
+- Use bash strict mode
+- Add `bee changelog`
+- Add `bee job`
+- Add `commands` search filter
+- Add `bee lint`
+- Add `bee hash`
+- Add `bee pull`
+- Add `bee install`
+- Add `bee reinstall`
+- Add `bee uninstall` for plugins
+- Add `bee info`
+- Add `bee outdated`
+- Add `bee depstree`
+- Add `bee batch`
+- Add `bee cache`
+- Add `bee switch`
+- Add plugin traps
+- Add global force option `bee -f`
+- Add global ssh option `bee -p`
+- Only log if `BEE_SILENT` is `0`
+- Ask before uninstalling
+- Add Dockerfile
+
+### Changed
+- Delete `master` branch and use `main` branch
+- Rename bee.sh to bee
+- Merge all bee source files into one file
+- Rename `--silent` to `-s`
+- Rename `--verbose` to `-v`
+- Rename templates folder to resources
+- Rename `log_strong` to `log_info`
+- Change warning and error emojis
+- Refactoring
+
+### Removed
+- Delete all plugins and use beehub
+
 ## [0.38.0] - 2020-12-16
 ### Added
 - Add `macos::notification`
@@ -300,7 +373,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/0.38.0...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/0.39.0...HEAD
+[0.39.0]: https://github.com/sschmid/bee/compare/0.38.0...0.39.0
 [0.38.0]: https://github.com/sschmid/bee/compare/0.37.3...0.38.0
 [0.37.3]: https://github.com/sschmid/bee/compare/0.37.2...0.37.3
 [0.37.2]: https://github.com/sschmid/bee/compare/0.37.1...0.37.2
