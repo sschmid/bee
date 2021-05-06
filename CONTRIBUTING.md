@@ -15,11 +15,11 @@ $ git clone https://github.com/<username>/bee.git
 ````
 
 If you want to contribute please consider to set up [git-flow](https://github.com/nvie/gitflow).
-The default branch of this repository is `master`
+The default branch of this repository is `main`
 
 ```
 $ cd bee
-$ git branch master origin/master
+$ git branch main origin/main
 $ git flow init -d
 ```
 
@@ -47,13 +47,13 @@ Contribute
 
 If you have many commits please consider using [git rebase](https://git-scm.com/docs/git-rebase) to cleanup the commits.
 This can simplify reviewing the pull request. Once you're happy with your changes
-create a [pull request](https://github.com/sschmid/bee/pulls) from your feature branch. The default branch is `master`.
+create a [pull request](https://github.com/sschmid/bee/pulls) from your feature branch. The default branch is `main`.
 
 ---
 
 By submitting a pull request, you represent that you have the right to license your contribution to the community,
 and agree by submitting the patch that your contributions are licensed
-under the [bee license](https://github.com/sschmid/bee/blob/master/LICENSE.txt).
+under the [bee license](https://github.com/sschmid/bee/blob/main/LICENSE.txt).
 
 Thanks for your contributions and happy coding :)
 
