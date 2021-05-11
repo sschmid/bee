@@ -1027,7 +1027,7 @@ bee_exit() {
   local -i exit_code=$?
   [[ ${BEE_JOB_RUNNING} -ne 0 ]] && job_exit ${exit_code}
   for t in "${BEE_EXIT_TRAPS[@]}"; do
-    "$t"
+    "$t" ${exit_code}
   done
   if [[ ${BEE_SILENT} -eq 0 && ${BEE_MODE} -eq ${BEE_MODE_COMMAND} ]]; then
     if [[ ${exit_code} -eq 0 && ${BEE_CANCELED} -eq 0 ]]; then
