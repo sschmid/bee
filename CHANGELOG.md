@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.39.1] - 2021-05-11
+### Added
+- Pass exit code to BEE_EXIT_TRAPS
+
 ## [0.39.0] - 2021-04-14
 ### Action required
 - Delete `master` branch and use `main` branch
@@ -373,7 +377,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/0.39.0...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/0.39.1...HEAD
+[0.39.1]: https://github.com/sschmid/bee/compare/0.39.0...0.39.1
 [0.39.0]: https://github.com/sschmid/bee/compare/0.38.0...0.39.0
 [0.38.0]: https://github.com/sschmid/bee/compare/0.37.3...0.38.0
 [0.37.3]: https://github.com/sschmid/bee/compare/0.37.2...0.37.3
