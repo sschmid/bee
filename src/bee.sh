@@ -264,7 +264,7 @@ resolve_plugin_specs() {
   resolve_registry_caches "${BEE_PLUGIN_REGISTRIES[@]}"
   local plugin_name plugin_version plugin_path
   local -a versions
-  local -i found=0
+  local -i found=0 missing=0
   for plugin in "$@"; do
     if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] || "${PLUGIN_SPECS_CACHE["${plugin}"]}" == "false" ]]; then
       plugin_name="${plugin%:*}"
@@ -307,6 +307,7 @@ resolve_plugin_specs() {
       if [[ ${found} -eq 0 ]]; then
         if [[ ! -v PLUGIN_SPECS_CACHE["${plugin}"] ]]; then
           log_warn "Could not find plugin ${plugin}"
+          missing=1
         fi
         PLUGIN_SPECS_CACHE["${plugin}"]="false"
       fi
@@ -314,6 +315,10 @@ resolve_plugin_specs() {
       PLUGIN_SPECS_RESULT+=("${PLUGIN_SPECS_CACHE["${plugin}"]}")
     fi
   done
+
+  if [[ ${missing} -ne 0 ]]; then
+    echo "Run 'bee install' to install missing plugins"
+  fi
 }
 
 unload_plugin_spec() {
