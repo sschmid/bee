@@ -3,24 +3,74 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+################################################################################
+# log
+################################################################################
+
+log_var() {
+  echo "${!1}"
+}
+
+################################################################################
+# plugins
+################################################################################
+BEE_RESOLVE_PLUGIN_NAME=""
+BEE_RESOLVE_PLUGIN_VERSION=""
+BEE_RESOLVE_PLUGIN_PATH=""
 bee::resolve_plugin() {
   local plugin="$1"
-  local plugin_name="${plugin%:*}"
-  local plugin_version="${plugin##*:}"
-  if [[ "${plugin_name}" == "${plugin_version}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-    local latest
-    latest="$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)"
-    plugin_version="$(basename "${latest}")"
+  BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
+  BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
+  if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
+    BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
   fi
-  local path="${BEE_PLUGINS_PATH}/${plugin_name}/${plugin_version}/${plugin_name}.sh"
-  if [[ -f "${path}" ]]; then
-    echo "${path}"
+  BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
+  if [[ ! -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+    BEE_RESOLVE_PLUGIN_PATH=""
   fi
 }
 
+################################################################################
+# main
+################################################################################
+
+bee::batch() {
+  for batch in "$@"; do
+    local cmd="${batch%% *}"
+    local args="${batch#* }"
+    if [[ "${args}" != "${cmd}" ]]; then
+      "${cmd}" "${args}"
+    else
+      "${cmd}"
+    fi
+  done
+}
+
 bee::main() {
+  while (($# > 0)); do
+    case "$1" in
+      batch)
+        shift
+        bee::batch "$@"
+        return
+        ;;
+      --)
+        shift
+        break
+        ;;
+      *) break ;;
+    esac
+    shift
+  done
+
   if (($# > 0)); then
-    "$@"
+    bee::resolve_plugin $1
+    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+      source "${BEE_RESOLVE_PLUGIN_PATH}"
+      "${BEE_RESOLVE_PLUGIN_NAME}"
+    else
+      "$@"
+    fi
   else
     echo "usage"
   fi
