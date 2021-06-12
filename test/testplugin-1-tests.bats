@@ -13,3 +13,8 @@ setup() {
   run testplugin
   assert_output "hello from testplugin 1.0.0"
 }
+
+@test "prints testplugin message with args" {
+  run testplugin test
+  assert_output "hello from testplugin 1.0.0 - test"
+}

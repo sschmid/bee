@@ -63,3 +63,8 @@ setup() {
   run bee testplugin
   assert_output "hello from testplugin 2.0.0"
 }
+
+@test "runs plugin with args" {
+  run bee testplugin test
+  assert_output "hello from testplugin 2.0.0 - test"
+}

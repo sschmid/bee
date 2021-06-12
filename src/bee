@@ -67,7 +67,8 @@ bee::main() {
     bee::resolve_plugin $1
     if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
       source "${BEE_RESOLVE_PLUGIN_PATH}"
-      "${BEE_RESOLVE_PLUGIN_NAME}"
+      shift
+      "${BEE_RESOLVE_PLUGIN_NAME}" "$@"
     else
       "$@"
     fi
