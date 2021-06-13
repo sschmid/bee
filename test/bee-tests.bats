@@ -73,16 +73,16 @@ teardown() {
 
 @test "runs plugin" {
   run bee testplugin
-  assert_output "hello from testplugin 2.0.0"
+  assert_output "testplugin 2.0.0 help"
 }
 
-@test "runs plugin with args" {
-  run bee testplugin test
-  assert_output "hello from testplugin 2.0.0 - test"
+@test "runs a plugin command" {
+  run bee testplugin greet "test"
+  assert_output "greeting test from testplugin 2.0.0"
 }
 
 @test "runs multiple plugin commands" {
-  run bee batch "testplugin:1.0.0 test1" "testplugin:2.0.0 test2"
-  assert_line --index 0 "hello from testplugin 1.0.0 - test1"
-  assert_line --index 1 "hello from testplugin 2.0.0 - test2"
+  run bee batch "testplugin:1.0.0 greet test1" "testplugin:2.0.0 greet test2"
+  assert_line --index 0 "greeting test1 from testplugin 1.0.0"
+  assert_line --index 1 "greeting test2 from testplugin 2.0.0"
 }

@@ -75,12 +75,19 @@ bee::load_beerc() {
   fi
 }
 
+bee::split_args() {
+  local IFS=" "
+  for arg in $@; do
+    echo "${arg}"
+  done
+}
+
 bee::batch() {
   for batch in "$@"; do
     local cmd="${batch%% *}"
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
-      bee::run "${cmd}" "${args}"
+      bee::run "${cmd}" $(bee::split_args "${args}")
     else
       bee::run "${cmd}"
     fi
@@ -118,7 +125,13 @@ bee::run() {
         # run as plugin
         source "${BEE_RESOLVE_PLUGIN_PATH}"
         shift
-        "${BEE_RESOLVE_PLUGIN_NAME}" "$@"
+        if (($# > 0)); then
+          local cmd="$1"
+          shift
+          "${BEE_RESOLVE_PLUGIN_NAME}::${cmd}" "$@"
+        else
+          "${BEE_RESOLVE_PLUGIN_NAME}::help"
+        fi
       else
         # run as command, e.g. echo "message"
         "$@"
