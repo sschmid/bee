@@ -103,3 +103,8 @@ teardown() {
   assert_line --index 1 "greeting from testplugindeps 1.0.0"
   assert_line --index 2 "greeting test from testplugin 2.0.0"
 }
+
+@test "fails on missing plugin dependency" {
+  run bee testpluginmissingdep greet "test"
+  assert_failure
+}

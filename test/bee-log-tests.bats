@@ -5,6 +5,28 @@ setup() {
 }
 
 ################################################################################
+# log echo
+################################################################################
+
+@test "logs echo message" {
+  run bee bee::log_echo "message"
+  assert_output --partial "message"
+}
+
+@test "logs multiple echo messages" {
+  run bee bee::log_echo "message1" "message2" "message3"
+  assert_output --partial "message1"
+  assert_output --partial "message2"
+  assert_output --partial "message3"
+}
+
+@test "logs echo quiet" {
+  run bee -q bee::log_echo "message"
+  run bee --quiet bee::log_echo "message"
+  refute_output
+}
+
+################################################################################
 # log
 ################################################################################
 

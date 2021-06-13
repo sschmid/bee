@@ -9,18 +9,20 @@ IFS=$'\n\t'
 
 BEE_QUIET=0
 
-bee::log() {
+bee::log_echo() {
   if ((!BEE_QUIET)); then
-    echo "🐝 $*"
+    echo "$*"
   fi
 }
 
+bee::log() {
+  bee::log_echo "🐝 $*"
+}
+
 bee::log_info() {
-  if ((!BEE_QUIET)); then
-    echo "################################################################################"
-    echo "🐝 $*"
-    echo "################################################################################"
-  fi
+  bee::log_echo "################################################################################"
+  bee::log "$*"
+  bee::log_echo "################################################################################"
 }
 
 bee::log_func() {
@@ -61,12 +63,20 @@ bee::resolve_plugin() {
 }
 
 BEE_LOAD_PLUGIN_NAME=""
+BEE_LOAD_PLUGIN_MISSING=()
 
 bee::load_plugin() {
+  BEE_LOAD_PLUGIN_MISSING=()
   bee::resolve_plugin "$1"
   if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
     BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
     bee::load_plugin_deps "${BEE_LOAD_PLUGIN_NAME}"
+    if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
+      for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
+        bee::log_error "Missing plugin: '${missing}'"
+      done
+      exit 1
+    fi
   else
     BEE_LOAD_PLUGIN_NAME=""
   fi
@@ -80,6 +90,8 @@ bee::load_plugin_deps() {
       bee::resolve_plugin "${dep}"
       if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
         bee::load_plugin_deps "${dep}"
+      else
+        BEE_LOAD_PLUGIN_MISSING+=("${dep}")
       fi
     done
   fi
