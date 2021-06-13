@@ -7,6 +7,34 @@ IFS=$'\n\t'
 # log
 ################################################################################
 
+BEE_QUIET=0
+
+bee::log() {
+  if ((!BEE_QUIET)); then
+    echo "🐝 $*"
+  fi
+}
+
+bee::log_info() {
+  if ((!BEE_QUIET)); then
+    echo "################################################################################"
+    echo "🐝 $*"
+    echo "################################################################################"
+  fi
+}
+
+bee::log_func() {
+  bee::log_info "${FUNCNAME[1]} $*"
+}
+
+bee::log_warn() {
+  echo "🟠 $*" >&2
+}
+
+bee::log_error() {
+  echo "🔴 $*" >&2
+}
+
 bee::log_var() {
   echo "${!1}"
 }
@@ -14,9 +42,11 @@ bee::log_var() {
 ################################################################################
 # plugins
 ################################################################################
+
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
+
 bee::resolve_plugin() {
   local plugin="$1"
   BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
@@ -31,14 +61,15 @@ bee::resolve_plugin() {
 }
 
 ################################################################################
-# main
+# run
 ################################################################################
 
 BEE_RC_LOADED=0
+
 bee::load_beerc() {
   if ((!BEE_RC_LOADED)); then
     [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
-    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
+    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" >"${BEE_RC}"
     source "${BEE_RC}"
     BEE_RC_LOADED=1
   fi
@@ -49,18 +80,19 @@ bee::batch() {
     local cmd="${batch%% *}"
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
-      bee::main "${cmd}" "${args}"
+      bee::run "${cmd}" "${args}"
     else
-      bee::main "${cmd}"
+      bee::run "${cmd}"
     fi
   done
 }
 
-bee::main() {
+bee::run() {
   if (($# > 0)); then
 
     while (($# > 0)); do
       case "$1" in
+        -q | --quiet) BEE_QUIET=1 ;;
         batch)
           shift
           bee::batch "$@"
@@ -78,7 +110,7 @@ bee::main() {
     bee::load_beerc
 
     if [[ "$1" =~ ^bee:: ]]; then
-      # run as builtin, e.g. bee::log_var
+      # run as bee-builtin, e.g. bee::log_var HOME
       "$@"
     else
       bee::resolve_plugin "$1"
@@ -98,4 +130,4 @@ bee::main() {
   fi
 }
 
-bee::main "$@"
+bee::run "$@"
