@@ -60,6 +60,41 @@ bee::resolve_plugin() {
   fi
 }
 
+BEE_LOAD_PLUGIN_NAME=""
+
+bee::load_plugin() {
+  bee::resolve_plugin "$1"
+  if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+    BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
+    bee::load_plugin_deps "${BEE_LOAD_PLUGIN_NAME}"
+  else
+    BEE_LOAD_PLUGIN_NAME=""
+  fi
+}
+
+bee::load_plugin_deps() {
+  source "${BEE_RESOLVE_PLUGIN_PATH}"
+  local deps="${BEE_RESOLVE_PLUGIN_NAME}::deps"
+  if [[ $(command -v "${deps}") == "${deps}" ]]; then
+    for dep in $("${deps}"); do
+      bee::resolve_plugin "${dep}"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        bee::load_plugin_deps "${dep}"
+      fi
+    done
+  fi
+}
+
+bee::run_plugin() {
+  if (($# > 0)); then
+    local cmd="$1"
+    shift
+    "${BEE_LOAD_PLUGIN_NAME}::${cmd}" "$@"
+  else
+    "${BEE_LOAD_PLUGIN_NAME}::help"
+  fi
+}
+
 ################################################################################
 # run
 ################################################################################
@@ -96,7 +131,6 @@ bee::batch() {
 
 bee::run() {
   if (($# > 0)); then
-
     while (($# > 0)); do
       case "$1" in
         -q | --quiet) BEE_QUIET=1 ;;
@@ -117,27 +151,16 @@ bee::run() {
     bee::load_beerc
 
     if [[ "$1" =~ ^bee:: ]]; then
-      # run as bee-builtin, e.g. bee::log_var HOME
       "$@"
     else
-      bee::resolve_plugin "$1"
-      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-        # run as plugin
-        source "${BEE_RESOLVE_PLUGIN_PATH}"
+      bee::load_plugin "$1"
+      if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
         shift
-        if (($# > 0)); then
-          local cmd="$1"
-          shift
-          "${BEE_RESOLVE_PLUGIN_NAME}::${cmd}" "$@"
-        else
-          "${BEE_RESOLVE_PLUGIN_NAME}::help"
-        fi
+        bee::run_plugin "$@"
       else
-        # run as command, e.g. echo "message"
         "$@"
       fi
     fi
-
   else
     echo "usage"
   fi

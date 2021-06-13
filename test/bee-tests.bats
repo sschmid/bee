@@ -86,3 +86,20 @@ teardown() {
   assert_line --index 0 "greeting test1 from testplugin 1.0.0"
   assert_line --index 1 "greeting test2 from testplugin 2.0.0"
 }
+
+################################################################################
+# plugins dependencies
+################################################################################
+
+@test "loads plugin dependencies" {
+  run bee testplugindeps greet "test"
+  assert_line --index 0 "greeting from testplugindeps 1.0.0"
+  assert_line --index 1 "greeting test from testplugin 2.0.0"
+}
+
+@test "loads plugin dependencies recursively" {
+  run bee testplugindepsdep greet "test"
+  assert_line --index 0 "greeting from testplugindepsdep 1.0.0"
+  assert_line --index 1 "greeting from testplugindeps 1.0.0"
+  assert_line --index 2 "greeting test from testplugin 2.0.0"
+}
