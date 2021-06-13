@@ -1,7 +1,6 @@
 setup() {
   load 'test_helper/common-test-setup.bash'
   _common_test_setup
-  export BEE_RC="${PROJECT_ROOT}/test/test-beerc.sh"
   _bee_plugins_path="${PROJECT_ROOT}/test/plugins"
 }
 
@@ -45,6 +44,26 @@ teardown() {
   run bee batch "echo" "echo test1" "echo" "bee::log_var BEE_RESOLVE_PLUGIN_PATH"
   assert_line --index 0 "test1"
   assert_line --index 1 "${BEE_RESOLVE_PLUGIN_PATH}"
+}
+
+################################################################################
+# modules
+################################################################################
+
+@test "runs bee module" {
+  run bee update
+  assert_output "update"
+}
+
+@test "runs bee module with args" {
+  run bee update "test"
+  assert_output "update test"
+}
+
+@test "loads modules only once" {
+  run bee batch "update" "update" "echo" "echo" "update"
+  assert_line --index 0 "update"
+  assert_line --index 1 "update"
 }
 
 ################################################################################

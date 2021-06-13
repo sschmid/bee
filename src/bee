@@ -42,6 +42,35 @@ bee::log_var() {
 }
 
 ################################################################################
+# modules
+################################################################################
+
+BEE_MODULES_PATH="${BEE_HOME}/src/modules"
+
+BEE_LOAD_MODULE_NAME=""
+declare -A BEE_LOAD_MODULE_LOADED=()
+
+bee::load_module() {
+  local module="$1"
+  if [[ ! -v BEE_LOAD_MODULE_LOADED["${module}"] ]]; then
+    local module_path="${BEE_MODULES_PATH}/bee-${module}.sh"
+    if [[ -f "${module_path}" ]]; then
+      source "${module_path}"
+      BEE_LOAD_MODULE_NAME="${module}"
+    else
+      BEE_LOAD_MODULE_NAME=""
+    fi
+    BEE_LOAD_MODULE_LOADED["${module}"]="${BEE_LOAD_MODULE_NAME}"
+  else
+    BEE_LOAD_MODULE_NAME="${BEE_LOAD_MODULE_LOADED["${module}"]}"
+  fi
+}
+
+bee::run_module() {
+  "bee::${BEE_LOAD_MODULE_NAME}" "$@"
+}
+
+################################################################################
 # plugins
 ################################################################################
 
@@ -63,7 +92,6 @@ bee::resolve_plugin() {
       BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${plugin_version}"]="${BEE_RESOLVE_PLUGIN_PATH}"
     else
       BEE_RESOLVE_PLUGIN_PATH=""
-      BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
     fi
     BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
   else
@@ -176,14 +204,20 @@ bee::run() {
     bee::load_beerc
 
     if [[ "$1" =~ ^bee:: ]]; then
-      "$@"
+      "$@" # run as bee-builtin, e.g. bee::log "message"
     else
-      bee::load_plugin "$1"
-      if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+      bee::load_module "$1"
+      if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
         shift
-        bee::run_plugin "$@"
+        bee::run_module "$@" # run as bee module, e.g. bee update
       else
-        "$@"
+        bee::load_plugin "$1"
+        if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+          shift
+          bee::run_plugin "$@" # run as bee plugin, e.g. bee github me
+        else
+          "$@" # run as command, e.g. bee echo "message"
+        fi
       fi
     fi
   else

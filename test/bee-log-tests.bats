@@ -1,7 +1,6 @@
 setup() {
   load 'test_helper/common-test-setup.bash'
   _common_test_setup
-  export BEE_RC="${PROJECT_ROOT}/test/test-beerc.sh"
 }
 
 ################################################################################

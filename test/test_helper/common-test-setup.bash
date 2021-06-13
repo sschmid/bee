@@ -8,6 +8,8 @@ _common_test_setup() {
   PROJECT_ROOT="$(cd "$(dirname "${BATS_TEST_FILENAME}")/.." >/dev/null 2>&1 && pwd)"
   TMP_DIR="${PROJECT_ROOT}/test/tmp"
   PATH="${PROJECT_ROOT}/src:${PATH}"
+  export BEE_RC="${PROJECT_ROOT}/test/test-beerc.sh"
+  export BEE_HOME="${PROJECT_ROOT}"
 }
 
 _create_test_tmp_dir() {
