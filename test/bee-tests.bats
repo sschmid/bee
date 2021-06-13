@@ -71,6 +71,23 @@ teardown() {
   refute_output
 }
 
+#@test "caches resolved plugin paths" {
+#  run bee batch \
+#    "bee::resolve_plugin testplugin:1.0.0" \
+#    "bee::resolve_plugin testplugin" \
+#    "bee::resolve_plugin testplugin:2.0.0" \
+#    "bee::resolve_plugin missing" \
+#    "bee::resolve_plugin missing:1.0.0" \
+#    "bee::resolve_plugin echo" \
+#    "bee::resolve_plugin echo" \
+#    "bee::resolve_plugin missing" \
+#    "bee::resolve_plugin missing:1.0.0" \
+#    "bee::resolve_plugin echo" \
+#    "bee::resolve_plugin echo"
+#
+#  assert_failure
+#}
+
 @test "runs plugin" {
   run bee testplugin
   assert_output "testplugin 2.0.0 help"

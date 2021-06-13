@@ -46,19 +46,28 @@ bee::log_var() {
 ################################################################################
 
 BEE_RESOLVE_PLUGIN_NAME=""
-BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
+declare -A BEE_RESOLVE_PLUGIN_NAME_CACHE=()
+declare -A BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 
 bee::resolve_plugin() {
   local plugin="$1"
+  local plugin_version="${plugin##*:}"
   BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
-  BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
-  if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-    BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
-  fi
-  BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
-  if [[ ! -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-    BEE_RESOLVE_PLUGIN_PATH=""
+  if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
+    if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${plugin_version}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
+      plugin_version="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
+    fi
+    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${plugin_version}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
+    if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+      BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${plugin_version}"]="${BEE_RESOLVE_PLUGIN_PATH}"
+    else
+      BEE_RESOLVE_PLUGIN_PATH=""
+      BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
+    fi
+    BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
+  else
+    BEE_RESOLVE_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]}"
   fi
 }
 
