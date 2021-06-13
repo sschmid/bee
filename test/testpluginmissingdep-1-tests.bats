@@ -21,12 +21,7 @@ setup() {
 
 @test "prints deps" {
   run testpluginmissingdep::deps
-  assert_line --index 0 "testplugin:1.0.0"
+  assert_line --index 0 "testplugindepsdep:1.0.0"
   assert_line --index 1 "missing:1.0.0"
-  assert_line --index 2 "missing:2.0.0"
-}
-
-@test "fails to call deps" {
-  run testpluginmissingdep::greet
-  assert_output --partial "greeting from testpluginmissingdep 1.0.0"
+  assert_line --index 2 "othermissing:1.0.0"
 }

@@ -63,6 +63,7 @@ bee::resolve_plugin() {
 }
 
 BEE_LOAD_PLUGIN_NAME=""
+declare -A BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 
 bee::load_plugin() {
@@ -83,17 +84,20 @@ bee::load_plugin() {
 }
 
 bee::load_plugin_deps() {
-  source "${BEE_RESOLVE_PLUGIN_PATH}"
-  local deps="${BEE_RESOLVE_PLUGIN_NAME}::deps"
-  if [[ $(command -v "${deps}") == "${deps}" ]]; then
-    for dep in $("${deps}"); do
-      bee::resolve_plugin "${dep}"
-      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-        bee::load_plugin_deps "${dep}"
-      else
-        BEE_LOAD_PLUGIN_MISSING+=("${dep}")
-      fi
-    done
+  if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"] ]]; then
+    source "${BEE_RESOLVE_PLUGIN_PATH}"
+    BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"]=1
+    local deps="${BEE_RESOLVE_PLUGIN_NAME}::deps"
+    if [[ $(command -v "${deps}") == "${deps}" ]]; then
+      for dep in $("${deps}"); do
+        bee::resolve_plugin "${dep}"
+        if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+          bee::load_plugin_deps "${dep}"
+        else
+          BEE_LOAD_PLUGIN_MISSING+=("${dep}")
+        fi
+      done
+    fi
   fi
 }
 

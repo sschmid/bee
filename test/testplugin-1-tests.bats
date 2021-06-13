@@ -1,8 +1,7 @@
 setup() {
   load 'test_helper/common-test-setup.bash'
   _common_test_setup
-  TESTPLUGIN_VERSION="1.0.0"
-  TESTPLUGIN_PATH="${PROJECT_ROOT}/test/plugins/testplugin/${TESTPLUGIN_VERSION}/testplugin.sh"
+  TESTPLUGIN_PATH="${PROJECT_ROOT}/test/plugins/testplugin/1.0.0/testplugin.sh"
   source "${TESTPLUGIN_PATH}"
 }
 
@@ -12,25 +11,30 @@ setup() {
 
 @test "prints message" {
   run testplugin
-  assert_output "hello from testplugin ${TESTPLUGIN_VERSION}"
+  assert_output "hello from testplugin 1.0.0"
 }
 
 @test "prints message with args" {
   run testplugin test
-  assert_output "hello from testplugin ${TESTPLUGIN_VERSION} - test"
+  assert_output "hello from testplugin 1.0.0 - test"
 }
 
 @test "prints help" {
   run testplugin::help
-  assert_output "testplugin ${TESTPLUGIN_VERSION} help"
+  assert_output "testplugin 1.0.0 help"
 }
 
 @test "greets" {
   run testplugin::greet
-  assert_output "greeting from testplugin ${TESTPLUGIN_VERSION}"
+  assert_output "greeting from testplugin 1.0.0"
 }
 
 @test "greets with args" {
   run testplugin::greet "test"
-  assert_output "greeting test from testplugin ${TESTPLUGIN_VERSION}"
+  assert_output "greeting test from testplugin 1.0.0"
+}
+
+@test "fails on being sourced multiple times" {
+  run source "${TESTPLUGIN_PATH}"
+  assert_failure
 }

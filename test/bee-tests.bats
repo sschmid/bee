@@ -94,17 +94,25 @@ teardown() {
 @test "loads plugin dependencies" {
   run bee testplugindeps greet "test"
   assert_line --index 0 "greeting from testplugindeps 1.0.0"
-  assert_line --index 1 "greeting test from testplugin 2.0.0"
+  assert_line --index 1 "greeting test from testplugin 1.0.0"
+  assert_line --index 2 "greeting test from othertestplugin 1.0.0"
 }
 
 @test "loads plugin dependencies recursively" {
   run bee testplugindepsdep greet "test"
   assert_line --index 0 "greeting from testplugindepsdep 1.0.0"
   assert_line --index 1 "greeting from testplugindeps 1.0.0"
-  assert_line --index 2 "greeting test from testplugin 2.0.0"
+  assert_line --index 2 "greeting test from testplugin 1.0.0"
+  assert_line --index 3 "greeting test from othertestplugin 1.0.0"
+  assert_line --index 4 "greeting test from othertestplugin 1.0.0"
 }
 
 @test "fails on missing plugin dependency" {
   run bee testpluginmissingdep greet "test"
   assert_failure
+}
+
+@test "loads plugins only once" {
+  run bee testplugindepsdep greet "test"
+  assert_success
 }

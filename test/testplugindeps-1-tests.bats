@@ -22,7 +22,7 @@ setup() {
 @test "prints deps" {
   run testplugindeps::deps
   assert_line --index 0 "testplugin:1.0.0"
-  assert_line --index 1 "testplugin:2.0.0"
+  assert_line --index 1 "othertestplugin:1.0.0"
 }
 
 @test "fails to call deps" {

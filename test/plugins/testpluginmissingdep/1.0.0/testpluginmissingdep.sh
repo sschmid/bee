@@ -9,9 +9,9 @@ testpluginmissingdep() {
 }
 
 testpluginmissingdep::deps() {
-  echo "testplugin:1.0.0"
+  echo "testplugindepsdep:1.0.0"
   echo "missing:1.0.0"
-  echo "missing:2.0.0"
+  echo "othermissing:1.0.0"
 }
 
 testpluginmissingdep::greet() {

@@ -10,9 +10,11 @@ testplugindepsdep() {
 
 testplugindepsdep::deps() {
   echo "testplugindeps:1.0.0"
+  echo "testplugin:1.0.0"
 }
 
 testplugindepsdep::greet() {
   echo "greeting from testplugindepsdep 1.0.0"
   testplugindeps::greet "$@"
+  othertestplugin::greet "$@"
 }
