@@ -7,7 +7,7 @@ IFS=$'\n\t'
 # log
 ################################################################################
 
-log_var() {
+bee::log_var() {
   echo "${!1}"
 }
 
@@ -34,44 +34,65 @@ bee::resolve_plugin() {
 # main
 ################################################################################
 
+BEE_RC_LOADED=0
+bee::load_beerc() {
+  if ((!BEE_RC_LOADED)); then
+    [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
+    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
+    source "${BEE_RC}"
+    BEE_RC_LOADED=1
+  fi
+}
+
 bee::batch() {
   for batch in "$@"; do
     local cmd="${batch%% *}"
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
-      "${cmd}" "${args}"
+      bee::main "${cmd}" "${args}"
     else
-      "${cmd}"
+      bee::main "${cmd}"
     fi
   done
 }
 
 bee::main() {
-  while (($# > 0)); do
-    case "$1" in
-      batch)
-        shift
-        bee::batch "$@"
-        return
-        ;;
-      --)
-        shift
-        break
-        ;;
-      *) break ;;
-    esac
-    shift
-  done
-
   if (($# > 0)); then
-    bee::resolve_plugin $1
-    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-      source "${BEE_RESOLVE_PLUGIN_PATH}"
+
+    while (($# > 0)); do
+      case "$1" in
+        batch)
+          shift
+          bee::batch "$@"
+          return
+          ;;
+        --)
+          shift
+          break
+          ;;
+        *) break ;;
+      esac
       shift
-      "${BEE_RESOLVE_PLUGIN_NAME}" "$@"
-    else
+    done
+
+    bee::load_beerc
+
+    if [[ "$1" =~ ^bee:: ]]; then
+      # run as builtin, e.g. bee::log_var
       "$@"
+    else
+      bee::resolve_plugin "$1"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        # run as plugin
+        source "${BEE_RESOLVE_PLUGIN_PATH}"
+        shift
+        "${BEE_RESOLVE_PLUGIN_NAME}" "$@"
+      else
+        # run as command, e.g. echo "message"
+        "$@"
+      fi
     fi
+
   else
     echo "usage"
   fi
