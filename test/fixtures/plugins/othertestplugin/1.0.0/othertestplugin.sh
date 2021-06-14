@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-if [[ -v OTHER_TESTPLUGIN_1_INIT ]]; then
+if [[ -v OTHERTESTPLUGIN_SOURCED ]]; then
   echo "# ERROR: already sourced"
   exit 1
 fi
 
-OTHER_TESTPLUGIN_1_INIT=0
+OTHERTESTPLUGIN_SOURCED=1
 
 othertestplugin() {
   if (($# > 0)); then

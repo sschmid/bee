@@ -1,12 +1,12 @@
 setup() {
-  load 'test_helper/common-test-setup.bash'
-  _common_test_setup
-  TESTPLUGIN_PATH="${PROJECT_ROOT}/test/plugins/testpluginmissingdep/1.0.0/testpluginmissingdep.sh"
-  source "${TESTPLUGIN_PATH}"
+  load "test-helper.bash"
+  local fixture="plugins/testpluginmissingdep/1.0.0/testpluginmissingdep.sh"
+  load "${fixture}"
+  TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
 
 @test "is not executable" {
-  assert_file_not_executable "${TESTPLUGIN_PATH}"
+  assert_file_not_executable "${TEST_FIXTURE_PATH}"
 }
 
 @test "prints message" {

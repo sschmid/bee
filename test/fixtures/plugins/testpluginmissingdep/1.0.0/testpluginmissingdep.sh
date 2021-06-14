@@ -13,7 +13,3 @@ testpluginmissingdep::deps() {
   echo "missing:1.0.0"
   echo "othermissing:1.0.0"
 }
-
-testpluginmissingdep::greet() {
-  echo "greeting from testpluginmissingdep 1.0.0"
-}
