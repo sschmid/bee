@@ -45,8 +45,6 @@ bee::log_var() {
 # modules
 ################################################################################
 
-BEE_MODULES_PATH="${BEE_HOME}/src/modules"
-
 BEE_LOAD_MODULE_NAME=""
 declare -A BEE_LOAD_MODULE_LOADED=()
 
@@ -225,4 +223,6 @@ bee::run() {
   fi
 }
 
-bee::run "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  bee::run "$@"
+fi
