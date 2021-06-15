@@ -6,6 +6,7 @@ if [[ -v BEE_TESTMODULE_SOURCED ]]; then
 fi
 
 BEE_TESTMODULE_SOURCED=1
+echo "# testmodule sourced"
 
 bee::testmodule() {
   if (($# > 0)); then

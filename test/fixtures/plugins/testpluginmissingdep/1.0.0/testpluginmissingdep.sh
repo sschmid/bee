@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "# testpluginmissingdep 1.0.0 sourced"
+
 testpluginmissingdep() {
   if (($#>0)); then
     echo "hello from testpluginmissingdep 1.0.0 - $@"

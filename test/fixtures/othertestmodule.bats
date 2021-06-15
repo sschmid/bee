@@ -1,6 +1,6 @@
 setup() {
   load "test-helper.bash"
-  local fixture="modules/bee-testmodule.sh"
+  local fixture="modules/bee-othertestmodule.sh"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
@@ -10,9 +10,9 @@ setup() {
 }
 
 @test "prints message when sourced" {
-  unset BEE_TESTMODULE_SOURCED
+  unset BEE_OTHERTESTMODULE_SOURCED
   run source "${TEST_FIXTURE_PATH}"
-  assert_output "# testmodule sourced"
+  assert_output "# othertestmodule sourced"
 }
 
 @test "fails on being sourced multiple times" {
@@ -22,16 +22,16 @@ setup() {
 }
 
 @test "prints message" {
-  run bee::testmodule
-  assert_output "hello from testmodule"
+  run bee::othertestmodule
+  assert_output "hello from othertestmodule"
 }
 
 @test "prints message with args" {
-  run bee::testmodule test
-  assert_output "hello from testmodule - test"
+  run bee::othertestmodule test
+  assert_output "hello from othertestmodule - test"
 }
 
 @test "prints help" {
-  run bee::testmodule::help
-  assert_output "testmodule help"
+  run bee::othertestmodule::help
+  assert_output "othertestmodule help"
 }

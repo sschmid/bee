@@ -9,6 +9,12 @@ setup() {
   assert_file_not_executable "${TEST_FIXTURE_PATH}"
 }
 
+@test "prints message when sourced" {
+  unset TESTPLUGIN_2_SOURCED
+  run source "${TEST_FIXTURE_PATH}"
+  assert_output "# testplugin 2.0.0 sourced"
+}
+
 @test "fails on being sourced multiple times" {
   run source "${TEST_FIXTURE_PATH}"
   assert_failure

@@ -9,6 +9,11 @@ setup() {
   assert_file_not_executable "${TEST_FIXTURE_PATH}"
 }
 
+@test "prints message when sourced" {
+  run source "${TEST_FIXTURE_PATH}"
+  assert_output "# testplugindeps 1.0.0 sourced"
+}
+
 @test "prints message" {
   run testplugindeps
   assert_output "hello from testplugindeps 1.0.0"

@@ -6,6 +6,7 @@ if [[ -v TESTPLUGIN_1_SOURCED ]]; then
 fi
 
 TESTPLUGIN_1_SOURCED=1
+echo "# testplugin 1.0.0 sourced"
 
 testplugin() {
   if (($# > 0)); then

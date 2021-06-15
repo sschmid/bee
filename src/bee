@@ -46,7 +46,7 @@ bee::log_var() {
 ################################################################################
 
 BEE_LOAD_MODULE_NAME=""
-declare -A BEE_LOAD_MODULE_LOADED=()
+declare -gA BEE_LOAD_MODULE_LOADED=()
 
 bee::load_module() {
   local module="$1"
@@ -65,7 +65,9 @@ bee::load_module() {
 }
 
 bee::run_module() {
-  "bee::${BEE_LOAD_MODULE_NAME}" "$@"
+  local module="$1"
+  shift
+  "bee::${module}" "$@"
 }
 
 ################################################################################
@@ -73,22 +75,25 @@ bee::run_module() {
 ################################################################################
 
 BEE_RESOLVE_PLUGIN_NAME=""
+BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
-declare -A BEE_RESOLVE_PLUGIN_NAME_CACHE=()
-declare -A BEE_RESOLVE_PLUGIN_PATH_CACHE=()
+declare -gA BEE_RESOLVE_PLUGIN_NAME_CACHE=()
+declare -gA BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 
 bee::resolve_plugin() {
   local plugin="$1"
-  local plugin_version="${plugin##*:}"
   BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
+  BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
-    if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${plugin_version}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-      plugin_version="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
+    if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
+      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
     fi
-    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${plugin_version}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
+    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
     if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-      BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${plugin_version}"]="${BEE_RESOLVE_PLUGIN_PATH}"
+      BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
     else
+      BEE_RESOLVE_PLUGIN_NAME=""
+      BEE_RESOLVE_PLUGIN_VERSION=""
       BEE_RESOLVE_PLUGIN_PATH=""
     fi
     BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
@@ -98,7 +103,7 @@ bee::resolve_plugin() {
 }
 
 BEE_LOAD_PLUGIN_NAME=""
-declare -A BEE_LOAD_PLUGIN_LOADED=()
+declare -gA BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 
 bee::load_plugin() {
@@ -137,12 +142,14 @@ bee::load_plugin_deps() {
 }
 
 bee::run_plugin() {
+  local plugin="$1"
+  shift
   if (($# > 0)); then
     local cmd="$1"
     shift
-    "${BEE_LOAD_PLUGIN_NAME}::${cmd}" "$@"
+    "${plugin}::${cmd}" "$@"
   else
-    "${BEE_LOAD_PLUGIN_NAME}::help"
+    "${plugin}::help"
   fi
 }
 
@@ -154,18 +161,11 @@ BEE_RC_LOADED=0
 
 bee::load_beerc() {
   if ((!BEE_RC_LOADED)); then
-    [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
+    # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
     [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" >"${BEE_RC}"
     source "${BEE_RC}"
     BEE_RC_LOADED=1
   fi
-}
-
-bee::split_args() {
-  local IFS=" "
-  for arg in $@; do
-    echo "${arg}"
-  done
 }
 
 bee::batch() {
@@ -180,12 +180,19 @@ bee::batch() {
   done
 }
 
+bee::split_args() {
+  local IFS=" "
+  for arg in $@; do
+    echo "${arg}"
+  done
+}
+
 bee::run() {
   if (($# > 0)); then
     while (($# > 0)); do
       case "$1" in
         -q | --quiet) BEE_QUIET=1 ;;
-        batch)
+        -b | --batch)
           shift
           bee::batch "$@"
           return
@@ -201,25 +208,21 @@ bee::run() {
 
     bee::load_beerc
 
-    if [[ "$1" =~ ^bee:: ]]; then
-      "$@" # run as bee-builtin, e.g. bee::log "message"
+    bee::load_module "$1"
+    if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
+      shift
+      bee::run_module "${BEE_LOAD_MODULE_NAME}" "$@" # run bee module, e.g. bee update
     else
-      bee::load_module "$1"
-      if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
+      bee::load_plugin "$1"
+      if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
         shift
-        bee::run_module "$@" # run as bee module, e.g. bee update
+        bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@" # run bee plugin, e.g. bee github
       else
-        bee::load_plugin "$1"
-        if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
-          shift
-          bee::run_plugin "$@" # run as bee plugin, e.g. bee github me
-        else
-          "$@" # run as command, e.g. bee echo "message"
-        fi
+        "$@" # run args, e.g. bee echo "message"
       fi
     fi
   else
-    echo "usage"
+    echo "bee help"
   fi
 }
 
