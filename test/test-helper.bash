@@ -14,7 +14,6 @@ PATH="${PROJECT_ROOT}/src:${PATH}"
 
 _source_bee(){
   source "${PROJECT_ROOT}/src/bee"
-  bee::load_beerc
 }
 
 _set_test_beerc() {

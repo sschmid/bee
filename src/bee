@@ -164,7 +164,7 @@ BEE_RC_LOADED=0
 bee::load_beerc() {
   if ((!BEE_RC_LOADED)); then
     # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
-    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" >"${BEE_RC}"
+    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
     # shellcheck disable=SC1090
     source "${BEE_RC}"
     BEE_RC_LOADED=1
