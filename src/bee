@@ -53,6 +53,7 @@ bee::load_module() {
   if [[ ! -v BEE_LOAD_MODULE_LOADED["${module}"] ]]; then
     local module_path="${BEE_MODULES_PATH}/bee-${module}.sh"
     if [[ -f "${module_path}" ]]; then
+      # shellcheck disable=SC1090
       source "${module_path}"
       BEE_LOAD_MODULE_NAME="${module}"
     else
@@ -77,7 +78,6 @@ bee::run_module() {
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
-declare -gA BEE_RESOLVE_PLUGIN_NAME_CACHE=()
 declare -gA BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 
 bee::resolve_plugin() {
@@ -86,7 +86,7 @@ bee::resolve_plugin() {
   BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
     if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(ls -d "${BEE_PLUGINS_PATH}/${plugin}/"*/ | sort -rV | head -n 1)")"
+      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${BEE_PLUGINS_PATH}/${plugin}" -mindepth 1 -type d | sort -rV | head -n 1)")"
     fi
     BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
     if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
@@ -125,7 +125,9 @@ bee::load_plugin() {
 
 bee::load_plugin_deps() {
   if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"] ]]; then
+    # shellcheck disable=SC1090
     source "${BEE_RESOLVE_PLUGIN_PATH}"
+    # shellcheck disable=SC2034
     BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"]=1
     local deps="${BEE_RESOLVE_PLUGIN_NAME}::deps"
     if [[ $(command -v "${deps}") == "${deps}" ]]; then
@@ -163,6 +165,7 @@ bee::load_beerc() {
   if ((!BEE_RC_LOADED)); then
     # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
     [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" >"${BEE_RC}"
+    # shellcheck disable=SC1090
     source "${BEE_RC}"
     BEE_RC_LOADED=1
   fi
@@ -173,6 +176,7 @@ bee::batch() {
     local cmd="${batch%% *}"
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
+      # shellcheck disable=SC2046
       bee::run "${cmd}" $(bee::split_args "${args}")
     else
       bee::run "${cmd}"
@@ -182,6 +186,7 @@ bee::batch() {
 
 bee::split_args() {
   local IFS=" "
+  # shellcheck disable=SC2068
   for arg in $@; do
     echo "${arg}"
   done
