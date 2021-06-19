@@ -156,6 +156,74 @@ bee::run_plugin() {
 }
 
 ################################################################################
+# traps
+################################################################################
+
+BEE_CANCELED=0
+BEE_MODE_INTERNAL=0
+BEE_MODE_PLUGIN=1
+BEE_MODE=${BEE_MODE_INTERNAL}
+
+T=${SECONDS}
+
+declare -gA BEE_TRAPS_INT=()
+bee::add_int_trap() {
+  BEE_TRAPS_INT["$1"]="$1"
+}
+bee::remove_int_trap() {
+  unset BEE_TRAPS_INT["$1"]
+}
+
+declare -gA BEE_TRAPS_TERM=()
+bee::add_term_trap() {
+  BEE_TRAPS_TERM["$1"]="$1"
+}
+bee::remove_term_trap() {
+  unset BEE_TRAPS_TERM["$1"]
+}
+
+declare -gA BEE_TRAPS_EXIT=()
+bee::add_exit_trap() {
+  BEE_TRAPS_EXIT["$1"]="$1"
+}
+bee::remove_exit_trap() {
+  unset BEE_TRAPS_EXIT["$1"]
+}
+
+bee::INT() {
+  BEE_CANCELED=1
+  for t in "${BEE_TRAPS_INT[@]}"; do
+    "$t"
+  done
+}
+
+bee::TERM() {
+  BEE_CANCELED=1
+  for t in "${BEE_TRAPS_TERM[@]}"; do
+    "$t"
+  done
+}
+
+bee::EXIT() {
+  local -i status=$?
+  for t in "${BEE_TRAPS_EXIT[@]}"; do
+    "$t" ${status}
+  done
+  if ((!BEE_QUIET && BEE_MODE == BEE_MODE_PLUGIN)); then
+    local duration="$((SECONDS - T)) seconds"
+    if ((BEE_CANCELED)); then
+      bee::log_warn "bzzzz (${duration})"
+    else
+      if ((status)); then
+        bee::log_error "bzzzz $status (${duration})"
+      else
+        bee::log "bzzzz (${duration})"
+      fi
+    fi
+  fi
+}
+
+################################################################################
 # run
 ################################################################################
 
@@ -193,6 +261,10 @@ bee::split_args() {
 }
 
 bee::run() {
+  trap bee::INT INT
+  trap bee::TERM TERM
+  trap bee::EXIT EXIT
+
   if (($# > 0)); then
     while (($# > 0)); do
       case "$1" in
@@ -220,6 +292,7 @@ bee::run() {
     else
       bee::load_plugin "$1"
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+        BEE_MODE=${BEE_MODE_PLUGIN}
         shift
         bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@" # run bee plugin, e.g. bee github
       else
