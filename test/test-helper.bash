@@ -8,15 +8,22 @@ export PROJECT_ROOT
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." >/dev/null 2>&1 && pwd)"
 TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
-export BEE_RC="${BATS_TEST_DIRNAME}/beerc.sh"
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
+
+_set_beerc(){
+  export BEE_RC="${BATS_TEST_DIRNAME}/beerc.sh"
+}
+
+_set_test_beerc(){
+  export BEE_RC="${BATS_TEST_DIRNAME}/test-beerc.sh"
+}
 
 _source_bee(){
   source "${PROJECT_ROOT}/src/bee"
 }
 
-_set_test_beerc() {
+_set_test_fixture_beerc() {
   BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.sh"
 }
 
