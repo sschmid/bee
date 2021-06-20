@@ -215,7 +215,7 @@ bee::EXIT() {
       bee::log_warn "bzzzz (${duration})"
     else
       if ((status)); then
-        bee::log_error "bzzzz $status (${duration})"
+        bee::log_error "bzzzz ${status} (${duration})"
       else
         bee::log "bzzzz (${duration})"
       fi
