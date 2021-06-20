@@ -9,6 +9,11 @@ teardown() {
   _teardown_test_tmp_dir
 }
 
+_prepare_job_logs() {
+  _setup_test_tmp_dir
+  export BEE_RESOURCES="${TMP_TEST_DIR}"
+}
+
 @test "is not executable" {
   assert_file_not_executable "${MODULE_PATH}"
 }
@@ -34,24 +39,21 @@ teardown() {
 }
 
 @test "logs success to logfile" {
-  _setup_test_tmp_dir
-  export BEE_RESOURCES="${TMP_TEST_DIR}"
+  _prepare_job_logs
   run bee job "testjob" echo "test"
   run cat "${TMP_TEST_DIR}/logs/"*
   assert_output "test"
 }
 
 @test "logs error to logfile" {
-  _setup_test_tmp_dir
-  export BEE_RESOURCES="${TMP_TEST_DIR}"
+  _prepare_job_logs
   run bee job "testjob" not_a_command
   run cat "${TMP_TEST_DIR}/logs/"*
   assert_output --partial "not_a_command: command not found"
 }
 
 @test "runs plugin as job" {
-  _setup_test_tmp_dir
-  export BEE_RESOURCES="${TMP_TEST_DIR}"
+  _prepare_job_logs
   run bee job "testjob" testplugin greet "test"
   run cat "${TMP_TEST_DIR}/logs/"*
   assert_line --index 0 "# testplugin 2.0.0 sourced"

@@ -8,8 +8,7 @@ teardown() {
 
 @test "loads beerc when specified" {
   _set_test_fixture_beerc
-  _source_bee
-  run bee::run echo
+  run bee echo
   assert_output "# test beerc sourced"
 }
 
@@ -24,7 +23,6 @@ teardown() {
 @test "creates default .beerc" {
   _setup_test_tmp_dir
   BEE_RC="${TMP_TEST_DIR}/tmp-beerc.sh"
-  _source_bee
-  run bee::run echo
+  run bee echo
   assert_file_exist "${BEE_RC}"
 }

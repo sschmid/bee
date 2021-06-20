@@ -8,7 +8,6 @@ export PROJECT_ROOT
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." >/dev/null 2>&1 && pwd)"
 TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
-
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
 _set_beerc(){
