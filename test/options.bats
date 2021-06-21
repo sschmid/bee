@@ -12,14 +12,6 @@ setup() {
   assert_output --partial "plugin-based bash automation"
 }
 
-@test "enable quiet mode" {
-  run bee -q bee::log "test"
-  refute_output
-
-  run bee --quiet bee::log "test"
-  refute_output
-}
-
 @test "batches multiple commands with args" {
   run bee -b "echo test1 test2" "echo test3 test4"
   assert_line --index 0 "test1 test2"
@@ -42,6 +34,14 @@ setup() {
   assert_line --index 1 "greeting test1 from testplugin 1.0.0"
   assert_line --index 2 "# testplugin 2.0.0 sourced"
   assert_line --index 3 "greeting test2 from testplugin 2.0.0"
+}
+
+@test "enable quiet mode" {
+  run bee -q bee::log "test"
+  refute_output
+
+  run bee --quiet bee::log "test"
+  refute_output
 }
 
 @test "-- ends options" {

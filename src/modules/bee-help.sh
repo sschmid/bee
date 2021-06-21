@@ -4,8 +4,9 @@ bee::help() {
   cat << EOF
 🐝 bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
 
-usage:
-bee [-h | --help] [--version] [-q | --quiet] [-v | --verbose] <command> [<args>]
+usage: bee [-h | --help] [--version]
+           [-q | --quiet] [-v | --verbose]
+           <command> [<args>]
 
   job <title> <command>       run command as a job
 

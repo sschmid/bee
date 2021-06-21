@@ -284,6 +284,7 @@ bee::run() {
         return
         ;;
       -q | --quiet) BEE_QUIET=1 ;;
+      -v | --verbose) set -x ;;
       --)
         shift
         break
