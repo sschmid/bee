@@ -33,12 +33,8 @@ bee::job() {
     bee::job::start "$@"
     bee::job::finish
   else
-    bee::job::help
+    bee::usage
   fi
-}
-
-bee::job::help() {
-  echo "bee job <title> <command> | run command as a job"
 }
 
 bee::job::start() {

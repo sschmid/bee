@@ -260,20 +260,31 @@ bee::split_args() {
   done
 }
 
+bee::usage() {
+  bee::load_module "help"
+  bee::run_module "${BEE_LOAD_MODULE_NAME}"
+}
+
 bee::run() {
   trap bee::INT INT
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
+  bee::load_beerc
+
   if (($# > 0)); then
     while (($# > 0)); do
       case "$1" in
-        -q | --quiet) BEE_QUIET=1 ;;
         -b | --batch)
           shift
           bee::batch "$@"
           return
           ;;
+        -h | --help)
+          bee::usage
+          return
+          ;;
+        -q | --quiet) BEE_QUIET=1 ;;
         --)
           shift
           break
@@ -282,8 +293,6 @@ bee::run() {
       esac
       shift
     done
-
-    bee::load_beerc
 
     bee::load_module "$1"
     if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
@@ -300,7 +309,7 @@ bee::run() {
       fi
     fi
   else
-    echo "bee help"
+    bee::usage
   fi
 }
 

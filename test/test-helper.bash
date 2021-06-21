@@ -23,7 +23,7 @@ _source_bee(){
 }
 
 _set_test_fixture_beerc() {
-  BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.sh"
+  export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.sh"
 }
 
 _setup_test_tmp_dir() {

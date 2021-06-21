@@ -8,8 +8,9 @@ setup() {
 }
 
 @test "prints bee help when no args" {
+  _set_beerc
   run bee
-  assert_output "bee help"
+  assert_output --partial "plugin-based bash automation"
 }
 
 @test "runs args" {

@@ -156,7 +156,7 @@ setup() {
   assert_line --index 6 "🔴 Missing plugin: 'othermissing:1.0.0'"
 }
 
-@test "runs plugin" {
+@test "runs plugin help when no args" {
   bee::load_plugin testplugin
   run bee::run_plugin testplugin
   assert_output "testplugin 2.0.0 help"

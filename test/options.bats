@@ -3,6 +3,15 @@ setup() {
   _set_test_beerc
 }
 
+@test "prints bee help" {
+  _set_beerc
+  run bee -h
+  assert_output --partial "plugin-based bash automation"
+
+  run bee --help
+  assert_output --partial "plugin-based bash automation"
+}
+
 @test "enable quiet mode" {
   run bee -q bee::log "test"
   refute_output
