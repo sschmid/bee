@@ -43,3 +43,17 @@ setup() {
   assert_line --index 2 "# testplugin 2.0.0 sourced"
   assert_line --index 3 "greeting test2 from testplugin 2.0.0"
 }
+
+@test "-- ends options" {
+  run bee -- echo "test"
+  assert_output "test"
+
+  run bee -q -- echo "test"
+  assert_output "test"
+}
+
+@test "prints bee help when options only" {
+  _set_beerc
+  run bee --
+  assert_output --partial "plugin-based bash automation"
+}

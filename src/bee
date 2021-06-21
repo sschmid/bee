@@ -272,28 +272,28 @@ bee::run() {
 
   bee::load_beerc
 
-  if (($# > 0)); then
-    while (($# > 0)); do
-      case "$1" in
-        -b | --batch)
-          shift
-          bee::batch "$@"
-          return
-          ;;
-        -h | --help)
-          bee::usage
-          return
-          ;;
-        -q | --quiet) BEE_QUIET=1 ;;
-        --)
-          shift
-          break
-          ;;
-        *) break ;;
-      esac
-      shift
-    done
+  while (($# > 0)); do
+    case "$1" in
+      -b | --batch)
+        shift
+        bee::batch "$@"
+        return
+        ;;
+      -h | --help)
+        bee::usage
+        return
+        ;;
+      -q | --quiet) BEE_QUIET=1 ;;
+      --)
+        shift
+        break
+        ;;
+      *) break ;;
+    esac
+    shift
+  done
 
+  if (($# > 0)); then
     bee::load_module "$1"
     if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
       shift
