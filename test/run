@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if (($# > 0)); then
+  test/bats/bin/bats "$@"
+else
+  test/bats/bin/bats --tap test test/fixtures
+fi
