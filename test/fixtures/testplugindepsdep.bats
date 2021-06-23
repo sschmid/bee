@@ -1,6 +1,6 @@
 setup() {
   load "test-helper.bash"
-  local fixture="plugins/testplugindepsdep/1.0.0/testplugindepsdep.sh"
+  local fixture="plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }

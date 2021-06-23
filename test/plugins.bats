@@ -14,7 +14,7 @@ setup() {
   assert_output "2.0.0"
 
   run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/testplugin/2.0.0/testplugin.sh"
+  assert_output "${BEE_PLUGINS_PATH}/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "resolves plugin with exact version" {
@@ -26,7 +26,7 @@ setup() {
   assert_output "1.0.0"
 
   run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/testplugin/1.0.0/testplugin.sh"
+  assert_output "${BEE_PLUGINS_PATH}/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "doesn't resolve plugin with unknown version" {
@@ -51,7 +51,7 @@ setup() {
   assert_output "1.0.0"
 
   run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/othertestplugin/1.0.0/othertestplugin.sh"
+  assert_output "${BEE_PLUGINS_PATH}/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "doesn't resolve unknown plugin" {

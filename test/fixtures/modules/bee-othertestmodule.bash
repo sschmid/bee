@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [[ -v BEE_OTHERTESTMODULE_SOURCED ]]; then
   echo "# ERROR: already sourced"
   exit 1

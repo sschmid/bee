@@ -13,7 +13,7 @@ setup() {
   assert_output "🐝 test"
 }
 
-@test "sources bee-run.sh" {
+@test "sources bee-run.bash" {
   _source_bee
   run bee::run echo "test"
   assert_output "test"

@@ -22,7 +22,7 @@ teardown() {
 
 @test "creates default .beerc" {
   _setup_test_tmp_dir
-  export BEE_RC="${TMP_TEST_DIR}/tmp-beerc.sh"
+  export BEE_RC="${TMP_TEST_DIR}/tmp-beerc.bash"
   run bee echo
   assert_file_exist "${BEE_RC}"
 }

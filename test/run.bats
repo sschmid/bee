@@ -4,7 +4,7 @@ setup() {
 }
 
 @test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/bee-run.sh"
+  assert_file_not_executable "${PROJECT_ROOT}/src/bee-run.bash"
 }
 
 @test "prints bee help when no args" {

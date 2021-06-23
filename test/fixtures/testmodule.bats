@@ -1,6 +1,6 @@
 setup() {
   load "test-helper.bash"
-  local fixture="modules/bee-testmodule.sh"
+  local fixture="modules/bee-testmodule.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }

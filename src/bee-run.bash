@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 ################################################################################
 # modules
 ################################################################################
@@ -10,7 +8,7 @@ declare -gA BEE_LOAD_MODULE_LOADED=()
 bee::load_module() {
   local module="$1"
   if [[ ! -v BEE_LOAD_MODULE_LOADED["${module}"] ]]; then
-    local module_path="${BEE_MODULES_PATH}/bee-${module}.sh"
+    local module_path="${BEE_MODULES_PATH}/bee-${module}.bash"
     if [[ -f "${module_path}" ]]; then
       # shellcheck disable=SC1090
       source "${module_path}"
@@ -47,7 +45,7 @@ bee::resolve_plugin() {
     if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
       BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${BEE_PLUGINS_PATH}/${plugin}" -mindepth 1 -type d | sort -rV | head -n 1)")"
     fi
-    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.sh"
+    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
     if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
       BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
     else

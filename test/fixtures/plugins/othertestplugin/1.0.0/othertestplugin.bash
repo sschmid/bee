@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [[ -v OTHERTESTPLUGIN_SOURCED ]]; then
   echo "# ERROR: already sourced"
   exit 1

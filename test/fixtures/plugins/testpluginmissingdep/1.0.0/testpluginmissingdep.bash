@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 echo "# testpluginmissingdep 1.0.0 sourced"
 
 testpluginmissingdep() {

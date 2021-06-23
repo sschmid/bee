@@ -41,7 +41,7 @@ bee::log_var() {
   echo "${!1}"
 }
 
-source src/bee-run.sh
+source src/bee-run.bash
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   bee::run "$@"
 fi

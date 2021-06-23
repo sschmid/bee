@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 BEE_JOB_SPINNER_INTERVAL=0.1
 BEE_JOB_SPINNER_FRAMES=(
   '🐝'

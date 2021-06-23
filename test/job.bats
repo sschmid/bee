@@ -1,7 +1,7 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/bee-job.sh"
+  MODULE_PATH="${PROJECT_ROOT}/src/modules/bee-job.bash"
   source "${MODULE_PATH}"
 }
 

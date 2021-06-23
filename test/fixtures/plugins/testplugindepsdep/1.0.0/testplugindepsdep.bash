@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 echo "# testplugindepsdep 1.0.0 sourced"
 
 testplugindepsdep() {

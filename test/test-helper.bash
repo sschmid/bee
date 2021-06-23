@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 load 'test_helper/bats-support/load.bash'
 load 'test_helper/bats-assert/load.bash'
 load 'test_helper/bats-file/load.bash'
@@ -11,11 +9,11 @@ TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
 _set_beerc(){
-  export BEE_RC="${BATS_TEST_DIRNAME}/beerc.sh"
+  export BEE_RC="${BATS_TEST_DIRNAME}/beerc.bash"
 }
 
 _set_test_beerc(){
-  export BEE_RC="${BATS_TEST_DIRNAME}/test-beerc.sh"
+  export BEE_RC="${BATS_TEST_DIRNAME}/test-beerc.bash"
 }
 
 _source_bee(){
@@ -23,7 +21,7 @@ _source_bee(){
 }
 
 _set_test_fixture_beerc() {
-  export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.sh"
+  export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"
 }
 
 _setup_test_tmp_dir() {

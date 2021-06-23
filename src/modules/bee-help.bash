@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 bee::help() {
   cat << EOF
 🐝 bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
