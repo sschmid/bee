@@ -184,18 +184,6 @@ bee::EXIT() {
 # run
 ################################################################################
 
-BEE_RC_LOADED=0
-
-bee::load_beerc() {
-  if ((!BEE_RC_LOADED)); then
-    # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
-    [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
-    # shellcheck disable=SC1090
-    source "${BEE_RC}"
-    BEE_RC_LOADED=1
-  fi
-}
-
 bee::batch() {
   for batch in "$@"; do
     local cmd="${batch%% *}"
@@ -227,8 +215,6 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  bee::load_beerc
-
   while (($# > 0)); do
     case "$1" in
       -b | --batch)
@@ -255,13 +241,13 @@ bee::run() {
     bee::load_module "$1"
     if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
       shift
-      bee::run_module "${BEE_LOAD_MODULE_NAME}" "$@" # run bee module, e.g. bee update
+      bee::run_module "${BEE_LOAD_MODULE_NAME}" "$@" # run bee module, e.g. bee plugins ls
     else
       bee::load_plugin "$1"
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
         BEE_MODE=${BEE_MODE_PLUGIN}
         shift
-        bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@" # run bee plugin, e.g. bee github
+        bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@" # run bee plugin, e.g. bee github me
       else
         "$@" # run args, e.g. bee echo "message"
       fi

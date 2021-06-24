@@ -41,7 +41,32 @@ bee::log_var() {
   echo "${!1}"
 }
 
-source src/bee-run.bash
+################################################################################
+# init
+################################################################################
+
+# TODO assign BEE_SYSTEM_HOME instead
+BEE_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
+[[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
+# shellcheck disable=SC1090
+source "${BEE_RC}"
+
+if [[ -v BEE_FILE ]]; then
+  # shellcheck disable=SC1090
+  source "${BEE_FILE}"
+fi
+
+if [[ -v BEE_VERSION ]]; then
+  BEE_HOME="${BEE_CACHES_PATH}/bee/${BEE_VERSION}"
+  [[ ! -d "${BEE_HOME}" ]] &&
+    git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" "${BEE_ORIGIN}" "${BEE_HOME}"
+fi
+
+# shellcheck disable=SC1090
+source "${BEE_HOME}/src/bee-run.bash"
+
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   bee::run "$@"
 fi

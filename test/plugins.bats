@@ -2,7 +2,6 @@ setup() {
   load 'test-helper.bash'
   _set_test_beerc
   _source_bee
-  bee::load_beerc
 }
 
 @test "resolves latest plugin" {

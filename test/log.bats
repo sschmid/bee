@@ -1,5 +1,6 @@
 setup() {
   load 'test-helper.bash'
+  _set_beerc
   _source_bee
 }
 

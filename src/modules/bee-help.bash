@@ -1,6 +1,8 @@
 bee::help() {
+  local version
+  version="$(cat "${BEE_HOME}/version.txt")"
   cat << EOF
-🐝 bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
+🐝 bee ${version} - plugin-based bash automation
 
 usage: bee [-h | --help] [--version]
            [-q | --quiet] [-v | --verbose]
