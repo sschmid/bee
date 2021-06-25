@@ -6,77 +6,48 @@ setup() {
 
 @test "resolves latest plugin" {
   bee::resolve_plugin testplugin
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  assert_output "testplugin"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  assert_output "2.0.0"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/testplugin/2.0.0/testplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "2.0.0"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "resolves plugin with exact version" {
   bee::resolve_plugin testplugin:1.0.0
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  assert_output "testplugin"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  assert_output "1.0.0"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/testplugin/1.0.0/testplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "doesn't resolve plugin with unknown version" {
   bee::resolve_plugin testplugin:9.0.0
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  refute_output
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
 }
 
 @test "resolves another plugin" {
   bee::resolve_plugin testplugin:2.0.0
   bee::resolve_plugin othertestplugin
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  assert_output "othertestplugin"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  assert_output "1.0.0"
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  assert_output "${BEE_PLUGINS_PATH}/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "othertestplugin"
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "doesn't resolve unknown plugin" {
   bee::resolve_plugin unknown
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  refute_output
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
 }
 
 @test "doesn't resolve unknown plugin with exact version" {
   bee::resolve_plugin unknown:1.0.0
-  run bee::log_var BEE_RESOLVE_PLUGIN_NAME
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_VERSION
-  refute_output
-
-  run bee::log_var BEE_RESOLVE_PLUGIN_PATH
-  refute_output
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
 }
 
+# this is a manual test / sanity check
 @test "caches resolved plugin paths" {
   bee::resolve_plugin testplugin:1.0.0
   bee::resolve_plugin testplugin
@@ -87,6 +58,7 @@ setup() {
   bee::resolve_plugin echo
   bee::resolve_plugin missing
   bee::resolve_plugin missing:1.0.0
+  # assert_output "fail on purpose to print steps"
 }
 
 ################################################################################
@@ -98,8 +70,7 @@ setup() {
   assert_output "# testplugin 1.0.0 sourced"
 
   bee::load_plugin testplugin:1.0.0
-  run bee::log_var BEE_LOAD_PLUGIN_NAME
-  assert_output "testplugin"
+  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "testplugin"
 }
 
 @test "loads plugin only once" {
@@ -114,21 +85,20 @@ setup() {
   assert_output "# othertestplugin 1.0.0 sourced"
 
   bee::load_plugin othertestplugin:1.0.0
-  run bee::log_var BEE_LOAD_PLUGIN_NAME
-  assert_output "othertestplugin"
+  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "othertestplugin"
 }
 
 @test "doesn't load unknown plugin" {
   run bee::load_plugin unkown
   assert_success
   refute_output
+  assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
 }
 
 @test "unknown plugin resets plugin name" {
   bee::load_plugin testplugin:1.0.0
   bee::load_plugin unkown
-  run bee::log_var BEE_LOAD_PLUGIN_NAME
-  refute_output
+  assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
 }
 
 @test "loads plugin dependencies" {
@@ -139,8 +109,7 @@ setup() {
   assert_line --index 3 "# othertestplugin 1.0.0 sourced"
 
   bee::load_plugin testplugindepsdep
-  run bee::log_var BEE_LOAD_PLUGIN_NAME
-  assert_output testplugindepsdep
+  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "testplugindepsdep"
 }
 
 @test "fails on missing plugin dependency" {

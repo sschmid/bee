@@ -9,8 +9,7 @@ setup() {
   assert_output "# testmodule sourced"
 
   bee::load_module testmodule
-  run bee::log_var BEE_LOAD_MODULE_NAME
-  assert_output "testmodule"
+  assert_equal "${BEE_LOAD_MODULE_NAME}" "testmodule"
 }
 
 @test "loads another module" {
@@ -19,8 +18,7 @@ setup() {
   assert_output "# othertestmodule sourced"
 
   bee::load_module othertestmodule
-  run bee::log_var BEE_LOAD_MODULE_NAME
-  assert_output "othertestmodule"
+  assert_equal "${BEE_LOAD_MODULE_NAME}" "othertestmodule"
 }
 
 @test "doesn't load unknown module" {
@@ -29,8 +27,7 @@ setup() {
   refute_output
 
   bee::load_module unknown
-  run bee::log_var BEE_LOAD_MODULE_NAME
-  refute_output
+  assert_equal "${BEE_LOAD_MODULE_NAME}" ""
 }
 
 @test "loads module only once" {
@@ -54,8 +51,7 @@ setup() {
   refute_output
 
   bee::load_module testmodule
-  run bee::log_var BEE_LOAD_MODULE_NAME
-  assert_output "testmodule"
+  assert_equal "${BEE_LOAD_MODULE_NAME}" "testmodule"
 }
 
 @test "caches unknown module" {
@@ -67,8 +63,7 @@ setup() {
   refute_output
 
   bee::load_module unknown
-  run bee::log_var BEE_LOAD_MODULE_NAME
-  refute_output
+  assert_equal "${BEE_LOAD_MODULE_NAME}" ""
 }
 
 @test "runs module" {
