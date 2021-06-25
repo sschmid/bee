@@ -45,11 +45,13 @@ _setup_test_bee_repo() {
   pushd "${TMP_TEST_DIR}/testbee" > /dev/null
     mkdir src
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
+    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
     git init -b main
     git add .
     git commit -m "Initial commit"
     git tag "0.1.0"
     echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
+    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
     git add .
     git commit -m "Bump version"
     git tag "1.0.0"
