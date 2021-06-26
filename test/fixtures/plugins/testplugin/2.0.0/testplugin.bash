@@ -8,6 +8,7 @@ echo "# testplugin 2.0.0 sourced"
 
 testplugin() {
   if (($# > 0)); then
+    # shellcheck disable=SC2145
     echo "hello from testplugin 2.0.0 - $@"
   else
     echo "hello from testplugin 2.0.0"
@@ -20,6 +21,7 @@ testplugin::help() {
 
 testplugin::greet() {
   if (($# > 0)); then
+    # shellcheck disable=SC2145
     echo "greeting $@ from testplugin 2.0.0"
   else
     echo "greeting from testplugin 2.0.0"

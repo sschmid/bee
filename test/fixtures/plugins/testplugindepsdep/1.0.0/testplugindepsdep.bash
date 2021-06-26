@@ -2,6 +2,7 @@ echo "# testplugindepsdep 1.0.0 sourced"
 
 testplugindepsdep() {
   if (($#>0)); then
+    # shellcheck disable=SC2145
     echo "hello from testplugindepsdep 1.0.0 - $@"
   else
     echo "hello from testplugindepsdep 1.0.0"

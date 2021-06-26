@@ -2,8 +2,8 @@ load 'test_helper/bats-support/load.bash'
 load 'test_helper/bats-assert/load.bash'
 load 'test_helper/bats-file/load.bash'
 
-export PROJECT_ROOT
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." > /dev/null 2>&1 && pwd)"
+export PROJECT_ROOT
 export TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
@@ -29,6 +29,7 @@ _set_test_fixture_beefile() {
 }
 
 _source_bee() {
+  # shellcheck disable=SC1090,SC1091
   source "${PROJECT_ROOT}/src/bee"
 }
 
@@ -42,7 +43,7 @@ _teardown_test_tmp_dir() {
 
 _setup_test_bee_repo() {
   mkdir "${TMP_TEST_DIR}/testbee"
-  pushd "${TMP_TEST_DIR}/testbee" > /dev/null
+  pushd "${TMP_TEST_DIR}/testbee" > /dev/null || exit 1
     mkdir src
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
@@ -55,5 +56,5 @@ _setup_test_bee_repo() {
     git add .
     git commit -m "Bump version"
     git tag "1.0.0"
-  popd > /dev/null
+  popd > /dev/null || exit 1
 }

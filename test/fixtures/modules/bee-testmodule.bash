@@ -8,6 +8,7 @@ echo "# testmodule sourced"
 
 bee::testmodule() {
   if (($# > 0)); then
+    # shellcheck disable=SC2145
     echo "hello from testmodule - $@"
   else
     echo "hello from testmodule"
