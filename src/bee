@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# 🐝 bee - plugin-based bash automation
+#
+# Shell Style Guide
+# https://google.github.io/styleguide/shell.xml
+#
+# "bash strict mode"
+# http://redsymbol.net/articles/unofficial-bash-strict-mode
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -45,7 +52,11 @@ bee::log_var() {
 # init
 ################################################################################
 
-BEE_SYSTEM_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BEE_SYSTEM_HOME="${BASH_SOURCE[0]}"
+while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
+  BEE_SYSTEM_HOME="$(readlink "${BEE_SYSTEM_HOME}")"
+done
+BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 
 # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
 [[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"

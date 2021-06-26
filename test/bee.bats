@@ -11,6 +11,29 @@ teardown() {
   assert_file_executable "${PROJECT_ROOT}/src/bee"
 }
 
+@test "resolves bee system home" {
+  _source_bee
+  assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
+}
+
+@test "resolves bee system home and follows symlink" {
+  _setup_test_tmp_dir
+  ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/bee"
+  # shellcheck disable=SC1090
+  source "${TMP_TEST_DIR}/bee"
+  assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
+}
+
+@test "resolves bee system home and follows multiple symlinks" {
+  _setup_test_tmp_dir
+  mkdir "${TMP_TEST_DIR}/src" "${TMP_TEST_DIR}/bin"
+  ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/src/bee"
+  ln -s "${TMP_TEST_DIR}/src/bee" "${TMP_TEST_DIR}/bee"
+  # shellcheck disable=SC1090
+  source "${TMP_TEST_DIR}/bee"
+  assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
+}
+
 @test "sources bee-run.bash" {
   run bee
   assert_output --partial "plugin-based bash automation"
