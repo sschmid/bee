@@ -4,8 +4,8 @@ setup() {
 
 find_src() {
   cd "${PROJECT_ROOT}" || exit 1
-  find "src" "etc" "test/fixtures" -name "*.bash" -type f
-  find "test" -name "*.bash" -type f -maxdepth 1
+  find "src" "etc" "test/fixtures" -type f -name "*.bash"
+  find "test" -type f -maxdepth 1 -name "*.bash"
 }
 
 @test "shellcheck" {

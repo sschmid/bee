@@ -77,3 +77,9 @@ setup() {
   run bee::run_module testmodule "test"
   assert_output "hello from testmodule - test"
 }
+
+@test "prints all modules" {
+  run bee::print_modules
+  assert_line --index 0 "othertestmodule"
+  assert_line --index 1 "testmodule"
+}

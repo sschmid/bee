@@ -28,6 +28,13 @@ bee::run_module() {
   "bee::${module}" "$@"
 }
 
+bee::print_modules() {
+  # shellcheck disable=SC2044
+  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "bee-*.bash" -exec basename {} ".bash" \;); do
+    echo "${module/bee-/}"
+  done
+}
+
 ################################################################################
 # plugins
 ################################################################################
@@ -43,7 +50,7 @@ bee::resolve_plugin() {
   BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
     if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${BEE_PLUGINS_PATH}/${plugin}" -mindepth 1 -maxdepth 1 -type d | sort -rV | head -n 1)")"
+      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${BEE_PLUGINS_PATH}/${plugin}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
     fi
     BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
     if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
