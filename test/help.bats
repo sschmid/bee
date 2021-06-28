@@ -1,9 +1,8 @@
 setup() {
   load "test-helper.bash"
   _set_test_beerc
+  _source_bee
   MODULE_PATH="${PROJECT_ROOT}/src/modules/help.bash"
-  # shellcheck disable=SC1090
-  source "${BEE_RC}"
   # shellcheck disable=SC1090
   source "${MODULE_PATH}"
 }
@@ -14,5 +13,5 @@ setup() {
 
 @test "prints entries" {
   run bee::help::print_entries
-  assert_output "  testmodule    help"
+  assert_output -e '^[[:space:]]*testmodule[[:space:]]+help'
 }

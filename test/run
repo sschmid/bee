@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
-if (($# > 0)); then
-  test/bats/bin/bats "$@"
+set -e
+
+if [[ $# -gt 0 && "$1" == "--docker" ]]; then
+  DOCKER_BUILDKIT=1 docker build --build-arg ALPINE_VERSION=3.14 --target test -t sschmid/bee .
+  docker run --rm sschmid/bee
+  test/shellcheck
 else
-  test/bats/bin/bats --tap test test/fixtures
+  [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
+  if (($# > 0)); then
+    test/bats/bin/bats "$@"
+  else
+    test/bats/bin/bats --tap test test/fixtures
+    test/shellcheck
+  fi
 fi

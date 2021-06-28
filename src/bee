@@ -59,7 +59,12 @@ done
 BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 
 # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
-[[ ! -f "${BEE_RC}" ]] && echo "# default beerc" > "${BEE_RC}"
+[[ ! -f "${BEE_RC}" ]] && cat << 'EOF' > "${BEE_RC}"
+BEE_ORIGIN="https://github.com/sschmid/bee.git"
+BEE_MODULES_PATH="${BEE_SYSTEM_HOME}/src/modules"
+BEE_CACHES_PATH="${HOME}/.bee/caches"
+BEE_PLUGINS_PATH="${BEE_CACHES_PATH}/plugins"
+EOF
 # shellcheck disable=SC1090
 source "${BEE_RC}"
 

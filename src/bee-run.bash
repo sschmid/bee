@@ -1,4 +1,16 @@
 ################################################################################
+# compatibility
+################################################################################
+
+column_compat() {
+  if command -v column &> /dev/null; then
+    column -s '|' -t "$@"
+  else
+    awk -F '|' '{ printf "%-26s%s\n", $1, $2 }' "$@"
+  fi
+}
+
+################################################################################
 # modules
 ################################################################################
 
@@ -117,13 +129,13 @@ bee::run_plugin() {
 ################################################################################
 
 bee::comp_modules() {
-  # shellcheck disable=SC2044
   find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
 }
 
 bee::comp_plugins() {
-  # shellcheck disable=SC2044
-  find "${BEE_PLUGINS_PATH}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+  if [[ -d "${BEE_PLUGINS_PATH}" ]]; then
+    find "${BEE_PLUGINS_PATH}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+  fi
 }
 
 bee::comp_module_or_plugin() {

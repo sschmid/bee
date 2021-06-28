@@ -1,3 +1,4 @@
+# shellcheck disable=SC2030,SC2031
 setup() {
   load "test-helper.bash"
   _set_test_beerc
@@ -10,11 +11,32 @@ setup() {
   assert_file_not_executable "${FILE_PATH}"
 }
 
+# shellcheck disable=SC2207
 @test "completes with modules and plugins" {
   COMP_WORDS=(bee)
   COMP_CWORD=1
   _bee_completions
-  assert_equal "${COMPREPLY[*]}" "othertestmodule testmodule testplugindepsdep testplugin testplugindeps othertestplugin testpluginmissingdep"
+  local expected=(
+    testmodule othertestmodule
+    testplugin othertestplugin testplugindeps testplugindepsdep testpluginmissingdep
+  )
+  expected=($(for i in "${expected[@]}"; do echo "$i"; done | sort))
+  COMPREPLY=($(for i in "${COMPREPLY[@]}"; do echo "$i"; done | sort))
+  assert_equal "${COMPREPLY[*]}" "${expected[*]}"
+}
+
+# shellcheck disable=SC2207
+@test "doesn't complete plugins when folder doesn't exists" {
+  COMP_WORDS=(bee)
+  COMP_CWORD=1
+  export BEE_PLUGINS_PATH=unkown
+  _bee_completions
+  local expected=(
+    testmodule othertestmodule
+  )
+  expected=($(for i in "${expected[@]}"; do echo "$i"; done | sort))
+  COMPREPLY=($(for i in "${COMPREPLY[@]}"; do echo "$i"; done | sort))
+  assert_equal "${COMPREPLY[*]}" "${expected[*]}"
 }
 
 @test "completes module" {

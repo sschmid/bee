@@ -19,7 +19,7 @@ teardown() {
 @test "resolves bee system home and follows symlink" {
   _setup_test_tmp_dir
   ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/bee"
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1090,SC1091
   source "${TMP_TEST_DIR}/bee"
   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
 }
@@ -29,7 +29,7 @@ teardown() {
   mkdir "${TMP_TEST_DIR}/src" "${TMP_TEST_DIR}/bin"
   ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/src/bee"
   ln -s "${TMP_TEST_DIR}/src/bee" "${TMP_TEST_DIR}/bee"
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1090,SC1091
   source "${TMP_TEST_DIR}/bee"
   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
 }

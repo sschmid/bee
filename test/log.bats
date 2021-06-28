@@ -154,6 +154,7 @@ setup() {
   assert_output "test1"
 }
 
+# shellcheck disable=SC2034
 @test "logs var even when quiet" {
   BEE_QUIET=1
   my_var="test2"
