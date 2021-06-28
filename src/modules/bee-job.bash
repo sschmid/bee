@@ -1,3 +1,4 @@
+# bee::help job <title> <command> | run command as a job
 BEE_JOB_SPINNER_INTERVAL=0.1
 BEE_JOB_SPINNER_FRAMES=(
   '🐝'

@@ -1,3 +1,4 @@
+# bee::help testmodule | help
 if [[ -v BEE_TESTMODULE_SOURCED ]]; then
   echo "# ERROR: already sourced"
   exit 1

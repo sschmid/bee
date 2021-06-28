@@ -1,3 +1,4 @@
+# bee::help update | update bee to the latest version
 bee::update() {
   if (($# == 0)); then
     pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
