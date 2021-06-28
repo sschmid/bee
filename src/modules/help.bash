@@ -21,7 +21,7 @@ EOF
 bee::help::print_entries() {
   local header
   # shellcheck disable=SC2044
-  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "bee-*.bash"); do
+  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash"); do
     header="$(head -n 1 "${module}")"
     if [[ "${header}" == "# bee::help"* ]]; then
       echo "  ${header:12}"

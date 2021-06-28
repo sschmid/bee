@@ -1,7 +1,7 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/bee-job.bash"
+  MODULE_PATH="${PROJECT_ROOT}/src/modules/job.bash"
   # shellcheck disable=SC1090
   source "${MODULE_PATH}"
 }

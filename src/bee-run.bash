@@ -8,7 +8,7 @@ declare -gA BEE_LOAD_MODULE_LOADED=()
 bee::load_module() {
   local module="$1"
   if [[ ! -v BEE_LOAD_MODULE_LOADED["${module}"] ]]; then
-    local module_path="${BEE_MODULES_PATH}/bee-${module}.bash"
+    local module_path="${BEE_MODULES_PATH}/${module}.bash"
     if [[ -f "${module_path}" ]]; then
       # shellcheck disable=SC1090
       source "${module_path}"
@@ -118,9 +118,7 @@ bee::run_plugin() {
 
 bee::comp_modules() {
   # shellcheck disable=SC2044
-  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "bee-*.bash" ! -name "bee-help.bash" -exec basename {} ".bash" \;); do
-    echo "${module/bee-/}"
-  done
+  find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
 }
 
 bee::comp_plugins() {
