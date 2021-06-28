@@ -1,7 +1,7 @@
 setup() {
   load "test-helper.bash"
   _set_test_beerc
-  FILE_PATH="${PROJECT_ROOT}/etc/bee-completion.bash"
+  FILE_PATH="${PROJECT_ROOT}/etc/bash_completion.d/bee-completion.bash"
   # shellcheck disable=SC1090
   source "${FILE_PATH}"
 }
