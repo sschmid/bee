@@ -28,13 +28,6 @@ bee::run_module() {
   "bee::${module}" "$@"
 }
 
-bee::print_modules() {
-  # shellcheck disable=SC2044
-  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "bee-*.bash" -exec basename {} ".bash" \;); do
-    echo "${module/bee-/}"
-  done
-}
-
 ################################################################################
 # plugins
 ################################################################################
@@ -116,6 +109,38 @@ bee::run_plugin() {
     "${plugin}::${cmd}" "$@"
   else
     "${plugin}::help"
+  fi
+}
+
+################################################################################
+# completion
+################################################################################
+
+bee::comp_modules() {
+  # shellcheck disable=SC2044
+  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "bee-*.bash" ! -name "bee-help.bash" -exec basename {} ".bash" \;); do
+    echo "${module/bee-/}"
+  done
+}
+
+bee::comp_plugins() {
+  # shellcheck disable=SC2044
+  find "${BEE_PLUGINS_PATH}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+}
+
+bee::comp_module_or_plugin() {
+  bee::load_module "$1"
+  if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
+    local comp="bee::${BEE_LOAD_MODULE_NAME}::comp"
+    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}"
+    return
+  fi
+
+  bee::load_plugin "$1"
+  if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+    local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
+    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}"
+    return
   fi
 }
 
@@ -245,20 +270,23 @@ bee::run() {
   done
 
   if (($# > 0)); then
+    # run bee module, e.g. bee plugins ls
     bee::load_module "$1"
     if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
       shift
-      bee::run_module "${BEE_LOAD_MODULE_NAME}" "$@" # run bee module, e.g. bee plugins ls
-    else
-      bee::load_plugin "$1"
-      if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
-        BEE_MODE=${BEE_MODE_PLUGIN}
-        shift
-        bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@" # run bee plugin, e.g. bee github me
-      else
-        "$@" # run args, e.g. bee echo "message"
-      fi
+      bee::run_module "${BEE_LOAD_MODULE_NAME}" "$@"
+      return
     fi
+    # run bee plugin, e.g. bee github me
+    bee::load_plugin "$1"
+    if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+      BEE_MODE=${BEE_MODE_PLUGIN}
+      shift
+      bee::run_plugin "${BEE_LOAD_PLUGIN_NAME}" "$@"
+      return
+    fi
+    # run args, e.g. bee echo "message"
+    "$@"
   else
     bee::usage
   fi

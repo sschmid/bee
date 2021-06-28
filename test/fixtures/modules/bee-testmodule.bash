@@ -19,3 +19,7 @@ bee::testmodule() {
 bee::testmodule::help() {
   echo "testmodule help"
 }
+
+bee::testmodule::comp() {
+  echo "testmodulecomp"
+}

@@ -27,3 +27,7 @@ testplugin::greet() {
     echo "greeting from testplugin 2.0.0"
   fi
 }
+
+testplugin::comp() {
+  echo "testplugincomp"
+}
