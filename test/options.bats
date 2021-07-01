@@ -57,3 +57,10 @@ setup() {
   run bee --
   assert_output --partial "plugin-based bash automation"
 }
+
+@test "prints version" {
+  local bee_version
+  bee_version="$(cat "${PROJECT_ROOT}/version.txt")"
+  run bee --version
+  assert_output "${bee_version}"
+}

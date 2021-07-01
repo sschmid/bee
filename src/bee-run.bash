@@ -270,6 +270,11 @@ bee::run() {
         ;;
       -q | --quiet) BEE_QUIET=1 ;;
       -v | --verbose) set -x ;;
+      --version)
+        # shellcheck disable=SC2153
+        cat "${BEE_HOME}/version.txt"
+        return
+        ;;
       --)
         shift
         break
