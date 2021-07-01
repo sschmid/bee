@@ -24,11 +24,24 @@ BEE_JOB_SPINNER_FRAMES=(
 
 BEE_JOB_SPINNER_PID=0
 BEE_JOB_RUNNING=0
+BEE_JOB_T=0
+BEE_JOB_SHOW_TIME=0
 BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
 bee::job() {
   if (($# >= 2)); then
+    while (($# > 0)); do
+      case "$1" in
+        -t | --time) BEE_JOB_SHOW_TIME=1 ;;
+        --)
+          shift
+          break
+          ;;
+        *) break ;;
+      esac
+      shift
+    done
     bee::job::start "$@"
     bee::job::finish
   else
@@ -51,11 +64,16 @@ bee::job::start() {
 
 bee::job::finish() {
   bee::job::stop_spinner
-  echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
+  if ((BEE_JOB_SHOW_TIME)); then
+    echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎ ($((SECONDS - BEE_JOB_T)) seconds)\033[0m"
+  else
+    echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
+  fi
 }
 
 bee::job::start_spinner() {
   BEE_JOB_RUNNING=1
+  BEE_JOB_T=${SECONDS}
   bee::add_int_trap bee::job::INT
   bee::add_exit_trap bee::job::EXIT
   if [[ -t 1 ]]; then
@@ -84,7 +102,11 @@ bee::job::stop_spinner() {
 bee::job::spin() {
   while true; do
     for i in "${BEE_JOB_SPINNER_FRAMES[@]}"; do
-      echo -ne "\r\033[2K${BEE_JOB_TITLE} ${i}"
+      if ((BEE_JOB_SHOW_TIME)); then
+        echo -ne "\r\033[2K${BEE_JOB_TITLE} ($((SECONDS - BEE_JOB_T)) seconds) ${i}"
+      else
+        echo -ne "\r\033[2K${BEE_JOB_TITLE} ${i}"
+      fi
       sleep ${BEE_JOB_SPINNER_INTERVAL}
     done
   done
@@ -93,7 +115,11 @@ bee::job::spin() {
 bee::job::INT() {
   ((!BEE_JOB_RUNNING)) && return
   bee::job::stop_spinner
-  echo "Aborted by $(whoami)" >> "${BEE_JOB_LOGFILE}"
+  if ((BEE_JOB_SHOW_TIME)); then
+    echo "Aborted by $(whoami) ($((SECONDS - BEE_JOB_T)) seconds)" >> "${BEE_JOB_LOGFILE}"
+  else
+    echo "Aborted by $(whoami)" >> "${BEE_JOB_LOGFILE}"
+  fi
 }
 
 bee::job::EXIT() {
@@ -101,6 +127,10 @@ bee::job::EXIT() {
   ((!BEE_JOB_RUNNING)) && return
   if ((status)); then
     bee::job::stop_spinner
-    echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"
+    if ((BEE_JOB_SHOW_TIME)); then
+      echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗ ($((SECONDS - BEE_JOB_T)) seconds)\033[0m"
+    else
+      echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"
+    fi
   fi
 }

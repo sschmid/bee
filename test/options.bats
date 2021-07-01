@@ -13,7 +13,7 @@ setup() {
 }
 
 @test "batches multiple commands with args" {
-  run bee -b "echo test1 test2" "echo test3 test4"
+  run bee --batch "echo test1 test2" "echo test3 test4"
   assert_line --index 0 "test1 test2"
   assert_line --index 1 "test3 test4"
 

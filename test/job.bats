@@ -39,6 +39,28 @@ _prepare_job_logs() {
   assert_output --partial "testjob ✗"
 }
 
+@test "runs job and succeeds with time" {
+  run bee job -t "testjob" echo "test"
+  assert_output --partial "(0 seconds)"
+
+  run bee job --time "testjob" echo "test"
+  assert_output --partial "(0 seconds)"
+}
+
+@test "runs jobs and resets time" {
+  run bee --batch "job -t testjob1 sleep 2" "job -t testjob2 sleep 2"
+  assert_line --index 0 --partial "(2 seconds)"
+  assert_line --index 1 --partial "(2 seconds)"
+}
+
+@test "runs job and fails with time" {
+  run bee job -t "testjob" not_a_command
+  assert_output --partial "(0 seconds)"
+
+  run bee job --time "testjob" not_a_command
+  assert_output --partial "(0 seconds)"
+}
+
 @test "logs success to logfile" {
   _prepare_job_logs
   run bee job "testjob" echo "test"
