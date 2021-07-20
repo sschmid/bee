@@ -1,6 +1,6 @@
 ARG ALPINE_VERSION=3.14
 FROM alpine:${ALPINE_VERSION} AS base
-RUN apk add --no-cache bash git
+RUN apk add --no-cache bash curl git
 RUN git config --global user.email "bee" && git config --global user.name "bee"
 
 FROM base AS bee

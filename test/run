@@ -2,8 +2,8 @@
 set -e
 
 if [[ $# -gt 0 && "$1" == "--docker" ]]; then
-  DOCKER_BUILDKIT=1 docker build --build-arg ALPINE_VERSION=3.14 --target test -t sschmid/bee .
-  docker run --rm sschmid/bee
+  DOCKER_BUILDKIT=1 docker build --build-arg ALPINE_VERSION=3.14 --target test -t sschmid/bee/test .
+  docker run --rm sschmid/bee/test
   test/shellcheck
 else
   [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
