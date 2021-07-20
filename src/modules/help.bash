@@ -26,5 +26,5 @@ bee::help::print_entries() {
     if [[ "${header}" == "# bee::help"* ]]; then
       echo "  ${header:12}"
     fi
-  done | sort | column_compat
+  done | sort | column -s '|' -t
 }

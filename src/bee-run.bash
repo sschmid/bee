@@ -2,14 +2,6 @@
 # compatibility
 ################################################################################
 
-column_compat() {
-  if command -v column &> /dev/null; then
-    column -s '|' -t "$@"
-  else
-    awk -F '|' '{ printf "%-26s%s\n", $1, $2 }' "$@"
-  fi
-}
-
 open_compat(){
   if command -v open &> /dev/null; then
     open "$@"
