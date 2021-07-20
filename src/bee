@@ -61,6 +61,7 @@ BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 # [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
 [[ ! -f "${BEE_RC}" ]] && cat << 'EOF' > "${BEE_RC}"
 BEE_ORIGIN="https://github.com/sschmid/bee.git"
+BEE_WIKI="https://github.com/sschmid/bee/wiki"
 BEE_LATEST_VERSION_PATH="https://raw.githubusercontent.com/sschmid/bee/main/version.txt"
 BEE_LATEST_VERSION_CACHE_EXPIRE=14400
 BEE_MODULES_PATH="${BEE_SYSTEM_HOME}/src/modules"
