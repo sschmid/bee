@@ -7,7 +7,7 @@ bee::help() {
 
 usage: bee [-h | --help] [--version]
            [-q | --quiet] [-v | --verbose]
-           <command> [<args>]
+           [-b | --batch] <command> [<args>]
 
 ${entries}
 
