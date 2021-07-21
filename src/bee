@@ -6,6 +6,8 @@
 #
 # "bash strict mode"
 # http://redsymbol.net/articles/unofficial-bash-strict-mode
+#
+# shellcheck disable=SC1090
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -64,17 +66,12 @@ BEE_ORIGIN="https://github.com/sschmid/bee.git"
 BEE_WIKI="https://github.com/sschmid/bee/wiki"
 BEE_LATEST_VERSION_PATH="https://raw.githubusercontent.com/sschmid/bee/main/version.txt"
 BEE_LATEST_VERSION_CACHE_EXPIRE=14400
-BEE_MODULES_PATH="${BEE_SYSTEM_HOME}/src/modules"
 BEE_CACHES_PATH="${HOME}/.bee/caches"
 BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
 EOF
-# shellcheck disable=SC1090
 source "${BEE_RC}"
 
-if [[ -v BEE_FILE ]]; then
-  # shellcheck disable=SC1090
-  source "${BEE_FILE}"
-fi
+[[ -v BEE_FILE ]] && source "${BEE_FILE}"
 
 if [[ -v BEE_VERSION ]]; then
   BEE_HOME="${BEE_CACHES_PATH}/bee/${BEE_VERSION}"
@@ -84,7 +81,6 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
-# shellcheck disable=SC1090
 source "${BEE_HOME}/src/bee-run.bash"
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

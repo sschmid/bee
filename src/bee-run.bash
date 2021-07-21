@@ -14,6 +14,8 @@ open_compat(){
 # modules
 ################################################################################
 
+BEE_MODULES_PATH="${BEE_MODULES_PATH:-"${BEE_HOME}/src/modules"}"
+
 BEE_LOAD_MODULE_NAME=""
 declare -gA BEE_LOAD_MODULE_LOADED=()
 
