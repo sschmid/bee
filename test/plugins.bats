@@ -8,14 +8,14 @@ setup() {
   bee::resolve_plugin testplugin
   assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
   assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "2.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/testplugin/2.0.0/testplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "resolves plugin with exact version" {
   bee::resolve_plugin testplugin:1.0.0
   assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
   assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/testplugin/1.0.0/testplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "doesn't resolve plugin with unknown version" {
@@ -30,7 +30,7 @@ setup() {
   bee::resolve_plugin othertestplugin
   assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "othertestplugin"
   assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATH}/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "doesn't resolve unknown plugin" {
@@ -134,4 +134,18 @@ setup() {
   bee::load_plugin testplugin
   run bee::run_plugin testplugin greet "test"
   assert_output "greeting test from testplugin 2.0.0"
+}
+
+################################################################################
+# multiple plugin folders
+################################################################################
+
+@test "loads plugin and dependencies from custom folder" {
+  BEE_PLUGINS_PATHS=(
+    "${PROJECT_ROOT}/test/fixtures/plugins"
+    "${PROJECT_ROOT}/test/fixtures/custom_plugins"
+  )
+  run bee::load_plugin customtestplugin
+  assert_line --index 0 "# customtestplugin 1.0.0 sourced"
+  assert_line --index 1 "# testplugin 1.0.0 sourced"
 }

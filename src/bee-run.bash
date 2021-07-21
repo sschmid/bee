@@ -51,16 +51,22 @@ declare -gA BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 
 bee::resolve_plugin() {
   local plugin="$1"
+  local -i found=0
   BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
   BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
-    if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${BEE_PLUGINS_PATH}/${plugin}" ]]; then
-      BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${BEE_PLUGINS_PATH}/${plugin}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
-    fi
-    BEE_RESOLVE_PLUGIN_PATH="${BEE_PLUGINS_PATH}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
-    if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-      BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
-    else
+    for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
+      if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${plugin_path}/${plugin}" ]]; then
+        BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${plugin_path}/${plugin}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
+      fi
+      BEE_RESOLVE_PLUGIN_PATH="${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+      if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
+        found=1
+        break
+      fi
+    done
+    if ((!found)); then
       BEE_RESOLVE_PLUGIN_NAME=""
       BEE_RESOLVE_PLUGIN_VERSION=""
       BEE_RESOLVE_PLUGIN_PATH=""
@@ -133,9 +139,11 @@ bee::comp_modules() {
 }
 
 bee::comp_plugins() {
-  if [[ -d "${BEE_PLUGINS_PATH}" ]]; then
-    find "${BEE_PLUGINS_PATH}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
-  fi
+  for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
+    if [[ -d "${plugin_path}" ]]; then
+      find "${plugin_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+    fi
+  done
 }
 
 bee::comp_module_or_plugin() {

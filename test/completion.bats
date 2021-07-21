@@ -15,10 +15,11 @@ setup() {
 @test "completes with modules and plugins" {
   COMP_WORDS=(bee)
   COMP_CWORD=1
+  export TEST_CUSTOM_PLUGINS=1
   _bee_completions
   local expected=(
     testmodule othertestmodule
-    testplugin othertestplugin testplugindeps testplugindepsdep testpluginmissingdep
+    testplugin othertestplugin testplugindeps testplugindepsdep testpluginmissingdep customtestplugin
   )
   expected=($(for i in "${expected[@]}"; do echo "$i"; done | sort))
   COMPREPLY=($(for i in "${COMPREPLY[@]}"; do echo "$i"; done | sort))
@@ -29,7 +30,7 @@ setup() {
 @test "doesn't complete plugins when folder doesn't exists" {
   COMP_WORDS=(bee)
   COMP_CWORD=1
-  export BEE_PLUGINS_PATH=unkown
+  export TEST_NO_PLUGINS=1
   _bee_completions
   local expected=(
     testmodule othertestmodule
