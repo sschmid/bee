@@ -3,8 +3,6 @@ setup() {
   _set_test_beerc
   _source_bee
   MODULE_PATH="${PROJECT_ROOT}/src/modules/help.bash"
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 @test "is not executable" {
@@ -12,6 +10,8 @@ setup() {
 }
 
 @test "prints entries" {
-  run bee::help::print_entries
+  # shellcheck disable=SC1090
+  source "${MODULE_PATH}"
+  run _strict bee::help::print_entries
   assert_output -e '^[[:space:]]*testmodule[[:space:]]+help'
 }

@@ -22,16 +22,16 @@ setup() {
 }
 
 @test "prints message" {
-  run bee::testmodule
+  run _strict bee::testmodule
   assert_output "hello from testmodule"
 }
 
 @test "prints message with args" {
-  run bee::testmodule test
+  run _strict bee::testmodule test
   assert_output "hello from testmodule - test"
 }
 
 @test "prints help" {
-  run bee::testmodule::help
+  run _strict bee::testmodule::help
   assert_output "testmodule help"
 }

@@ -1,9 +1,6 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/update.bash"
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 teardown() {
@@ -11,7 +8,7 @@ teardown() {
 }
 
 @test "is not executable" {
-  assert_file_not_executable "${MODULE_PATH}"
+  assert_file_not_executable "${PROJECT_ROOT}/src/modules/update.bash"
 }
 
 @test "shows help when args" {

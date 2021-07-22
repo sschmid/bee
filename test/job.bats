@@ -1,9 +1,6 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/job.bash"
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 teardown() {
@@ -16,7 +13,7 @@ _prepare_job_logs() {
 }
 
 @test "is not executable" {
-  assert_file_not_executable "${MODULE_PATH}"
+  assert_file_not_executable "${PROJECT_ROOT}/src/modules/job.bash"
 }
 
 @test "shows help when not enough args" {

@@ -66,7 +66,7 @@ setup() {
 ################################################################################
 
 @test "loads plugin" {
-  run bee::load_plugin testplugin:1.0.0
+  run _strict bee::load_plugin testplugin:1.0.0
   assert_output "# testplugin 1.0.0 sourced"
 
   bee::load_plugin testplugin:1.0.0
@@ -75,13 +75,13 @@ setup() {
 
 @test "loads plugin only once" {
   bee::load_plugin testplugin:1.0.0
-  run bee::load_plugin testplugin:1.0.0
+  run _strict bee::load_plugin testplugin:1.0.0
   refute_output
 }
 
 @test "loads another plugin" {
   bee::load_plugin testplugin:1.0.0
-  run bee::load_plugin othertestplugin:1.0.0
+  run _strict bee::load_plugin othertestplugin:1.0.0
   assert_output "# othertestplugin 1.0.0 sourced"
 
   bee::load_plugin othertestplugin:1.0.0
@@ -89,7 +89,7 @@ setup() {
 }
 
 @test "doesn't load unknown plugin" {
-  run bee::load_plugin unkown
+  run _strict bee::load_plugin unkown
   assert_success
   refute_output
   assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
@@ -102,7 +102,7 @@ setup() {
 }
 
 @test "loads plugin dependencies" {
-  run bee::load_plugin testplugindepsdep
+  run _strict bee::load_plugin testplugindepsdep
   assert_line --index 0 "# testplugindepsdep 1.0.0 sourced"
   assert_line --index 1 "# testplugindeps 1.0.0 sourced"
   assert_line --index 2 "# testplugin 1.0.0 sourced"
@@ -113,7 +113,7 @@ setup() {
 }
 
 @test "fails on missing plugin dependency" {
-  run bee::load_plugin testpluginmissingdep
+  run _strict bee::load_plugin testpluginmissingdep
   assert_failure
   assert_line --index 0 "# testpluginmissingdep 1.0.0 sourced"
   assert_line --index 1 "# testplugindepsdep 1.0.0 sourced"
@@ -126,13 +126,13 @@ setup() {
 
 @test "runs plugin help when no args" {
   bee::load_plugin testplugin
-  run bee::run_plugin testplugin
+  run _strict bee::run_plugin testplugin
   assert_output "testplugin 2.0.0 help"
 }
 
 @test "runs plugin with args" {
   bee::load_plugin testplugin
-  run bee::run_plugin testplugin greet "test"
+  run _strict bee::run_plugin testplugin greet "test"
   assert_output "greeting test from testplugin 2.0.0"
 }
 
@@ -145,7 +145,7 @@ setup() {
     "${PROJECT_ROOT}/test/fixtures/plugins"
     "${PROJECT_ROOT}/test/fixtures/custom_plugins"
   )
-  run bee::load_plugin customtestplugin
+  run _strict bee::load_plugin customtestplugin
   assert_line --index 0 "# customtestplugin 1.0.0 sourced"
   assert_line --index 1 "# testplugin 1.0.0 sourced"
 }

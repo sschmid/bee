@@ -10,14 +10,14 @@ _test_exit() {
 
 @test "adds exit trap with status" {
   bee::add_exit_trap _test_exit
-  run bee::run :
+  run _strict bee::run :
   assert_success
   assert_output "test exit 0"
 }
 
 @test "adds exit trap with error status" {
   bee::add_exit_trap _test_exit
-  run bee::run not_a_command
+  run _strict bee::run not_a_command
   assert_failure
   assert_output --partial "test exit 127"
 }
@@ -25,7 +25,7 @@ _test_exit() {
 @test "removes exit trap" {
   bee::add_exit_trap _test_exit
   bee::remove_exit_trap _test_exit
-  run bee::run :
+  run _strict bee::run :
   refute_output
 }
 

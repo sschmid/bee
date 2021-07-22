@@ -33,6 +33,12 @@ _source_bee() {
   source "${PROJECT_ROOT}/src/bee"
 }
 
+_strict() {
+  set -euo pipefail
+  IFS=$'\n\t'
+  "$@"
+}
+
 _setup_test_tmp_dir() {
   mkdir -p "${TMP_TEST_DIR}"
 }
@@ -56,5 +62,34 @@ _setup_test_bee_repo() {
     git add .
     git commit -m "Bump version"
     git tag "1.0.0"
+  popd > /dev/null || exit 1
+}
+
+_setup_test_bee_hub1_repo() {
+  mkdir -p "${TMP_TEST_DIR}/testbeehub1/testplugin/1.0.0"
+  pushd "${TMP_TEST_DIR}/testbeehub1" > /dev/null || exit 1
+    echo "echo '# testplugin spec 1.0.0 sourced'" > testplugin/1.0.0/plugin.bash
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+  popd > /dev/null || exit 1
+}
+
+_setup_test_bee_hub2_repo() {
+  mkdir -p "${TMP_TEST_DIR}/testbeehub2/othertestplugin/1.0.0"
+  pushd "${TMP_TEST_DIR}/testbeehub2" > /dev/null || exit 1
+    echo "echo '# othertestplugin spec 1.0.0 sourced'" > othertestplugin/1.0.0/plugin.bash
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+  popd > /dev/null || exit 1
+}
+
+_update_test_bee_hub1_repo() {
+  mkdir -p "${TMP_TEST_DIR}/testbeehub1/testplugin/2.0.0"
+  pushd "${TMP_TEST_DIR}/testbeehub1" > /dev/null || exit 1
+    echo "echo '# testplugin spec 2.0.0 sourced'" > testplugin/2.0.0/plugin.bash
+    git add .
+    git commit -m "Initial commit"
   popd > /dev/null || exit 1
 }

@@ -5,7 +5,7 @@ setup() {
 }
 
 @test "loads module" {
-  run bee::load_module testmodule
+  run _strict bee::load_module testmodule
   assert_output "# testmodule sourced"
 
   bee::load_module testmodule
@@ -14,7 +14,7 @@ setup() {
 
 @test "loads another module" {
   bee::load_module testmodule
-  run bee::load_module othertestmodule
+  run _strict bee::load_module othertestmodule
   assert_output "# othertestmodule sourced"
 
   bee::load_module othertestmodule
@@ -22,7 +22,7 @@ setup() {
 }
 
 @test "doesn't load unknown module" {
-  run bee::load_module unknown
+  run _strict bee::load_module unknown
   assert_success
   refute_output
 
@@ -32,14 +32,14 @@ setup() {
 
 @test "loads module only once" {
   bee::load_module testmodule
-  run bee::load_module testmodule
+  run _strict bee::load_module testmodule
   assert_success
   refute_output
 }
 
 @test "loads unknown module only once" {
   bee::load_module unknown
-  run bee::load_module unknown
+  run _strict bee::load_module unknown
   assert_success
   refute_output
 }
@@ -47,7 +47,7 @@ setup() {
 @test "caches module" {
   bee::load_module testmodule
   bee::load_module othertestmodule
-  run bee::load_module testmodule
+  run _strict bee::load_module testmodule
   refute_output
 
   bee::load_module testmodule
@@ -58,7 +58,7 @@ setup() {
   bee::load_module testmodule
   bee::load_module unknown
   bee::load_module testmodule
-  run bee::load_module unknown
+  run _strict bee::load_module unknown
   assert_success
   refute_output
 
@@ -68,12 +68,12 @@ setup() {
 
 @test "runs module" {
   bee::load_module testmodule
-  run bee::run_module testmodule
+  run _strict bee::run_module testmodule
   assert_output "hello from testmodule"
 }
 
 @test "runs module with args" {
   bee::load_module testmodule
-  run bee::run_module testmodule "test"
+  run _strict bee::run_module testmodule "test"
   assert_output "hello from testmodule - test"
 }

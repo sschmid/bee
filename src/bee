@@ -65,7 +65,8 @@ BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 BEE_ORIGIN="https://github.com/sschmid/bee.git"
 BEE_WIKI="https://github.com/sschmid/bee/wiki"
 BEE_LATEST_VERSION_PATH="https://raw.githubusercontent.com/sschmid/bee/main/version.txt"
-BEE_LATEST_VERSION_CACHE_EXPIRE=14400
+BEE_LATEST_VERSION_CACHE_EXPIRE=14400 # 4h
+BEE_HUBS=("https://github.com/sschmid/beehub.git")
 BEE_CACHES_PATH="${HOME}/.bee/caches"
 BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
 EOF
