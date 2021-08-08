@@ -2,7 +2,7 @@
 #
 # This script installs to /usr/local only
 # To install, run
-# bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/master/install)"
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
 
 set -e
 
