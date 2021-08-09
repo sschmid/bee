@@ -58,8 +58,8 @@ bee::resolve_plugin() {
   BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
     for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
-      if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${plugin_path}/${plugin}" ]]; then
-        BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${plugin_path}/${plugin}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
+      if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+        BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
       fi
       BEE_RESOLVE_PLUGIN_PATH="${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
       if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then

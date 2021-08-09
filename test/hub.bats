@@ -40,6 +40,13 @@ _prepare_module() {
   assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
 }
 
+@test "git:// to cache path" {
+  _prepare_module
+  run _strict bee::hub::to_cache_path "git://github.com/sschmid/beehub"
+  assert_success
+  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+}
+
 @test "git@ to cache path" {
   _prepare_module
   run _strict bee::hub::to_cache_path "git@github.com:sschmid/beehub.git"
@@ -47,11 +54,18 @@ _prepare_module() {
   assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
 }
 
-@test "unsupported url" {
+@test "ssh:// to cache path" {
+  _prepare_module
+  run _strict bee::hub::to_cache_path "ssh://git@github.com/sschmid/beehub"
+  assert_success
+  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+}
+
+@test "warns when unsupported url" {
   _prepare_module
   run _strict bee::hub::to_cache_path "unknown"
   assert_success
-  refute_output
+  assert_output "🟠 Unsupported hub url: unknown"
 }
 
 @test "clones all registered hubs" {
@@ -62,16 +76,32 @@ _prepare_module() {
     "file://${TMP_TEST_DIR}/testbeehub1"
     "file://${TMP_TEST_DIR}/testbeehub2"
   )
-  run _strict bee::hub update
+  run _strict bee::hub pull
   assert_success
 
-  [ -d "${BEE_HUBS_CACHE_PATH}/testbeehub1" ]
-  [ -f "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash" ]
-  [ -d "${BEE_HUBS_CACHE_PATH}/testbeehub2" ]
-  [ -f "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.bash" ]
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash"
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.bash"
 }
 
-@test "skips invalid hub url" {
+@test "clones specified hubs" {
+  _setup_test_bee_hub1_repo
+  _setup_test_bee_hub2_repo
+  _prepare_module
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testbeehub1"
+    "file://${TMP_TEST_DIR}/testbeehub2"
+  )
+  run _strict bee::hub pull "file://${TMP_TEST_DIR}/testbeehub1"
+  assert_success
+
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash"
+  assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2"
+}
+
+@test "ignores cloning unknown hubs" {
   _setup_test_bee_hub1_repo
   _setup_test_bee_hub2_repo
   _prepare_module
@@ -80,16 +110,18 @@ _prepare_module() {
     "unknown"
     "file://${TMP_TEST_DIR}/testbeehub2"
   )
-  run _strict bee::hub update
+  run _strict bee::hub pull
   assert_success
+  assert_output --partial "🟠 Unsupported hub url: unknown"
 
-  [ -d "${BEE_HUBS_CACHE_PATH}/testbeehub1" ]
-  [ -f "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash" ]
-  [ -d "${BEE_HUBS_CACHE_PATH}/testbeehub2" ]
-  [ -f "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.bash" ]
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash"
+  assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/unknown"
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.bash"
 }
 
-@test "updates existing hubs" {
+@test "pulls existing hubs" {
   _setup_test_bee_hub1_repo
   _setup_test_bee_hub2_repo
   _prepare_module
@@ -97,12 +129,25 @@ _prepare_module() {
     "file://${TMP_TEST_DIR}/testbeehub1"
     "file://${TMP_TEST_DIR}/testbeehub2"
   )
-  bee::hub update
-  [ ! -f "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.bash" ]
+  bee::hub pull
+  assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.bash"
 
   _update_test_bee_hub1_repo
-  run _strict bee::hub update
+  run _strict bee::hub pull
   assert_success
-  [ -f "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.bash" ]
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.bash"
 }
 
+@test "pulls test hub" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+  )
+  run _strict bee::hub pull
+
+  assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testhub"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindeps/1.0.0/spec.json"
+}

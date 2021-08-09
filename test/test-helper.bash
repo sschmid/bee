@@ -93,3 +93,55 @@ _update_test_bee_hub1_repo() {
     git commit -m "Initial commit"
   popd > /dev/null || exit 1
 }
+
+_setup_test_bee_hub_repo() {
+  mkdir -p "${TMP_TEST_DIR}/testhub"
+  cp -r "${PROJECT_ROOT}/test/fixtures/hub/" "${TMP_TEST_DIR}/testhub"
+  pushd "${TMP_TEST_DIR}/testhub" > /dev/null || exit 1
+    local file
+    while read -r -d '' file; do
+      sed -i "" "s;HOME;${TMP_TEST_DIR};" "${file}"
+    done < <(find . -type f -name "spec.json" -print0)
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+  popd > /dev/null || exit 1
+}
+
+_setup_empty_bee_hub_repo() {
+  mkdir -p "${TMP_TEST_DIR}/$1"
+  pushd "${TMP_TEST_DIR}/$1" > /dev/null || exit 1
+    echo "empty" > empty.txt
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+  popd > /dev/null || exit 1
+}
+
+_setup_testplugin_repo() {
+  mkdir -p "${TMP_TEST_DIR}/plugins"
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/1.0.0/" "${TMP_TEST_DIR}/plugins/testplugin"
+  pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+    git tag "v1.0.0"
+  popd > /dev/null || exit 1
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/" "${TMP_TEST_DIR}/plugins/testplugin"
+  pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
+    git add .
+    git commit -m "Release 2.0.0"
+    git tag "v2.0.0"
+  popd > /dev/null || exit 1
+}
+
+_setup_testplugindeps_repo() {
+  mkdir -p "${TMP_TEST_DIR}/plugins"
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugindeps/1.0.0/" "${TMP_TEST_DIR}/plugins/testplugindeps"
+  pushd "${TMP_TEST_DIR}/plugins/testplugindeps" > /dev/null || exit 1
+    git init -b main
+    git add .
+    git commit -m "Initial commit"
+    git tag "v1.0.0"
+  popd > /dev/null || exit 1
+}

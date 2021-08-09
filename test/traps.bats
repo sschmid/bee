@@ -54,6 +54,7 @@ _test_exit() {
 
 @test "fails in plugin mode" {
   run bee testplugin not_a_command
+  assert_failure
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --partial --index 1 "testplugin::not_a_command: command not found"
   assert_line --partial --index 2 "🔴 bzzzz 127"
@@ -68,6 +69,7 @@ _test_exit() {
 
 @test "fails quiet in plugin mode" {
   run bee --quiet testplugin not_a_command
+  assert_failure
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --partial --index 1 "testplugin::not_a_command: command not found"
   refute_output --partial "bzzzz"

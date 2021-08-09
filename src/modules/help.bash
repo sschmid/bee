@@ -19,12 +19,11 @@ EOF
 }
 
 bee::help::print_entries() {
-  local header
-  # shellcheck disable=SC2044
-  for module in $(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash"); do
+  local header module
+  while read -r -d '' module; do
     header="$(head -n 1 "${module}")"
     if [[ "${header}" == "# bee::help"* ]]; then
       echo "  ${header:12}"
     fi
-  done | sort | column -s '|' -t
+  done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | sort | column -s '|' -t
 }
