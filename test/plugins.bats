@@ -120,8 +120,8 @@ setup() {
   assert_line --index 2 "# testplugindeps 1.0.0 sourced"
   assert_line --index 3 "# testplugin 1.0.0 sourced"
   assert_line --index 4 "# othertestplugin 1.0.0 sourced"
-  assert_line --index 5 "🔴 Missing plugin: 'missing:1.0.0'"
-  assert_line --index 6 "🔴 Missing plugin: 'othermissing:1.0.0'"
+  assert_line --index 5 "${BEE_ERR} Missing plugin: 'missing:1.0.0'"
+  assert_line --index 6 "${BEE_ERR} Missing plugin: 'othermissing:1.0.0'"
 }
 
 @test "runs plugin help when no args" {

@@ -8,6 +8,9 @@ export TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
+BEE_WARN="🟠"
+BEE_ERR="🔴"
+
 _set_beerc() {
   export BEE_RC="${BATS_TEST_DIRNAME}/beerc.bash"
 }

@@ -106,12 +106,12 @@ setup() {
 
 @test "logs warn message" {
   run _strict bee::log_warn "message"
-  assert_output "🟠 message"
+  assert_output "${BEE_WARN} message"
 }
 
 @test "logs multiple warn messages" {
   run _strict bee::log_warn "message1" "message2" "message3"
-  assert_line --index 0 "🟠 message1"
+  assert_line --index 0 "${BEE_WARN} message1"
   assert_line --index 1 "message2"
   assert_line --index 2 "message3"
 }
@@ -119,7 +119,7 @@ setup() {
 @test "logs warn message even when quiet" {
   BEE_QUIET=1
   run _strict bee::log_warn "message"
-  assert_output "🟠 message"
+  assert_output "${BEE_WARN} message"
 }
 
 #################################################################################
@@ -128,12 +128,12 @@ setup() {
 
 @test "logs error message" {
   run _strict bee::log_error "message"
-  assert_output "🔴 message"
+  assert_output "${BEE_ERR} message"
 }
 
 @test "logs multiple error messages" {
   run _strict bee::log_error "message1" "message2" "message3"
-  assert_line --index 0 "🔴 message1"
+  assert_line --index 0 "${BEE_ERR} message1"
   assert_line --index 1 "message2"
   assert_line --index 2 "message3"
 }
@@ -141,7 +141,7 @@ setup() {
 @test "logs error message even when quiet" {
   BEE_QUIET=1
   run _strict bee::log_error "message"
-  assert_output "🔴 message"
+  assert_output "${BEE_ERR} message"
 }
 
 #################################################################################

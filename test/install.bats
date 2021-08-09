@@ -25,7 +25,7 @@ _prepare_module() {
   _strict bee::hub pull
   run _strict bee::hub install unknown
   assert_failure
-  assert_output "🔴 Couldn't find and install plugin: unknown"
+  assert_output "${BEE_ERR} Couldn't find and install plugin: unknown"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
 }
 
@@ -82,7 +82,7 @@ _prepare_module() {
   _strict bee::hub pull
   run _strict bee::hub install testplugin:9.0.0
   assert_failure
-  assert_output "🔴 Couldn't find and install plugin: testplugin:9.0.0"
+  assert_output "${BEE_ERR} Couldn't find and install plugin: testplugin:9.0.0"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/testplugin"
 }
 

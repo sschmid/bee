@@ -65,7 +65,7 @@ _prepare_module() {
   _prepare_module
   run _strict bee::hub::to_cache_path "unknown"
   assert_success
-  assert_output "🟠 Unsupported hub url: unknown"
+  assert_output "${BEE_WARN} Unsupported hub url: unknown"
 }
 
 @test "clones all registered hubs" {
@@ -112,7 +112,7 @@ _prepare_module() {
   )
   run _strict bee::hub pull
   assert_success
-  assert_output --partial "🟠 Unsupported hub url: unknown"
+  assert_output --partial "${BEE_WARN} Unsupported hub url: unknown"
 
   assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.bash"
