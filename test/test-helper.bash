@@ -107,7 +107,7 @@ _setup_test_bee_hub_repo() {
   pushd "${TMP_TEST_DIR}/testhub" > /dev/null || exit 1
     local file
     while read -r -d '' file; do
-      sed -i "" "s;HOME;${TMP_TEST_DIR};" "${file}"
+      sed -i.bak -e "s;HOME;${TMP_TEST_DIR};" -- "${file}" && rm "${file}.bak"
     done < <(find . -type f -name "spec.json" -print0)
     git init -b main
     git add .
