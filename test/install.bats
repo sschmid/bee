@@ -120,6 +120,7 @@ _prepare_module() {
 @test "skips installing already installed plugins" {
   _setup_test_bee_hub_repo
   _prepare_module
+  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
   )

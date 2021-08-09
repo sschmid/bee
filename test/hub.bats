@@ -28,6 +28,7 @@ _prepare_module() {
 
 @test "file:// to cache path" {
   _prepare_module
+  # shellcheck disable=SC2016
   run _strict bee::hub::to_cache_path 'file://${HOME}/bee/beehub'
   assert_success
   assert_output "${BEE_HUBS_CACHE_PATH}/beehub"
@@ -141,6 +142,7 @@ _prepare_module() {
 @test "pulls test hub" {
   _setup_test_bee_hub_repo
   _prepare_module
+  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
   )

@@ -82,6 +82,12 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
+BEE_PLATFORM="${BEE_HOME}/src/platform/${BEE_OSTYPE:-${OSTYPE%%[[:digit:]]*}}/platform.bash"
+if [[ -f "${BEE_PLATFORM}" ]]; then
+  source "${BEE_PLATFORM}"
+else
+  bee::log_warn "Missing platform support for ${OSTYPE%%[[:digit:]]*} (${OSTYPE})"
+fi
 source "${BEE_HOME}/src/bee-run.bash"
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
