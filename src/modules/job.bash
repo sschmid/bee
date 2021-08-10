@@ -55,7 +55,7 @@ bee::job::start() {
   bee::job::start_spinner
   if [[ -v BEE_RESOURCES ]]; then
     mkdir -p "${BEE_RESOURCES}/logs"
-    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y-%m-%d-%H-%M-%S')-job-${BEE_JOB_TITLE}-${RANDOM}${RANDOM}.log"
+    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y%m%d%H%M%S')-job-${BEE_JOB_TITLE// /-}-${RANDOM}${RANDOM}.log"
   else
     BEE_JOB_LOGFILE=/dev/null
   fi

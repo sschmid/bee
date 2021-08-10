@@ -65,6 +65,13 @@ _prepare_job_logs() {
   assert_output "test"
 }
 
+@test "uses job title for logfile" {
+  _prepare_job_logs
+  run bee job "Do some work" echo "test"
+  run ls "${TMP_TEST_DIR}/logs"
+  assert_output --partial "Do-some-work"
+}
+
 @test "logs error to logfile" {
   _prepare_job_logs
   run bee job "testjob" not_a_command
