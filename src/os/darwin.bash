@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-plat_open() {
+os_open() {
   open "$@"
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-plat_open() {
+os_open() {
   # shellcheck disable=SC2145
   echo "# TEST open: $@"
 }

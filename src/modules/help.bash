@@ -22,8 +22,6 @@ bee::help::print_entries() {
   local header module
   while read -r -d '' module; do
     header="$(head -n 1 "${module}")"
-    if [[ "${header}" == "# bee::help"* ]]; then
-      echo "  ${header:12}"
-    fi
+    [[ "${header}" == "# bee::help"* ]] && echo "  ${header:12}"
   done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | sort | column -s '|' -t
 }

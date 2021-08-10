@@ -56,10 +56,10 @@ _teardown_test_tmp_dir() {
 _setup_test_bee_repo() {
   mkdir "${TMP_TEST_DIR}/testbee"
   pushd "${TMP_TEST_DIR}/testbee" > /dev/null || exit 1
-    mkdir -p src/platform/test
+    mkdir -p src/os/test
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
-    cp "${PROJECT_ROOT}/src/platform/test/platform.bash" "src/platform/test/platform.bash"
+    cp "${PROJECT_ROOT}/src/os/test.bash" "src/os/test.bash"
     git init -b main
     git add .
     git commit -m "Initial commit"

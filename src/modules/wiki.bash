@@ -1,4 +1,4 @@
 # bee::help wiki | open wiki
 bee::wiki() {
-  plat_open "${BEE_WIKI}"
+  os_open "${BEE_WIKI}"
 }

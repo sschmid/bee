@@ -1,18 +1,16 @@
+# shellcheck disable=SC1090
 ################################################################################
 # modules
 ################################################################################
-
 BEE_MODULES_PATH="${BEE_MODULES_PATH:-"${BEE_HOME}/src/modules"}"
 
 BEE_LOAD_MODULE_NAME=""
-declare -gA BEE_LOAD_MODULE_LOADED=()
-
+declare -Ag BEE_LOAD_MODULE_LOADED=()
 bee::load_module() {
   local module="$1"
   if [[ ! -v BEE_LOAD_MODULE_LOADED["${module}"] ]]; then
     local module_path="${BEE_MODULES_PATH}/${module}.bash"
     if [[ -f "${module_path}" ]]; then
-      # shellcheck disable=SC1090
       source "${module_path}"
       BEE_LOAD_MODULE_NAME="${module}"
     else
@@ -33,12 +31,10 @@ bee::run_module() {
 ################################################################################
 # plugins
 ################################################################################
-
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
-declare -gA BEE_RESOLVE_PLUGIN_PATH_CACHE=()
-
+declare -Ag BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 bee::resolve_plugin() {
   local plugin="$1"
   local -i found=0
@@ -68,15 +64,14 @@ bee::resolve_plugin() {
 }
 
 BEE_LOAD_PLUGIN_NAME=""
-declare -gA BEE_LOAD_PLUGIN_LOADED=()
+declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
-
 bee::load_plugin() {
   BEE_LOAD_PLUGIN_MISSING=()
   bee::resolve_plugin "$1"
   if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
     BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
-    bee::load_plugin_deps "${BEE_LOAD_PLUGIN_NAME}"
+    bee::load_plugin_deps
     if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
         bee::log_error "Missing plugin: '${missing}'"
@@ -90,7 +85,6 @@ bee::load_plugin() {
 
 bee::load_plugin_deps() {
   if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"] ]]; then
-    # shellcheck disable=SC1090
     source "${BEE_RESOLVE_PLUGIN_PATH}"
     # shellcheck disable=SC2034
     BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"]=1
@@ -99,7 +93,7 @@ bee::load_plugin_deps() {
       for dep in $("${deps}"); do
         bee::resolve_plugin "${dep}"
         if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-          bee::load_plugin_deps "${dep}"
+          bee::load_plugin_deps
         else
           BEE_LOAD_PLUGIN_MISSING+=("${dep}")
         fi
@@ -123,16 +117,13 @@ bee::run_plugin() {
 ################################################################################
 # completion
 ################################################################################
-
 bee::comp_modules() {
   find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
 }
 
 bee::comp_plugins() {
   for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
-    if [[ -d "${plugin_path}" ]]; then
-      find "${plugin_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
-    fi
+    [[ -d "${plugin_path}" ]] && find "${plugin_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
   done
 }
 
@@ -155,57 +146,27 @@ bee::comp_module_or_plugin() {
 ################################################################################
 # traps
 ################################################################################
-
 BEE_CANCELED=0
 BEE_MODE_INTERNAL=0
 BEE_MODE_PLUGIN=1
 BEE_MODE=${BEE_MODE_INTERNAL}
-
 T=${SECONDS}
 
-declare -gA BEE_TRAPS_INT=()
-bee::add_int_trap() {
-  BEE_TRAPS_INT["$1"]="$1"
-}
-bee::remove_int_trap() {
-  unset BEE_TRAPS_INT["$1"]
-}
+declare -Ag BEE_TRAPS_INT=()
+declare -Ag BEE_TRAPS_TERM=()
+declare -Ag BEE_TRAPS_EXIT=()
+bee::add_int_trap() { BEE_TRAPS_INT["$1"]="$1"; }
+bee::add_term_trap() { BEE_TRAPS_TERM["$1"]="$1"; }
+bee::add_exit_trap() { BEE_TRAPS_EXIT["$1"]="$1"; }
+bee::remove_int_trap() { unset BEE_TRAPS_INT["$1"]; }
+bee::remove_term_trap() { unset BEE_TRAPS_TERM["$1"]; }
+bee::remove_exit_trap() { unset BEE_TRAPS_EXIT["$1"]; }
 
-declare -gA BEE_TRAPS_TERM=()
-bee::add_term_trap() {
-  BEE_TRAPS_TERM["$1"]="$1"
-}
-bee::remove_term_trap() {
-  unset BEE_TRAPS_TERM["$1"]
-}
-
-declare -gA BEE_TRAPS_EXIT=()
-bee::add_exit_trap() {
-  BEE_TRAPS_EXIT["$1"]="$1"
-}
-bee::remove_exit_trap() {
-  unset BEE_TRAPS_EXIT["$1"]
-}
-
-bee::INT() {
-  BEE_CANCELED=1
-  for t in "${BEE_TRAPS_INT[@]}"; do
-    "$t"
-  done
-}
-
-bee::TERM() {
-  BEE_CANCELED=1
-  for t in "${BEE_TRAPS_TERM[@]}"; do
-    "$t"
-  done
-}
-
+bee::INT() { BEE_CANCELED=1; for t in "${BEE_TRAPS_INT[@]}"; do "$t"; done; }
+bee::TERM() { BEE_CANCELED=1; for t in "${BEE_TRAPS_TERM[@]}"; do "$t"; done; }
 bee::EXIT() {
   local -i status=$?
-  for t in "${BEE_TRAPS_EXIT[@]}"; do
-    "$t" ${status}
-  done
+  for t in "${BEE_TRAPS_EXIT[@]}"; do "$t" ${status}; done
   if ((!BEE_QUIET && BEE_MODE == BEE_MODE_PLUGIN)); then
     local duration="$((SECONDS - T)) seconds"
     if ((BEE_CANCELED)); then
@@ -223,7 +184,6 @@ bee::EXIT() {
 ################################################################################
 # run
 ################################################################################
-
 bee::batch() {
   for batch in "$@"; do
     local cmd="${batch%% *}"
@@ -240,9 +200,7 @@ bee::batch() {
 bee::split_args() {
   local IFS=" "
   # shellcheck disable=SC2068
-  for arg in $@; do
-    echo "${arg}"
-  done
+  for arg in $@; do echo "${arg}"; done
 }
 
 bee::usage() {
@@ -255,32 +213,15 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  while (($# > 0)); do
-    case "$1" in
-      -b | --batch)
-        shift
-        bee::batch "$@"
-        return
-        ;;
-      -h | --help)
-        bee::usage
-        return
-        ;;
-      -q | --quiet) BEE_QUIET=1 ;;
-      -v | --verbose) set -x ;;
-      --version)
-        # shellcheck disable=SC2153
-        cat "${BEE_HOME}/version.txt"
-        return
-        ;;
-      --)
-        shift
-        break
-        ;;
-      *) break ;;
-    esac
-    shift
-  done
+  while (($# > 0)); do case "$1" in
+    -b | --batch) shift; bee::batch "$@"; return ;;
+    -h | --help) bee::usage; return ;;
+    -q | --quiet) BEE_QUIET=1 ;;
+    -v | --verbose) set -x ;;
+    --version) cat "${BEE_HOME}/version.txt"; return ;;
+    --) shift; break ;;
+    *) break ;;
+  esac; shift; done
 
   if (($# > 0)); then
     # run bee module, e.g. bee plugins ls

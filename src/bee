@@ -1,58 +1,20 @@
 #!/usr/bin/env bash
-# 🐝 bee - plugin-based bash automation
-#
-# Shell Style Guide
-# https://google.github.io/styleguide/shell.xml
-#
-# "bash strict mode"
-# http://redsymbol.net/articles/unofficial-bash-strict-mode
-#
 # shellcheck disable=SC1090
-
 set -euo pipefail
 IFS=$'\n\t'
 
-################################################################################
-# log
-################################################################################
-
 BEE_QUIET=0
-
-bee::log_echo() {
-  if ((!BEE_QUIET)); then
-    echo "$*"
-  fi
-}
-
-bee::log() {
-  bee::log_echo "🐝 $*"
-}
-
+bee::log_echo() { ((!BEE_QUIET)) && echo "$*"; }
+bee::log() { bee::log_echo "🐝 $*"; }
 bee::log_info() {
   bee::log_echo "################################################################################"
   bee::log "$*"
   bee::log_echo "################################################################################"
 }
-
-bee::log_func() {
-  bee::log_info "${FUNCNAME[1]} $*"
-}
-
-bee::log_warn() {
-  echo "🟠 $*" >&2
-}
-
-bee::log_error() {
-  echo "🔴 $*" >&2
-}
-
-bee::log_var() {
-  echo "${!1}"
-}
-
-################################################################################
-# init
-################################################################################
+bee::log_func() { bee::log_info "${FUNCNAME[1]} $*"; }
+bee::log_warn() { echo "🟠 $*" >&2; }
+bee::log_error() { echo "🔴 $*" >&2; }
+bee::log_var() { echo "${!1}"; }
 
 BEE_SYSTEM_HOME="${BASH_SOURCE[0]}"
 while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
@@ -60,8 +22,7 @@ while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
 done
 BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 
-# [[ ! -v BEE_RC ]] && BEE_RC="${HOME}/.beerc"
-[[ ! -f "${BEE_RC}" ]] && cat << 'EOF' > "${BEE_RC}"
+[[ ! -f "${BEE_RC:="${HOME}/.beerc"}" ]] && cat << 'EOF' > "${BEE_RC}"
 BEE_ORIGIN="https://github.com/sschmid/bee.git"
 BEE_WIKI="https://github.com/sschmid/bee/wiki"
 BEE_LATEST_VERSION_PATH="https://raw.githubusercontent.com/sschmid/bee/main/version.txt"
@@ -82,14 +43,13 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
-BEE_PLATFORM="${BEE_HOME}/src/platform/${BEE_OSTYPE:-${OSTYPE%%[[:digit:]]*}}/platform.bash"
-if [[ -f "${BEE_PLATFORM}" ]]; then
-  source "${BEE_PLATFORM}"
+if [[ -f "${BEE_HOME}/src/os/${BEE_OSTYPE:=${OSTYPE%%[[:digit:]]*}}.bash" ]]; then
+  source "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash"
 else
-  bee::log_warn "Missing platform support for ${OSTYPE%%[[:digit:]]*} (${OSTYPE})"
+  bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
 fi
-source "${BEE_HOME}/src/bee-run.bash"
 
+source "${BEE_HOME}/src/bee-run.bash"
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   bee::run "$@"
 fi

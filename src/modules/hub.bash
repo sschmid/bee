@@ -67,20 +67,12 @@ bee::hub::install() {
 }
 
 bee::hub::to_cache_path() {
-  local url="$1"
-  if [[ "${url}" =~ ^https:// ]]; then
-    echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${url#https://}")/$(basename "${url}" .git)"
-  elif [[ "${url}" =~ ^git:// ]]; then
-    echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${url#git://}")/$(basename "${url}" .git)"
-  elif [[ "${url}" =~ ^git@ ]]; then
-    local path="${url#git@}"
-    echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${path/://}")/$(basename "${url}" .git)"
-  elif [[ "${url}" =~ ^ssh:// ]]; then
-    local path="${url#ssh://}"
-    echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${path#git@}")/$(basename "${url}" .git)"
-  elif [[ "${url}" =~ ^file:// ]]; then
-    echo "${BEE_HUBS_CACHE_PATH}/$(basename "${url}")"
-  else
-    bee::log_warn "Unsupported hub url: ${url}"
-  fi
+  case "$1" in
+    https://*) echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${1#https://}")/$(basename "$1" .git)" ;;
+    git://*) echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${1#git://}")/$(basename "$1" .git)" ;;
+    git@*) local path="${1#git@}"; echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${path/://}")/$(basename "$1" .git)" ;;
+    ssh://*) local path="${1#ssh://}"; echo "${BEE_HUBS_CACHE_PATH}/$(dirname "${path#git@}")/$(basename "$1" .git)" ;;
+    file://*) echo "${BEE_HUBS_CACHE_PATH}/$(basename "$1")" ;;
+    *) bee::log_warn "Unsupported hub url: $1"
+  esac
 }

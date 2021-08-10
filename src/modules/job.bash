@@ -1,27 +1,6 @@
 # bee::help job <title> <command> | run command as a job
 BEE_JOB_SPINNER_INTERVAL=0.1
-BEE_JOB_SPINNER_FRAMES=(
-  '🐝'
-  ' 🐝'
-  '  🐝'
-  '   🐝'
-  '    🐝'
-  '     🐝'
-  '      🐝'
-  '       🐝'
-  '        🐝'
-  '         🐝'
-  '        🐝'
-  '       🐝'
-  '      🐝'
-  '     🐝'
-  '    🐝'
-  '   🐝'
-  '  🐝'
-  ' 🐝'
-  '🐝'
-)
-
+BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
 BEE_JOB_SPINNER_PID=0
 BEE_JOB_RUNNING=0
 BEE_JOB_T=0
@@ -31,17 +10,12 @@ BEE_JOB_LOGFILE=""
 
 bee::job() {
   if (($# >= 2)); then
-    while (($# > 0)); do
-      case "$1" in
-        -t | --time) BEE_JOB_SHOW_TIME=1 ;;
-        --)
-          shift
-          break
-          ;;
-        *) break ;;
-      esac
-      shift
-    done
+    while (($# > 0)); do case "$1" in
+      -t | --time) BEE_JOB_SHOW_TIME=1 ;;
+      --) shift; break ;;
+      *) break ;;
+    esac; shift; done
+
     bee::job::start "$@"
     bee::job::finish
   else
