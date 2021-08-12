@@ -1,5 +1,5 @@
 {
-  "name": "testplugindeps",
+  "name": "testplugindepsdep",
   "version": "1.0.0",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
@@ -7,11 +7,11 @@
     "sschmid"
   ],
   "info": "bee testplugin",
-  "git": "file://HOME/plugins/testplugindeps",
+  "git": "file://HOME/plugins/testplugindepsdep",
   "tag": "v1.0.0",
   "sha256": "1234567890",
   "dependencies": [
-    "testplugin:1.0.0",
-    "othertestplugin:1.0.0"
+    "testplugindeps:1.0.0",
+    "testplugin:1.0.0"
   ]
 }

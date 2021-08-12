@@ -25,7 +25,9 @@ _prepare_module() {
   _strict bee::hub pull
   run _strict bee::hub install unknown
   assert_failure
-  assert_output "${BEE_ERR} Couldn't find and install plugin: unknown"
+  assert_line --index 0 "Installing"
+  assert_line --index 1 --partial "unknown ✗"
+  assert_line --index 2 "${BEE_ERR} Couldn't install plugin: unknown"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
 }
 
@@ -47,6 +49,7 @@ _prepare_module() {
   )
   run _strict bee::hub install testplugin
   assert_success
+  assert_line --index 1 --partial "testplugin:2.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
@@ -65,6 +68,7 @@ _prepare_module() {
 
   run _strict bee::hub install testplugin:1.0.0
   assert_success
+  assert_line --index 1 --partial "testplugin:1.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
 }
 
@@ -82,7 +86,9 @@ _prepare_module() {
   _strict bee::hub pull
   run _strict bee::hub install testplugin:9.0.0
   assert_failure
-  assert_output "${BEE_ERR} Couldn't find and install plugin: testplugin:9.0.0"
+  assert_line --index 0 "Installing"
+  assert_line --index 1 --partial "testplugin:9.0.0 ✗"
+  assert_line --index 2 "${BEE_ERR} Couldn't install plugin: testplugin:9.0.0"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/testplugin"
 }
 
@@ -97,6 +103,8 @@ _prepare_module() {
 
   run _strict bee::hub install testplugin:1.0.0 testplugin:2.0.0
   assert_success
+  assert_line --index 1 --partial "testplugin:1.0.0"
+  assert_line --index 2 --partial "testplugin:2.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
@@ -108,19 +116,23 @@ _prepare_module() {
     "file://${TMP_TEST_DIR}/testhub"
   )
   _setup_testplugin_repo
-  _setup_testplugindeps_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_generic_plugin_repo testplugindeps
   _strict bee::hub pull
 
   run _strict bee::hub install testplugindeps
   assert_success
+  assert_line --index 1 --partial "testplugindeps:1.0.0"
+  assert_line --index 2 --partial "testplugin:1.0.0"
+  assert_line --index 3 --partial "othertestplugin:1.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "skips installing already installed plugins" {
   _setup_test_bee_hub_repo
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
   )
@@ -130,12 +142,66 @@ _prepare_module() {
 
   run _strict bee::hub install testplugin
   assert_success
+  assert_line --index 1 --partial "testplugin:2.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
-# if installing plugin fails, try all the others, don't exit
-# install plugins with all deps recursive
-# install plugins with all deps recursive unique, no double installs
-# install plugins with circular dependency
+@test "installs plugins with dependencies recursively" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+  )
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_generic_plugin_repo testplugindeps
+  _setup_generic_plugin_repo testplugindepsdep
+  _strict bee::hub pull
+
+  run _strict bee::hub install testplugindepsdep testplugin:1.0.0
+  assert_success
+  assert_line --index 1 --partial "testplugindepsdep:1.0.0"
+  assert_line --index 2 --partial "testplugindeps:1.0.0"
+  assert_line --index 3 --partial "testplugin:1.0.0"
+  assert_line --index 4 --partial "othertestplugin:1.0.0"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+}
+
+@test "fails late when plugins are missing" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+  )
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_generic_plugin_repo testplugindeps
+  _setup_generic_plugin_repo testplugindepsdep
+  _strict bee::hub pull
+
+  run _strict bee::hub install testpluginmissingdep
+  assert_failure
+  assert_line --index 1 --partial "testpluginmissingdep:1.0.0"
+  assert_line --index 2 --partial "missing:1.0.0 ✗"
+  assert_line --index 3 --partial "testplugindepsdep:1.0.0"
+  assert_line --index 4 --partial "testplugindeps:1.0.0"
+  assert_line --index 5 --partial "testplugin:1.0.0"
+  assert_line --index 6 --partial "othertestplugin:1.0.0"
+  assert_line --index 7 --partial "testplugin:1.0.0"
+  assert_line --index 8 --partial "othermissing:1.0.0 ✗"
+  assert_line --index 9 "${BEE_ERR} Couldn't install plugin: missing:1.0.0"
+  assert_line --index 10 "${BEE_ERR} Couldn't install plugin: othermissing:1.0.0"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testpluginmissingdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+}
+
 # if installed plugin exists, check hash to verify it's original
-# when installings plugin, check hash to verify it's original
+# when installing plugin, check hash to verify it's original

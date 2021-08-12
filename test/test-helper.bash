@@ -126,14 +126,7 @@ _setup_empty_bee_hub_repo() {
 }
 
 _setup_testplugin_repo() {
-  mkdir -p "${TMP_TEST_DIR}/plugins"
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/1.0.0/" "${TMP_TEST_DIR}/plugins/testplugin"
-  pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
-    git init -b main
-    git add .
-    git commit -m "Initial commit"
-    git tag "v1.0.0"
-  popd > /dev/null || exit 1
+  _setup_generic_plugin_repo testplugin
   cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/" "${TMP_TEST_DIR}/plugins/testplugin"
   pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
     git add .
@@ -142,10 +135,10 @@ _setup_testplugin_repo() {
   popd > /dev/null || exit 1
 }
 
-_setup_testplugindeps_repo() {
+_setup_generic_plugin_repo() {
   mkdir -p "${TMP_TEST_DIR}/plugins"
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugindeps/1.0.0/" "${TMP_TEST_DIR}/plugins/testplugindeps"
-  pushd "${TMP_TEST_DIR}/plugins/testplugindeps" > /dev/null || exit 1
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/" "${TMP_TEST_DIR}/plugins/$1"
+  pushd "${TMP_TEST_DIR}/plugins/$1" > /dev/null || exit 1
     git init -b main
     git add .
     git commit -m "Initial commit"
