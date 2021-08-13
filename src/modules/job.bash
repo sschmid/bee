@@ -1,4 +1,7 @@
-# bee::help job <title> <command> | run command as a job
+# bee::help
+# job [-t | --time] <title> <command> ; run command as a job [show elapsed time]
+# bee::help
+
 BEE_JOB_SPINNER_INTERVAL=0.1
 BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
 BEE_JOB_SPINNER_PID=0

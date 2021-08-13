@@ -19,9 +19,16 @@ EOF
 }
 
 bee::help::print_entries() {
-  local header module
+  local module entry
   while read -r -d '' module; do
-    header="$(head -n 1 "${module}")"
-    [[ "${header}" == "# bee::help"* ]] && echo "  ${header:12}"
-  done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | sort | column -s '|' -t
+    exec {help}< "${module}"
+    read -r entry <&${help}
+    if [[ "${entry}" == "# bee::help" ]]; then
+      while read -r entry; do
+        [[ "${entry}" == "# bee::help" ]] && break
+        echo "  ${entry:2}"
+      done <&${help}
+    fi
+    exec {help}>&-
+  done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | column -s ';' -t
 }

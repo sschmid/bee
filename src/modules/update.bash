@@ -1,4 +1,8 @@
-# bee::help update | update bee to the latest version
+# bee::help
+# update ; update bee to the latest version
+#   print [--cached] ; show latest version [cache locally]
+# bee::help
+
 bee::update() {
   while (($# > 0)); do case "$1" in
     --read-latest-version) bee::update::read_latest_version; return ;;

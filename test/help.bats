@@ -13,5 +13,6 @@ setup() {
   # shellcheck disable=SC1090
   source "${MODULE_PATH}"
   run _strict bee::help::print_entries
-  assert_output -e '^[[:space:]]*testmodule[[:space:]]+help'
+  assert_line --index 0 -e '^[[:space:]]*testmodule[[:space:]]+help[[:space:]]1'
+  assert_line --index 1 -e '^[[:space:]]*testmodule[[:space:]]test[[:space:]]+help[[:space:]]2'
 }
