@@ -4,28 +4,35 @@
 # bee::help
 
 bee::update() {
-  while (($# > 0)); do case "$1" in
-    --read-latest-version) bee::update::read_latest_version; return ;;
-    --read-latest-version-cached) bee::update::read_latest_version_cached; return ;;
-    --) shift; break ;;
-    *) break ;;
-  esac; shift; done
-
-  if (($# == 0)); then
+  if (($#)); then
+    while (($# > 0)); do case "$1" in
+      print) shift; bee::update::print "$@"; return ;;
+      --) shift; break ;;
+      *) bee::usage; return ;;
+    esac; shift; done
+  else
     pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
       git pull origin main
       bee::log "bee is up-to-date and ready to bzzzz"
     popd > /dev/null || exit 1
-  else
-    bee::usage
   fi
 }
 
-bee::update::read_latest_version() {
-  curl -fsSL "${BEE_LATEST_VERSION_PATH}"
+bee::update::print() {
+  while (($# > 0)); do case "$1" in
+    --cached) bee::update::print_cached; return ;;
+    --) shift; break ;;
+    *) break ;;
+  esac; shift; done
+
+  if (($#)); then
+    bee::usage
+  else
+    curl -fsSL "${BEE_LATEST_VERSION_PATH}"
+  fi
 }
 
-bee::update::read_latest_version_cached() {
+bee::update::print_cached() {
   mkdir -p "${BEE_CACHES_PATH}"
   local -i last_ts now delta
   local cache cache_file="${BEE_CACHES_PATH}/.bee_latest_version_cache"

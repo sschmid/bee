@@ -27,37 +27,37 @@ teardown() {
 #}
 
 @test "reads latest version" {
-  run bee update --read-latest-version
+  run bee update print
   assert_output "1.2.3"
   assert_file_not_exist "${TMP_TEST_DIR}/caches/.bee_latest_version_cache"
 }
 
 @test "caches latest version" {
-  run bee update --read-latest-version-cached
+  run bee update print --cached
   assert_output "1.2.3"
   assert_file_exist "${TMP_TEST_DIR}/caches/.bee_latest_version_cache"
 }
 
 @test "reads cached latest version" {
   _source_bee
-  output=$(bee::run update --read-latest-version-cached)
+  output=$(bee::run update print --cached)
   assert_output "1.2.3"
 
   # shellcheck disable=SC2034
   BEE_LATEST_VERSION_PATH="file://${PROJECT_ROOT}/test/testversion2.txt"
-  output=$(bee::run update --read-latest-version-cached)
+  output=$(bee::run update print --cached)
   assert_output "1.2.3"
 }
 
 @test "updates cached latest version after cooldown" {
   _source_bee
-  output=$(bee::run update --read-latest-version-cached)
+  output=$(bee::run update print --cached)
   assert_output "1.2.3"
 
   sleep 2
 
   # shellcheck disable=SC2034
   BEE_LATEST_VERSION_PATH="file://${PROJECT_ROOT}/test/testversion2.txt"
-  output=$(bee::run update --read-latest-version-cached)
+  output=$(bee::run update print --cached)
   assert_output "4.5.6"
 }
