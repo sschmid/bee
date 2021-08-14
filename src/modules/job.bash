@@ -13,7 +13,7 @@ BEE_JOB_LOGFILE=""
 
 bee::job() {
   if (($# >= 2)); then
-    while (($# > 0)); do case "$1" in
+    while (($#)); do case "$1" in
       -t | --time) BEE_JOB_SHOW_TIME=1 ;;
       --) shift; break ;;
       *) break ;;

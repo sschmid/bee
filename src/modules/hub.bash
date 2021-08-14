@@ -6,6 +6,11 @@
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 
+bee::hub::comp() {
+  echo "pull"
+  echo "install"
+}
+
 bee::hub() {
   if (($#)); then
     case "$1" in

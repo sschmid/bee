@@ -11,7 +11,7 @@ BEE_TESTMODULE_SOURCED=1
 echo "# testmodule sourced"
 
 bee::testmodule() {
-  if (($# > 0)); then
+  if (($#)); then
     # shellcheck disable=SC2145
     echo "hello from testmodule - $@"
   else

@@ -3,13 +3,16 @@
 #   print [--cached] ; show latest version [cache locally]
 # bee::help
 
+bee::update::comp() {
+  echo "print"
+}
+
 bee::update() {
   if (($#)); then
-    while (($# > 0)); do case "$1" in
+    case "$1" in
       print) shift; bee::update::print "$@"; return ;;
-      --) shift; break ;;
-      *) bee::usage; return ;;
-    esac; shift; done
+      *) bee::usage ;;
+    esac
   else
     pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
       git pull origin main
@@ -19,7 +22,7 @@ bee::update() {
 }
 
 bee::update::print() {
-  while (($# > 0)); do case "$1" in
+  while (($#)); do case "$1" in
     --cached) bee::update::print_cached; return ;;
     --) shift; break ;;
     *) break ;;

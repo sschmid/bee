@@ -105,7 +105,7 @@ bee::load_plugin_deps() {
 bee::run_plugin() {
   local plugin="$1"
   shift
-  if (($# > 0)); then
+  if (($#)); then
     local cmd="$1"
     shift
     "${plugin}::${cmd}" "$@"
@@ -213,7 +213,7 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  while (($# > 0)); do case "$1" in
+  while (($#)); do case "$1" in
     -b | --batch) shift; bee::batch "$@"; return ;;
     -h | --help) bee::usage; return ;;
     -q | --quiet) BEE_QUIET=1 ;;
@@ -223,7 +223,7 @@ bee::run() {
     *) break ;;
   esac; shift; done
 
-  if (($# > 0)); then
+  if (($#)); then
     # run bee module, e.g. bee plugins ls
     bee::load_module "$1"
     if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then

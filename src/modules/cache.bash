@@ -3,10 +3,14 @@
 #   rm ; delete cache
 # bee::help
 
+bee::cache::comp() {
+  echo "rm"
+}
+
 bee::cache() {
   if (($#)); then
     case "$1" in
-      rm) shift; rm -rf "${BEE_CACHES_PATH}" ;;
+      rm) rm -rf "${BEE_CACHES_PATH}"; return ;;
       *) bee::usage ;;
     esac
   else

@@ -7,7 +7,7 @@ OTHERTESTPLUGIN_SOURCED=1
 echo "# othertestplugin 1.0.0 sourced"
 
 othertestplugin() {
-  if (($# > 0)); then
+  if (($#)); then
     # shellcheck disable=SC2145
     echo "hello from othertestplugin 1.0.0 - $@"
   else
@@ -20,7 +20,7 @@ othertestplugin::help() {
 }
 
 othertestplugin::greet() {
-  if (($# > 0)); then
+  if (($#)); then
     # shellcheck disable=SC2145
     echo "greeting $@ from othertestplugin 1.0.0"
   else

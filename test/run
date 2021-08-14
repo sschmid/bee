@@ -7,7 +7,7 @@ if [[ $# -gt 0 && "$1" == "--docker" ]]; then
   test/shellcheck
 else
   [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
-  if (($# > 0)); then
+  if (($#)); then
     test/bats/bin/bats "$@"
   else
     test/bats/bin/bats --tap test test/fixtures
