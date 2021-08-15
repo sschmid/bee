@@ -10,7 +10,7 @@ bee::cache::comp() {
 bee::cache() {
   if (($#)); then
     case "$1" in
-      rm) rm -rf "${BEE_CACHES_PATH}"; return ;;
+      rm) rm -rf "${BEE_CACHES_PATH}" ;;
       *) bee::usage ;;
     esac
   else

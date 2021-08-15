@@ -10,7 +10,7 @@ bee::update::comp() {
 bee::update() {
   if (($#)); then
     case "$1" in
-      print) shift; bee::update::print "$@"; return ;;
+      print) shift; bee::update::print "$@" ;;
       *) bee::usage ;;
     esac
   else

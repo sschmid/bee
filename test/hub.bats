@@ -69,6 +69,18 @@ _prepare_module() {
   assert_output "${BEE_WARN} Unsupported hub url: unknown"
 }
 
+@test "lists all hub urls" {
+  _prepare_module
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testbeehub1"
+    "file://${TMP_TEST_DIR}/testbeehub2"
+  )
+  run _strict bee::hub ls
+  assert_success
+  assert_line --index 0 "file://${TMP_TEST_DIR}/testbeehub1"
+  assert_line --index 1 "file://${TMP_TEST_DIR}/testbeehub2"
+}
+
 @test "clones all registered hubs" {
   _setup_test_bee_hub1_repo
   _setup_test_bee_hub2_repo
