@@ -11,9 +11,9 @@ usage: bee [-h | --help] [--version]
 ${entries}
 
 examples:
-  bee version bump_minor
-  bee changelog merge
-  bee github me"
+   bee version bump_minor
+   bee changelog merge
+   bee github me"
 }
 
 bee::help::print_entries() {
@@ -27,9 +27,9 @@ bee::help::print_entries() {
     if [[ "${entry}" == "# bee::help" ]]; then
       while read -r entry; do
         [[ "${entry}" == "# bee::help" ]] && echo && break
-        echo "  ${entry:2}"
+        echo "${entry:2}"
       done <&${help}
     fi
     exec {help}>&-
-  done | awk -F ';' '{ printf "%-40s%s\n", $1, $2 }'
+  done | awk -F ';' '{ printf "%-37s%s\n", $1, $2 }'
 }
