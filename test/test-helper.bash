@@ -101,9 +101,10 @@ _update_test_bee_hub1_repo() {
 }
 
 _setup_test_bee_hub_repo() {
-  mkdir -p "${TMP_TEST_DIR}/testhub"
-  cp -r "${PROJECT_ROOT}/test/fixtures/hub/" "${TMP_TEST_DIR}/testhub"
-  pushd "${TMP_TEST_DIR}/testhub" > /dev/null || exit 1
+  local name="${1:-"testhub"}"
+  mkdir -p "${TMP_TEST_DIR}/${name}"
+  cp -r "${PROJECT_ROOT}/test/fixtures/hub/" "${TMP_TEST_DIR}/${name}"
+  pushd "${TMP_TEST_DIR}/${name}" > /dev/null || exit 1
     local file
     while read -r -d '' file; do
       sed -i.bak -e "s;HOME;${TMP_TEST_DIR};" -- "${file}" && rm "${file}.bak"

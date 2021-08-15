@@ -69,18 +69,6 @@ _prepare_module() {
   assert_output "${BEE_WARN} Unsupported hub url: unknown"
 }
 
-@test "lists all hub urls" {
-  _prepare_module
-  BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testbeehub1"
-    "file://${TMP_TEST_DIR}/testbeehub2"
-  )
-  run _strict bee::hub ls
-  assert_success
-  assert_line --index 0 "file://${TMP_TEST_DIR}/testbeehub1"
-  assert_line --index 1 "file://${TMP_TEST_DIR}/testbeehub2"
-}
-
 @test "clones all registered hubs" {
   _setup_test_bee_hub1_repo
   _setup_test_bee_hub2_repo
@@ -154,7 +142,6 @@ _prepare_module() {
 @test "pulls test hub" {
   _setup_test_bee_hub_repo
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
   )
@@ -164,4 +151,52 @@ _prepare_module() {
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/spec.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/spec.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindeps/1.0.0/spec.json"
+}
+
+@test "lists all hub urls with their plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+    "file://${TMP_TEST_DIR}/othertesthub"
+  )
+  _strict bee::hub pull
+  run _strict bee::hub ls
+  assert_success
+
+  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
+  assert_line --index 1 "├── othertestplugin"
+  assert_line --index 2 "├── testplugin"
+  assert_line --index 3 "├── testplugindeps"
+  assert_line --index 4 "├── testplugindepsdep"
+  assert_line --index 5 "└── testpluginmissingdep"
+  assert_line --index 6 "file://${TMP_TEST_DIR}/othertesthub"
+  assert_line --index 7 "├── othertestplugin"
+  assert_line --index 8 "├── testplugin"
+  assert_line --index 9 "├── testplugindeps"
+  assert_line --index 10 "├── testplugindepsdep"
+  assert_line --index 11 "└── testpluginmissingdep"
+}
+
+@test "lists specified hub urls with their plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+    "file://${TMP_TEST_DIR}/othertesthub"
+  )
+  _strict bee::hub pull
+  run _strict bee::hub ls "file://${TMP_TEST_DIR}/othertesthub"
+  assert_success
+
+  assert_line --index 0 "file://${TMP_TEST_DIR}/othertesthub"
+  assert_line --index 1 "├── othertestplugin"
+  assert_line --index 2 "├── testplugin"
+  assert_line --index 3 "├── testplugindeps"
+  assert_line --index 4 "├── testplugindepsdep"
+  assert_line --index 5 "└── testpluginmissingdep"
 }

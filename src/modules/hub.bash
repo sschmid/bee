@@ -15,7 +15,7 @@ bee::hub::comp() {
 bee::hub() {
   if (($#)); then
     case "$1" in
-      ls) echo "${BEE_HUBS[*]}" ;;
+      ls) shift; bee::hub::ls "$@" ;;
       pull) shift; bee::hub::pull "$@" ;;
       install) shift; echo "Installing"; bee::hub::install "$@" ;;
       *) bee::usage ;;
@@ -23,6 +23,28 @@ bee::hub() {
   else
     bee::usage
   fi
+}
+
+bee::hub::ls() {
+  local cache_path
+  local -a plugins
+  local -i i n
+  for url in "${@:-"${BEE_HUBS[@]}"}"; do
+    cache_path="$(bee::hub::to_cache_path "${url}")"
+    if [[ -n "$cache_path" ]]; then
+      echo "${url}"
+      mapfile -t plugins < <(ls "${cache_path}")
+      n=${#plugins[@]}
+      for ((i = 0; i < n; i++)); do
+        if ((i == n - 1)); then
+          echo "└── ${plugins[i]}"
+        else
+          echo "├── ${plugins[i]}"
+        fi
+      done
+      echo
+    fi
+  done
 }
 
 bee::hub::pull() {
