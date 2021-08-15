@@ -1,6 +1,6 @@
 # bee::help
 # update ; update bee to the latest version
-#   print [--cached] ; show latest version [cache locally]
+#     print [--cached] ; show latest version [cache locally]
 # bee::help
 
 bee::update::comp() {

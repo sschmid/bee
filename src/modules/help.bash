@@ -2,8 +2,7 @@ bee::help() {
   local version entries
   version="$(cat "${BEE_HOME}/version.txt")"
   entries="$(bee::help::print_entries)"
-  cat << EOF
-🐝 bee ${version} - plugin-based bash automation
+  echo "🐝 bee ${version} - plugin-based bash automation
 
 usage: bee [-h | --help] [--version]
            [-q | --quiet] [-v | --verbose]
@@ -14,21 +13,23 @@ ${entries}
 examples:
   bee version bump_minor
   bee changelog merge
-  bee github me
-EOF
+  bee github me"
 }
 
 bee::help::print_entries() {
-  local module entry
-  while read -r -d '' module; do
-    exec {help}< "${module}"
+  local module_path entry _
+  while read -r -d '' module_path; do
+    echo -e "$(basename "${module_path}" ".bash")\t${module_path}"
+  done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | sort | \
+  while read -r _ module_path; do
+    exec {help}< "${module_path}"
     read -r entry <&${help}
     if [[ "${entry}" == "# bee::help" ]]; then
       while read -r entry; do
-        [[ "${entry}" == "# bee::help" ]] && break
+        [[ "${entry}" == "# bee::help" ]] && echo && break
         echo "  ${entry:2}"
       done <&${help}
     fi
     exec {help}>&-
-  done < <(find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" -print0) | column -s ';' -t
+  done | awk -F ';' '{ printf "%-40s%s\n", $1, $2 }'
 }
