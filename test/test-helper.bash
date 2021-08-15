@@ -8,7 +8,6 @@ export TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
-export BEE_OSTYPE="test"
 # shellcheck disable=SC2034
 BEE_WARN="🟠"
 # shellcheck disable=SC2034
@@ -56,10 +55,10 @@ _teardown_test_tmp_dir() {
 _setup_test_bee_repo() {
   mkdir "${TMP_TEST_DIR}/testbee"
   pushd "${TMP_TEST_DIR}/testbee" > /dev/null || exit 1
-    mkdir -p src/os/test
+    mkdir -p src/os
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
-    cp "${PROJECT_ROOT}/src/os/test.bash" "src/os/test.bash"
+    cp -r "${PROJECT_ROOT}/src/os" src
     git init -b main
     git add .
     git commit -m "Initial commit"

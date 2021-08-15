@@ -46,6 +46,7 @@ fi
 if [[ -f "${BEE_HOME}/src/os/${BEE_OSTYPE:=${OSTYPE%%[[:digit:]]*}}.bash" ]]; then
   source "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash"
 else
+  source "${BEE_HOME}/src/os/generic.bash"
   bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
 fi
 
