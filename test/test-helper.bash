@@ -103,7 +103,7 @@ _update_test_bee_hub1_repo() {
 _setup_test_bee_hub_repo() {
   local name="${1:-"testhub"}"
   mkdir -p "${TMP_TEST_DIR}/${name}"
-  cp -r "${PROJECT_ROOT}/test/fixtures/hub/" "${TMP_TEST_DIR}/${name}"
+  cp -r "${PROJECT_ROOT}/test/fixtures/hub/." "${TMP_TEST_DIR}/${name}"
   pushd "${TMP_TEST_DIR}/${name}" > /dev/null || exit 1
     local file
     while read -r -d '' file; do
@@ -127,7 +127,7 @@ _setup_empty_bee_hub_repo() {
 
 _setup_testplugin_repo() {
   _setup_generic_plugin_repo testplugin
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/" "${TMP_TEST_DIR}/plugins/testplugin"
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/." "${TMP_TEST_DIR}/plugins/testplugin"
   pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
     git add .
     git commit -m "Release 2.0.0"
@@ -137,7 +137,7 @@ _setup_testplugin_repo() {
 
 _setup_generic_plugin_repo() {
   mkdir -p "${TMP_TEST_DIR}/plugins"
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/" "${TMP_TEST_DIR}/plugins/$1"
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/." "${TMP_TEST_DIR}/plugins/$1"
   pushd "${TMP_TEST_DIR}/plugins/$1" > /dev/null || exit 1
     git init -b main
     git add .

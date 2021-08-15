@@ -26,9 +26,16 @@ bee::hub() {
 }
 
 bee::hub::ls() {
-  local cache_path
-  local -a plugins
-  local -i i n
+  local -i show_all=0
+  while (($#)); do case "$1" in
+    -a |--all) show_all=1 ;;
+    --) shift; break ;;
+    *) break ;;
+  esac; shift; done
+
+  local cache_path plugin_name plugin_version indent bullet
+  local -a plugins versions
+  local -i i j n m
   for url in "${@:-"${BEE_HUBS[@]}"}"; do
     cache_path="$(bee::hub::to_cache_path "${url}")"
     if [[ -n "$cache_path" ]]; then
@@ -37,10 +44,19 @@ bee::hub::ls() {
         mapfile -t plugins < <(ls "${cache_path}")
         n=${#plugins[@]}
         for ((i = 0; i < n; i++)); do
-          if ((i == n - 1)); then
-            echo "└── ${plugins[i]}"
-          else
-            echo "├── ${plugins[i]}"
+          plugin_name="${plugins[i]}"
+          if ((i == n - 1)); then bullet="└── "; else bullet="├── "; fi
+          echo "${bullet}${plugin_name}"
+
+          if ((show_all)); then
+            mapfile -t versions < <(find "${cache_path}/${plugin_name}" -type d -mindepth 1 -maxdepth 1 | sort -V)
+            m=${#versions[@]}
+            for ((j = 0; j < m; j++)); do
+              plugin_version="$(basename "${versions[j]}")"
+              if ((i == n - 1)); then indent="    "; else indent="│    "; fi
+                if ((j == m - 1)); then bullet="└── "; else bullet="├── "; fi
+                echo "${indent}${bullet}${plugin_version}"
+            done
           fi
         done
         echo

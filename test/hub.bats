@@ -201,7 +201,6 @@ _prepare_module() {
 
 @test "won't list hub urls when not pulled" {
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
     "file://${TMP_TEST_DIR}/othertesthub"
@@ -210,4 +209,29 @@ _prepare_module() {
   assert_success
   assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
   assert_line --index 1 "file://${TMP_TEST_DIR}/othertesthub"
+}
+
+@test "lists hub urls with their plugins and all versions" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+  )
+  _strict bee::hub pull
+  run _strict bee::hub ls -a
+  assert_success
+
+  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
+  assert_line --index 1 "├── othertestplugin"
+  assert_line --index 2 "│    └── 1.0.0"
+  assert_line --index 3 "├── testplugin"
+  assert_line --index 4 "│    ├── 1.0.0"
+  assert_line --index 5 "│    └── 2.0.0"
+  assert_line --index 6 "├── testplugindeps"
+  assert_line --index 7 "│    └── 1.0.0"
+  assert_line --index 8 "├── testplugindepsdep"
+  assert_line --index 9 "│    └── 1.0.0"
+  assert_line --index 10 "└── testpluginmissingdep"
+  assert_line --index 11 "    └── 1.0.0"
 }
