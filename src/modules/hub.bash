@@ -33,16 +33,18 @@ bee::hub::ls() {
     cache_path="$(bee::hub::to_cache_path "${url}")"
     if [[ -n "$cache_path" ]]; then
       echo "${url}"
-      mapfile -t plugins < <(ls "${cache_path}")
-      n=${#plugins[@]}
-      for ((i = 0; i < n; i++)); do
-        if ((i == n - 1)); then
-          echo "└── ${plugins[i]}"
-        else
-          echo "├── ${plugins[i]}"
-        fi
-      done
-      echo
+      if [[ -d "${cache_path}" ]]; then
+        mapfile -t plugins < <(ls "${cache_path}")
+        n=${#plugins[@]}
+        for ((i = 0; i < n; i++)); do
+          if ((i == n - 1)); then
+            echo "└── ${plugins[i]}"
+          else
+            echo "├── ${plugins[i]}"
+          fi
+        done
+        echo
+      fi
     fi
   done
 }

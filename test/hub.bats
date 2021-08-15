@@ -157,7 +157,6 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
     "file://${TMP_TEST_DIR}/othertesthub"
@@ -184,7 +183,6 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${TMP_TEST_DIR}/testhub"
     "file://${TMP_TEST_DIR}/othertesthub"
@@ -199,4 +197,17 @@ _prepare_module() {
   assert_line --index 3 "├── testplugindeps"
   assert_line --index 4 "├── testplugindepsdep"
   assert_line --index 5 "└── testpluginmissingdep"
+}
+
+@test "won't list hub urls when not pulled" {
+  _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUBS=(
+    "file://${TMP_TEST_DIR}/testhub"
+    "file://${TMP_TEST_DIR}/othertesthub"
+  )
+  run _strict bee::hub ls
+  assert_success
+  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
+  assert_line --index 1 "file://${TMP_TEST_DIR}/othertesthub"
 }
