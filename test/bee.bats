@@ -3,10 +3,6 @@ setup() {
   _set_beerc
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 @test "is executable" {
   assert_file_executable "${PROJECT_ROOT}/src/bee"
 }
@@ -17,20 +13,18 @@ teardown() {
 }
 
 @test "resolves bee system home and follows symlink" {
-  _setup_test_tmp_dir
-  ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/bee"
+  ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/bee"
   # shellcheck disable=SC1090,SC1091
-  source "${TMP_TEST_DIR}/bee"
+  source "${BATS_TEST_TMPDIR}/bee"
   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
 }
 
 @test "resolves bee system home and follows multiple symlinks" {
-  _setup_test_tmp_dir
-  mkdir "${TMP_TEST_DIR}/src" "${TMP_TEST_DIR}/bin"
-  ln -s "${PROJECT_ROOT}/src/bee" "${TMP_TEST_DIR}/src/bee"
-  ln -s "${TMP_TEST_DIR}/src/bee" "${TMP_TEST_DIR}/bee"
+  mkdir "${BATS_TEST_TMPDIR}/src" "${BATS_TEST_TMPDIR}/bin"
+  ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/src/bee"
+  ln -s "${BATS_TEST_TMPDIR}/src/bee" "${BATS_TEST_TMPDIR}/bee"
   # shellcheck disable=SC1090,SC1091
-  source "${TMP_TEST_DIR}/bee"
+  source "${BATS_TEST_TMPDIR}/bee"
   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
 }
 
@@ -47,7 +41,6 @@ teardown() {
 
 @test "installs specified bee version" {
   _set_test_beefile
-  _setup_test_tmp_dir
   _setup_test_bee_repo
   run bee
   assert_line --index 0 "# test bee-run.bash 0.1.0 sourced"

@@ -2,10 +2,6 @@ setup() {
   load 'test-helper.bash'
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 @test "loads beerc when specified" {
   _set_test_fixture_beerc
   run bee echo
@@ -13,8 +9,7 @@ teardown() {
 }
 
 @test "creates default .beerc" {
-  _setup_test_tmp_dir
-  export BEE_RC="${TMP_TEST_DIR}/tmp-beerc.bash"
+  export BEE_RC="${BATS_TEST_TMPDIR}/tmp-beerc.bash"
   run bee
   assert_file_exist "${BEE_RC}"
 }

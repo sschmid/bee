@@ -4,10 +4,6 @@ setup() {
   MODULE_PATH="${PROJECT_ROOT}/src/modules/hub.bash"
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 @test "is not executable" {
   assert_file_not_executable "${MODULE_PATH}"
 }
@@ -74,8 +70,8 @@ _prepare_module() {
   _setup_test_bee_hub2_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testbeehub1"
-    "file://${TMP_TEST_DIR}/testbeehub2"
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
   )
   run _strict bee::hub pull
   assert_success
@@ -91,10 +87,10 @@ _prepare_module() {
   _setup_test_bee_hub2_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testbeehub1"
-    "file://${TMP_TEST_DIR}/testbeehub2"
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
   )
-  run _strict bee::hub pull "file://${TMP_TEST_DIR}/testbeehub1"
+  run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub1"
   assert_success
 
   assert_dir_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1"
@@ -107,9 +103,9 @@ _prepare_module() {
   _setup_test_bee_hub2_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
     "unknown"
-    "file://${TMP_TEST_DIR}/testbeehub2"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
   )
   run _strict bee::hub pull
   assert_success
@@ -127,8 +123,8 @@ _prepare_module() {
   _setup_test_bee_hub2_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testbeehub1"
-    "file://${TMP_TEST_DIR}/testbeehub2"
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
   )
   bee::hub pull
   assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.bash"
@@ -143,7 +139,7 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   run _strict bee::hub pull
 
@@ -158,20 +154,20 @@ _prepare_module() {
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/othertesthub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/othertesthub"
   )
   _strict bee::hub pull
   run _strict bee::hub ls
   assert_success
 
-  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
+  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
   assert_line --index 1 "├── othertestplugin"
   assert_line --index 2 "├── testplugin"
   assert_line --index 3 "├── testplugindeps"
   assert_line --index 4 "├── testplugindepsdep"
   assert_line --index 5 "└── testpluginmissingdep"
-  assert_line --index 6 "file://${TMP_TEST_DIR}/othertesthub"
+  assert_line --index 6 "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_line --index 7 "├── othertestplugin"
   assert_line --index 8 "├── testplugin"
   assert_line --index 9 "├── testplugindeps"
@@ -184,14 +180,14 @@ _prepare_module() {
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/othertesthub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/othertesthub"
   )
   _strict bee::hub pull
-  run _strict bee::hub ls "file://${TMP_TEST_DIR}/othertesthub"
+  run _strict bee::hub ls "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_success
 
-  assert_line --index 0 "file://${TMP_TEST_DIR}/othertesthub"
+  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_line --index 1 "├── othertestplugin"
   assert_line --index 2 "├── testplugin"
   assert_line --index 3 "├── testplugindeps"
@@ -202,13 +198,13 @@ _prepare_module() {
 @test "won't list hub urls when not pulled" {
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/othertesthub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/othertesthub"
   )
   run _strict bee::hub ls
   assert_success
-  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
-  assert_line --index 1 "file://${TMP_TEST_DIR}/othertesthub"
+  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
+  assert_line --index 1 "file://${BATS_TEST_TMPDIR}/othertesthub"
 }
 
 @test "lists hub urls with their plugins and all versions" {
@@ -216,13 +212,13 @@ _prepare_module() {
   _prepare_module
   # shellcheck disable=SC2034
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _strict bee::hub pull
   run _strict bee::hub ls -a
   assert_success
 
-  assert_line --index 0 "file://${TMP_TEST_DIR}/testhub"
+  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
   assert_line --index 1 "├── othertestplugin"
   assert_line --index 2 "│    └── 1.0.0"
   assert_line --index 3 "├── testplugin"

@@ -3,10 +3,6 @@ setup() {
   _set_beerc
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 @test "is not executable" {
   assert_file_not_executable "${PROJECT_ROOT}/src/modules/update.bash"
 }
@@ -19,7 +15,6 @@ teardown() {
 # This test would actually pull and update the system bee
 #@test "doesn't update specified bee version" {
 #  _set_test_beefile
-#  _setup_test_tmp_dir
 #  _setup_test_bee_repo
 #  bee update
 #  run bee
@@ -29,13 +24,13 @@ teardown() {
 @test "reads latest version" {
   run bee update print
   assert_output "1.2.3"
-  assert_file_not_exist "${TMP_TEST_DIR}/caches/.bee_latest_version_cache"
+  assert_file_not_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
 }
 
 @test "caches latest version" {
   run bee update print --cached
   assert_output "1.2.3"
-  assert_file_exist "${TMP_TEST_DIR}/caches/.bee_latest_version_cache"
+  assert_file_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
 }
 
 @test "reads cached latest version" {

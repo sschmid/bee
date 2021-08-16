@@ -4,10 +4,6 @@ setup() {
   MODULE_PATH="${PROJECT_ROOT}/src/modules/hub.bash"
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 _prepare_module() {
   _source_bee
   # shellcheck disable=SC1090
@@ -19,8 +15,8 @@ _prepare_module() {
   _setup_empty_bee_hub_repo "empty2"
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/empty1"
-    "file://${TMP_TEST_DIR}/empty2"
+    "file://${BATS_TEST_TMPDIR}/empty1"
+    "file://${BATS_TEST_TMPDIR}/empty2"
   )
   _strict bee::hub pull
   run _strict bee::hub install unknown
@@ -36,16 +32,16 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/empty1"
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/empty1"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _strict bee::hub pull
 
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/empty1"
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/unknown"
+    "file://${BATS_TEST_TMPDIR}/empty1"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/unknown"
   )
   run _strict bee::hub install testplugin
   assert_success
@@ -59,9 +55,9 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/empty1"
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/empty2"
+    "file://${BATS_TEST_TMPDIR}/empty1"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/empty2"
   )
   _setup_testplugin_repo
   _strict bee::hub pull
@@ -78,9 +74,9 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/empty1"
-    "file://${TMP_TEST_DIR}/testhub"
-    "file://${TMP_TEST_DIR}/empty2"
+    "file://${BATS_TEST_TMPDIR}/empty1"
+    "file://${BATS_TEST_TMPDIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/empty2"
   )
   _setup_testplugin_repo
   _strict bee::hub pull
@@ -96,7 +92,7 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _strict bee::hub pull
@@ -113,7 +109,7 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
@@ -134,7 +130,7 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _prepare_module
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _strict bee::hub pull
@@ -151,7 +147,7 @@ _prepare_module() {
   _prepare_module
   # shellcheck disable=SC2034
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
@@ -176,7 +172,7 @@ _prepare_module() {
   _prepare_module
   # shellcheck disable=SC2034
   BEE_HUBS=(
-    "file://${TMP_TEST_DIR}/testhub"
+    "file://${BATS_TEST_TMPDIR}/testhub"
   )
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin

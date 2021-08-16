@@ -4,7 +4,6 @@ load 'test_helper/bats-file/load.bash'
 
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." > /dev/null 2>&1 && pwd)"
 export PROJECT_ROOT
-export TMP_TEST_DIR="${PROJECT_ROOT}/test/tmp"
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
@@ -44,17 +43,9 @@ _strict() {
   "$@"
 }
 
-_setup_test_tmp_dir() {
-  mkdir -p "${TMP_TEST_DIR}"
-}
-
-_teardown_test_tmp_dir() {
-  rm -rf "${TMP_TEST_DIR}"
-}
-
 _setup_test_bee_repo() {
-  mkdir "${TMP_TEST_DIR}/testbee"
-  pushd "${TMP_TEST_DIR}/testbee" > /dev/null || exit 1
+  mkdir "${BATS_TEST_TMPDIR}/testbee"
+  pushd "${BATS_TEST_TMPDIR}/testbee" > /dev/null || exit 1
     mkdir -p src/os
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
@@ -72,8 +63,8 @@ _setup_test_bee_repo() {
 }
 
 _setup_test_bee_hub1_repo() {
-  mkdir -p "${TMP_TEST_DIR}/testbeehub1/testplugin/1.0.0"
-  pushd "${TMP_TEST_DIR}/testbeehub1" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/testbeehub1/testplugin/1.0.0"
+  pushd "${BATS_TEST_TMPDIR}/testbeehub1" > /dev/null || exit 1
     echo "echo '# testplugin spec 1.0.0 sourced'" > testplugin/1.0.0/plugin.bash
     git init -b main
     git add .
@@ -82,8 +73,8 @@ _setup_test_bee_hub1_repo() {
 }
 
 _setup_test_bee_hub2_repo() {
-  mkdir -p "${TMP_TEST_DIR}/testbeehub2/othertestplugin/1.0.0"
-  pushd "${TMP_TEST_DIR}/testbeehub2" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/testbeehub2/othertestplugin/1.0.0"
+  pushd "${BATS_TEST_TMPDIR}/testbeehub2" > /dev/null || exit 1
     echo "echo '# othertestplugin spec 1.0.0 sourced'" > othertestplugin/1.0.0/plugin.bash
     git init -b main
     git add .
@@ -92,8 +83,8 @@ _setup_test_bee_hub2_repo() {
 }
 
 _update_test_bee_hub1_repo() {
-  mkdir -p "${TMP_TEST_DIR}/testbeehub1/testplugin/2.0.0"
-  pushd "${TMP_TEST_DIR}/testbeehub1" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/testbeehub1/testplugin/2.0.0"
+  pushd "${BATS_TEST_TMPDIR}/testbeehub1" > /dev/null || exit 1
     echo "echo '# testplugin spec 2.0.0 sourced'" > testplugin/2.0.0/plugin.bash
     git add .
     git commit -m "Initial commit"
@@ -102,12 +93,12 @@ _update_test_bee_hub1_repo() {
 
 _setup_test_bee_hub_repo() {
   local name="${1:-"testhub"}"
-  mkdir -p "${TMP_TEST_DIR}/${name}"
-  cp -r "${PROJECT_ROOT}/test/fixtures/hub/." "${TMP_TEST_DIR}/${name}"
-  pushd "${TMP_TEST_DIR}/${name}" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/${name}"
+  cp -r "${PROJECT_ROOT}/test/fixtures/hub/." "${BATS_TEST_TMPDIR}/${name}"
+  pushd "${BATS_TEST_TMPDIR}/${name}" > /dev/null || exit 1
     local file
     while read -r -d '' file; do
-      sed -i.bak -e "s;HOME;${TMP_TEST_DIR};" -- "${file}" && rm "${file}.bak"
+      sed -i.bak -e "s;HOME;${BATS_TEST_TMPDIR};" -- "${file}" && rm "${file}.bak"
     done < <(find . -type f -name "spec.json" -print0)
     git init -b main
     git add .
@@ -116,8 +107,8 @@ _setup_test_bee_hub_repo() {
 }
 
 _setup_empty_bee_hub_repo() {
-  mkdir -p "${TMP_TEST_DIR}/$1"
-  pushd "${TMP_TEST_DIR}/$1" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/$1"
+  pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
     echo "empty" > empty.txt
     git init -b main
     git add .
@@ -127,8 +118,8 @@ _setup_empty_bee_hub_repo() {
 
 _setup_testplugin_repo() {
   _setup_generic_plugin_repo testplugin
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/." "${TMP_TEST_DIR}/plugins/testplugin"
-  pushd "${TMP_TEST_DIR}/plugins/testplugin" > /dev/null || exit 1
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
+  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
     git add .
     git commit -m "Release 2.0.0"
     git tag "v2.0.0"
@@ -136,9 +127,9 @@ _setup_testplugin_repo() {
 }
 
 _setup_generic_plugin_repo() {
-  mkdir -p "${TMP_TEST_DIR}/plugins"
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/." "${TMP_TEST_DIR}/plugins/$1"
-  pushd "${TMP_TEST_DIR}/plugins/$1" > /dev/null || exit 1
+  mkdir -p "${BATS_TEST_TMPDIR}/plugins"
+  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/." "${BATS_TEST_TMPDIR}/plugins/$1"
+  pushd "${BATS_TEST_TMPDIR}/plugins/$1" > /dev/null || exit 1
     git init -b main
     git add .
     git commit -m "Initial commit"

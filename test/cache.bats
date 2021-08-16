@@ -5,10 +5,6 @@ setup() {
   MODULE_PATH="${PROJECT_ROOT}/src/modules/cache.bash"
 }
 
-teardown() {
-  _teardown_test_tmp_dir
-}
-
 @test "is not executable" {
   assert_file_not_executable "${MODULE_PATH}"
 }
