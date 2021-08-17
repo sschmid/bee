@@ -11,7 +11,7 @@ setup() {
 @test "prints bee help when no args" {
   _unset_test_modules
   run bee
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 @test "runs args" {

@@ -13,12 +13,14 @@ BEE_WARN="🟠"
 # shellcheck disable=SC2034
 BEE_ERR="🔴"
 
-_set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/beerc.bash"; }
+assert_bee_help() {
+  assert_output --partial "plugin-based bash automation"
+}
+
+_set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
 _set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
 _set_test_modules() { export TEST_BEE_MODULES_PATH=1; }
 _unset_test_modules() { unset TEST_BEE_MODULES_PATH; }
-_set_beefile() { export BEE_FILE="${BATS_TEST_DIRNAME}/test-beefile.bash"; }
-_set_beefile_fixture() { export BEE_FILE="${BATS_TEST_DIRNAME}/fixtures/test-beefile.bash"; }
 
 _source_bee() {
   # shellcheck disable=SC1090,SC1091
@@ -29,25 +31,6 @@ _strict() {
   set -euo pipefail
   IFS=$'\n\t'
   "$@"
-}
-
-_setup_test_bee_repo() {
-  mkdir "${BATS_TEST_TMPDIR}/testbee"
-  pushd "${BATS_TEST_TMPDIR}/testbee" > /dev/null || exit 1
-    mkdir -p src/os
-    echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
-    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
-    cp -r "${PROJECT_ROOT}/src/os" src
-    git init -b main
-    git add .
-    git commit -m "Initial commit"
-    git tag "0.1.0"
-    echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
-    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
-    git add .
-    git commit -m "Bump version"
-    git tag "1.0.0"
-  popd > /dev/null || exit 1
 }
 
 _setup_test_bee_hub1_repo() {

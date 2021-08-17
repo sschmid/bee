@@ -16,7 +16,7 @@ setup() {
 
 @test "shows help when unknown args" {
   run _strict bee::run cache unkown
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 @test "deletes cache" {

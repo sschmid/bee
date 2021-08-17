@@ -13,10 +13,10 @@ _prepare_job_logs() {
 
 @test "shows help when not enough args" {
   run bee job
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 
   run bee job "test"
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 @test "runs job and succeeds" {

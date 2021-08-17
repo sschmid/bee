@@ -10,10 +10,10 @@ setup() {
 
 @test "shows help when not enough args" {
   run bee hub
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 
   run bee hub unknown
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 _prepare_module() {

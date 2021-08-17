@@ -6,10 +6,10 @@ setup() {
 @test "prints bee help" {
   _set_beerc
   run bee -h
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 
   run bee --help
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 @test "batches multiple commands with args" {
@@ -55,7 +55,7 @@ setup() {
 @test "prints bee help when options only" {
   _set_beerc
   run bee --
-  assert_output --partial "plugin-based bash automation"
+  assert_bee_help
 }
 
 @test "prints version" {
