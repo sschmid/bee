@@ -2,6 +2,7 @@ load 'test_helper/bats-support/load.bash'
 load 'test_helper/bats-assert/load.bash'
 load 'test_helper/bats-file/load.bash'
 
+export BATS_TEST_DIRNAME
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." > /dev/null 2>&1 && pwd)"
 export PROJECT_ROOT
 
@@ -94,7 +95,7 @@ _update_test_bee_hub1_repo() {
 _setup_test_bee_hub_repo() {
   local name="${1:-"testhub"}"
   mkdir -p "${BATS_TEST_TMPDIR}/${name}"
-  cp -r "${PROJECT_ROOT}/test/fixtures/hub/." "${BATS_TEST_TMPDIR}/${name}"
+  cp -r "${BATS_TEST_DIRNAME}/fixtures/hub/." "${BATS_TEST_TMPDIR}/${name}"
   pushd "${BATS_TEST_TMPDIR}/${name}" > /dev/null || exit 1
     local file
     while read -r -d '' file; do
@@ -118,7 +119,7 @@ _setup_empty_bee_hub_repo() {
 
 _setup_testplugin_repo() {
   _setup_generic_plugin_repo testplugin
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
+  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
   pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
     git add .
     git commit -m "Release 2.0.0"
@@ -128,7 +129,7 @@ _setup_testplugin_repo() {
 
 _setup_generic_plugin_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/plugins"
-  cp -r "${PROJECT_ROOT}/test/fixtures/plugins/$1/1.0.0/." "${BATS_TEST_TMPDIR}/plugins/$1"
+  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/$1/1.0.0/." "${BATS_TEST_TMPDIR}/plugins/$1"
   pushd "${BATS_TEST_TMPDIR}/plugins/$1" > /dev/null || exit 1
     git init -b main
     git add .

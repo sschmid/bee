@@ -142,8 +142,8 @@ setup() {
 
 @test "loads plugin and dependencies from custom folder" {
   BEE_PLUGINS_PATHS=(
-    "${PROJECT_ROOT}/test/fixtures/plugins"
-    "${PROJECT_ROOT}/test/fixtures/custom_plugins"
+    "${BATS_TEST_DIRNAME}/fixtures/plugins"
+    "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"
   )
   run _strict bee::load_plugin customtestplugin
   assert_line --index 0 "# customtestplugin 1.0.0 sourced"
