@@ -4,7 +4,6 @@ setup() {
 }
 
 @test "prints bee help" {
-  _set_beerc
   run bee -h
   assert_bee_help
 
@@ -53,14 +52,11 @@ setup() {
 }
 
 @test "prints bee help when options only" {
-  _set_beerc
   run bee --
   assert_bee_help
 }
 
 @test "prints version" {
-  local bee_version
-  bee_version="$(cat "${PROJECT_ROOT}/version.txt")"
   run bee --version
-  assert_output "${bee_version}"
+  assert_output "$(cat "${PROJECT_ROOT}/version.txt")"
 }
