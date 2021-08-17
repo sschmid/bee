@@ -4,47 +4,47 @@ setup() {
   _source_bee
 }
 
+assert_plugin() {
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "$1"
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "$2"
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/$1/$2/$1.bash"
+}
+
+assert_no_plugin() {
+  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
+  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
+}
+
 @test "resolves latest plugin" {
   bee::resolve_plugin testplugin
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "2.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/testplugin/2.0.0/testplugin.bash"
+  assert_plugin testplugin 2.0.0
 }
 
 @test "resolves plugin with exact version" {
   bee::resolve_plugin testplugin:1.0.0
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "testplugin"
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/testplugin/1.0.0/testplugin.bash"
+  assert_plugin testplugin 1.0.0
 }
 
 @test "doesn't resolve plugin with unknown version" {
   bee::resolve_plugin testplugin:9.0.0
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
+  assert_no_plugin
 }
 
 @test "resolves another plugin" {
   bee::resolve_plugin testplugin:2.0.0
   bee::resolve_plugin othertestplugin
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "othertestplugin"
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "1.0.0"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_plugin othertestplugin 1.0.0
 }
 
 @test "doesn't resolve unknown plugin" {
   bee::resolve_plugin unknown
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
+  assert_no_plugin
 }
 
 @test "doesn't resolve unknown plugin with exact version" {
   bee::resolve_plugin unknown:1.0.0
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
+  assert_no_plugin
 }
 
 # this is a manual test / sanity check
