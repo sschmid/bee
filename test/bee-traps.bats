@@ -43,6 +43,7 @@ _test_exit() {
 
 @test "fails in internal mode" {
   run bee not_a_command
+  assert_failure
   assert_output --partial "not_a_command: command not found"
 }
 
@@ -50,7 +51,7 @@ _test_exit() {
   run bee testplugin
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --index 1 "testplugin 2.0.0 help"
-  assert_line --partial --index 2 "🐝 bzzzz"
+  assert_line --partial --index 2 "bzzzz"
 }
 
 @test "fails in plugin mode" {
