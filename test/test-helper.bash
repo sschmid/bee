@@ -13,25 +13,12 @@ BEE_WARN="🟠"
 # shellcheck disable=SC2034
 BEE_ERR="🔴"
 
-_set_beerc() {
-  export BEE_RC="${BATS_TEST_DIRNAME}/beerc.bash"
-}
-
-_set_test_beerc() {
-  export BEE_RC="${BATS_TEST_DIRNAME}/test-beerc.bash"
-}
-
-_set_test_fixture_beerc() {
-  export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"
-}
-
-_set_test_beefile() {
-  export BEE_FILE="${BATS_TEST_DIRNAME}/test-beefile.bash"
-}
-
-_set_test_fixture_beefile() {
-  export BEE_FILE="${BATS_TEST_DIRNAME}/fixtures/test-beefile.bash"
-}
+_set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/beerc.bash"; }
+_set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
+_set_test_modules() { export TEST_BEE_MODULES_PATH=1; }
+_unset_test_modules() { unset TEST_BEE_MODULES_PATH; }
+_set_beefile() { export BEE_FILE="${BATS_TEST_DIRNAME}/test-beefile.bash"; }
+_set_beefile_fixture() { export BEE_FILE="${BATS_TEST_DIRNAME}/fixtures/test-beefile.bash"; }
 
 _source_bee() {
   # shellcheck disable=SC1090,SC1091

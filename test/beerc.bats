@@ -3,7 +3,7 @@ setup() {
 }
 
 @test "loads beerc when specified" {
-  _set_test_fixture_beerc
+  _set_beerc_fixture
   run bee echo
   assert_line --index 0 "# test beerc sourced"
 }

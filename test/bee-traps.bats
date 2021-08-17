@@ -1,6 +1,7 @@
 setup() {
   load 'test-helper.bash'
-  _set_test_beerc
+  _set_beerc
+  _set_test_modules
   _source_bee
 }
 

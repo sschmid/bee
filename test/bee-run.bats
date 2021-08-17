@@ -1,6 +1,7 @@
 setup() {
   load 'test-helper.bash'
-  _set_test_beerc
+  _set_beerc
+  _set_test_modules
 }
 
 @test "is not executable" {
@@ -8,7 +9,7 @@ setup() {
 }
 
 @test "prints bee help when no args" {
-  _set_beerc
+  _unset_test_modules
   run bee
   assert_output --partial "plugin-based bash automation"
 }
