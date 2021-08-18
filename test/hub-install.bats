@@ -149,7 +149,6 @@ _prepare_module() {
   assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
-# TODO
 @test "skips installing already installed plugins" {
   _setup_test_bee_hub_repo
   _prepare_module
