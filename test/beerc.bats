@@ -9,7 +9,7 @@ setup() {
 }
 
 @test "creates default .beerc" {
-  export BEE_RC="${BATS_TEST_TMPDIR}/tmp-beerc.bash"
+  export BEE_RC="${BATS_TEST_TMPDIR}/beerc.bash"
   run bee
   assert_file_exist "${BEE_RC}"
 }

@@ -56,28 +56,28 @@ _prepare_job_logs() {
 @test "logs success to logfile" {
   _prepare_job_logs
   run bee job "testjob" echo "test"
-  run cat "${BATS_TEST_TMPDIR}/logs/"*
+  run cat "${BEE_RESOURCES}/logs/"*
   assert_output "test"
 }
 
 @test "uses job title for logfile" {
   _prepare_job_logs
   run bee job "Do some work" echo "test"
-  run ls "${BATS_TEST_TMPDIR}/logs"
+  run ls "${BEE_RESOURCES}/logs"
   assert_output --partial "Do-some-work"
 }
 
 @test "logs error to logfile" {
   _prepare_job_logs
   run bee job "testjob" not_a_command
-  run cat "${BATS_TEST_TMPDIR}/logs/"*
+  run cat "${BEE_RESOURCES}/logs/"*
   assert_output --partial "not_a_command: command not found"
 }
 
 @test "runs plugin as job" {
   _prepare_job_logs
   run bee job "testjob" testplugin greet "test"
-  run cat "${BATS_TEST_TMPDIR}/logs/"*
+  run cat "${BEE_RESOURCES}/logs/"*
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --index 1 "greeting test from testplugin 2.0.0"
 }

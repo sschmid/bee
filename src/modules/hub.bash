@@ -113,7 +113,7 @@ bee::hub::install_recursively() {
           local git tag deps
           while read -r git tag deps; do
             git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}"
-            echo -e "${indent}${bullet}\033[32m${plugin_name}:${plugin_version} ✔︎ (${url})\033[0m"
+            echo -e "${indent}${bullet}\033[32m✔︎ ${plugin_name}:${plugin_version} (${url})\033[0m"
             # shellcheck disable=SC2086
             if [[ -n "${deps}" ]]; then
               if ((i == n - 1)); then
@@ -129,7 +129,7 @@ bee::hub::install_recursively() {
     done
     if ((!found)); then
       missing+=("${plugin}")
-      echo -e "${indent}${bullet}\033[31m${plugin} ✗\033[0m"
+      echo -e "${indent}${bullet}\033[31m✗ ${plugin}\033[0m"
     fi
   done
   if ((${#missing[@]})); then

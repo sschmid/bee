@@ -2,11 +2,10 @@ setup() {
   load "test-helper.bash"
   _set_beerc
   _source_bee
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/cache.bash"
 }
 
 @test "is not executable" {
-  assert_file_not_executable "${MODULE_PATH}"
+  assert_file_not_executable "${PROJECT_ROOT}/src/modules/cache.bash"
 }
 
 @test "prints cache path" {
@@ -21,8 +20,6 @@ setup() {
 
 @test "deletes cache" {
   mkdir -p "${BEE_CACHES_PATH}"
-  assert_dir_exist "${BEE_CACHES_PATH}"
-
   run _strict bee::run cache rm
   assert_dir_not_exist "${BEE_CACHES_PATH}"
 }
