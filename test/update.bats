@@ -30,7 +30,7 @@ setup() {
   assert_output "1.2.3"
 
   # shellcheck disable=SC2034
-  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/testversion2.txt"
+  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"
   output=$(bee::run update print --cached)
   assert_output "1.2.3"
 }
@@ -43,7 +43,7 @@ setup() {
   sleep 2
 
   # shellcheck disable=SC2034
-  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/testversion2.txt"
+  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"
   output=$(bee::run update print --cached)
   assert_output "4.5.6"
 }
