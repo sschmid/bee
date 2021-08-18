@@ -1,6 +1,6 @@
 setup() {
   load "test-helper.bash"
-  local fixture="modules/othertestmodule.bash"
+  local fixture="fixtures/modules/othertestmodule.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }

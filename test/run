@@ -10,7 +10,7 @@ else
   if (($#)); then
     test/bats/bin/bats "$@"
   else
-    test/bats/bin/bats --tap test test/fixtures
+    test/bats/bin/bats --tap test
     test/shellcheck
   fi
 fi

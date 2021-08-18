@@ -1,6 +1,6 @@
 setup() {
   load "test-helper.bash"
-  local fixture="plugins/othertestplugin/1.0.0/othertestplugin.bash"
+  local fixture="fixtures/plugins/testplugin/1.0.0/testplugin.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
@@ -10,9 +10,9 @@ setup() {
 }
 
 @test "prints message when sourced" {
-  unset OTHERTESTPLUGIN_SOURCED
+  unset TESTPLUGIN_1_SOURCED
   run source "${TEST_FIXTURE_PATH}"
-  assert_output "# othertestplugin 1.0.0 sourced"
+  assert_output "# testplugin 1.0.0 sourced"
 }
 
 @test "fails on being sourced multiple times" {
@@ -22,26 +22,26 @@ setup() {
 }
 
 @test "prints message" {
-  run othertestplugin
-  assert_output "hello from othertestplugin 1.0.0"
+  run testplugin
+  assert_output "hello from testplugin 1.0.0"
 }
 
 @test "prints message with args" {
-  run othertestplugin test
-  assert_output "hello from othertestplugin 1.0.0 - test"
+  run testplugin test
+  assert_output "hello from testplugin 1.0.0 - test"
 }
 
 @test "prints help" {
-  run othertestplugin::help
-  assert_output "othertestplugin 1.0.0 help"
+  run testplugin::help
+  assert_output "testplugin 1.0.0 help"
 }
 
 @test "greets" {
-  run othertestplugin::greet
-  assert_output "greeting from othertestplugin 1.0.0"
+  run testplugin::greet
+  assert_output "greeting from testplugin 1.0.0"
 }
 
 @test "greets with args" {
-  run othertestplugin::greet "test"
-  assert_output "greeting test from othertestplugin 1.0.0"
+  run testplugin::greet "test"
+  assert_output "greeting test from testplugin 1.0.0"
 }
