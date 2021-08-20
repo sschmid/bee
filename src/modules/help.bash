@@ -31,5 +31,5 @@ bee::help::print_entries() {
       done <&${help}
     fi
     exec {help}>&-
-  done | awk -F ';' '{ printf "%-37s%s\n", $1, $2 }'
+  done | awk -F ':' '{ printf "%-37s%s\n", $1, $2 }'
 }

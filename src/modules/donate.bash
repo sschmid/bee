@@ -1,5 +1,5 @@
 # bee::help
-# donate ; bee is free, but powered by your donations
+# donate : bee is free, but powered by your donations
 # bee::help
 
 bee::donate() {

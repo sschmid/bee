@@ -1,5 +1,5 @@
 # bee::help
-# new ; create new beefile
+# new : create new beefile
 # bee::help
 
 bee::new() {

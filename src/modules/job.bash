@@ -1,5 +1,5 @@
 # bee::help
-# job [-t | --time] <title> <command> ; run command as a job [show elapsed time]
+# job [-t | --time] <title> <command> : run command as a job [show elapsed time]
 # bee::help
 
 BEE_JOB_SPINNER_INTERVAL=0.1

@@ -1,6 +1,6 @@
 # bee::help
-# cache ; show cache path
-#    rm ; delete cache
+# cache : show cache path
+#    rm : delete cache
 # bee::help
 
 bee::cache::comp() {

@@ -1,5 +1,5 @@
 # bee::help
-# wiki ; open wiki
+# wiki : open wiki
 # bee::help
 
 bee::wiki() {

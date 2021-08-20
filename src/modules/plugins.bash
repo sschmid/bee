@@ -1,5 +1,5 @@
 # bee::help
-# plugins ; list enabled plugins
+# plugins : list enabled plugins
 # bee::help
 
 bee::plugins() {
