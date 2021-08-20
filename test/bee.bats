@@ -3,11 +3,6 @@ setup() {
   _set_beerc
 }
 
-_setup_beefile() {
-  echo "$@" > "${BATS_TEST_TMPDIR}/beefile"
-  export BEE_FILE="${BATS_TEST_TMPDIR}/beefile"
-}
-
 assert_bee_system_home() {
   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
 }
