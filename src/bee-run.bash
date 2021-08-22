@@ -31,32 +31,34 @@ bee::run_module() {
 ################################################################################
 # plugins
 ################################################################################
+
+bee::resolve() {
+  local plugin="$1" plugins_path="$2" file="$3"
+  local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
+  if [[ "${plugin_name}" == "${plugin_version}" && -d "${plugins_path}/${plugin_name}" ]]; then
+    plugin_version="$(basename "$(find "${plugins_path}/${plugin_name}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
+  fi
+  path="${plugins_path}/${plugin_name}/${plugin_version}/${file}"
+  [[ -f "${path}" ]] && echo -e "${plugin_name}\t${plugin_version}\t${path}"
+}
+
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
 declare -Ag BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 bee::resolve_plugin() {
-  local plugin="$1"
+  local plugin="$1" plugin_name plugin_version plugin_path
   local -i found=0
-  BEE_RESOLVE_PLUGIN_NAME="${plugin%:*}"
-  BEE_RESOLVE_PLUGIN_VERSION="${plugin##*:}"
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
-    for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
-      if [[ "${BEE_RESOLVE_PLUGIN_NAME}" == "${BEE_RESOLVE_PLUGIN_VERSION}" && -d "${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-        BEE_RESOLVE_PLUGIN_VERSION="$(basename "$(find "${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
-      fi
-      BEE_RESOLVE_PLUGIN_PATH="${plugin_path}/${BEE_RESOLVE_PLUGIN_NAME}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
-      if [[ -f "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+    for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
+      while read -r plugin_name plugin_version plugin_path; do
+        BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
         BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
         found=1
-        break
-      fi
+      done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash")
+      ((found)) && break
     done
-    if ((!found)); then
-      BEE_RESOLVE_PLUGIN_NAME=""
-      BEE_RESOLVE_PLUGIN_VERSION=""
-      BEE_RESOLVE_PLUGIN_PATH=""
-    fi
+    ((!found)) && BEE_RESOLVE_PLUGIN_NAME="" BEE_RESOLVE_PLUGIN_VERSION="" BEE_RESOLVE_PLUGIN_PATH=""
     BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
   else
     BEE_RESOLVE_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]}"
@@ -122,8 +124,8 @@ bee::comp_modules() {
 }
 
 bee::comp_plugins() {
-  for plugin_path in "${BEE_PLUGINS_PATHS[@]}"; do
-    [[ -d "${plugin_path}" ]] && find "${plugin_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+  for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
+    [[ -d "${plugins_path}" ]] && find "${plugins_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
   done
 }
 

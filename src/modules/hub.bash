@@ -95,16 +95,10 @@ bee::hub::install_recursively() {
   for ((i = 0; i < n; i++)); do
     found=0
     plugin="${plugins[i]}"
-    plugin_name="${plugin%:*}"
-    plugin_version="${plugin##*:}"
     ((i == n - 1)) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="$(bee::hub::to_cache_path "${url}")"
-      if [[ "${plugin_name}" == "${plugin_version}" && -d "${cache_path}/${plugin_name}" ]]; then
-        plugin_version="$(basename "$(find "${cache_path}/${plugin_name}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
-      fi
-      spec_path="${cache_path}/${plugin_name}/${plugin_version}/spec.json"
-      if [[ -f "${spec_path}" ]]; then
+      while read -r plugin_name plugin_version spec_path; do
         found=1
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         if [[ -d "${plugin_path}" ]]; then
@@ -124,8 +118,8 @@ bee::hub::install_recursively() {
             fi
           done < <(jq -r '[.git, .tag, .dependencies[]?] | @tsv' "${spec_path}")
         fi
-        break
-      fi
+      done < <(bee::resolve "${plugin}" "${cache_path}" "spec.json")
+      ((found)) && break
     done
     if ((!found)); then
       missing+=("${plugin}")
