@@ -4,7 +4,7 @@
 
 bee::new() {
   # test mode: use this instead
-#  local beefile="${1:-beefile}"
+  # local beefile="${1:-beefile}"
   local beefile="beefile"
 
   if [[ -f "${beefile}" ]]; then

@@ -45,7 +45,7 @@ bee::hub::ls() {
         n=${#plugins[@]}
         for ((i = 0; i < n; i++)); do
           plugin_name="${plugins[i]}"
-          if ((i == n - 1)); then bullet="└── "; else bullet="├── "; fi
+          ((i == n - 1)) && bullet="└── " || bullet="├── "
           echo "${bullet}${plugin_name}"
 
           if ((show_all)); then
@@ -53,9 +53,9 @@ bee::hub::ls() {
             m=${#versions[@]}
             for ((j = 0; j < m; j++)); do
               plugin_version="$(basename "${versions[j]}")"
-              if ((i == n - 1)); then indent="    "; else indent="│    "; fi
-                if ((j == m - 1)); then bullet="└── "; else bullet="├── "; fi
-                echo "${indent}${bullet}${plugin_version}"
+              ((i == n - 1)) && indent="    " || indent="│    "
+              ((j == m - 1)) && bullet="└── " || bullet="├── "
+              echo "${indent}${bullet}${plugin_version}"
             done
           fi
         done
@@ -97,7 +97,7 @@ bee::hub::install_recursively() {
     plugin="${plugins[i]}"
     plugin_name="${plugin%:*}"
     plugin_version="${plugin##*:}"
-    if ((i == n - 1)); then bullet="└── "; else bullet="├── "; fi
+    ((i == n - 1)) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="$(bee::hub::to_cache_path "${url}")"
       if [[ "${plugin_name}" == "${plugin_version}" && -d "${cache_path}/${plugin_name}" ]]; then

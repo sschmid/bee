@@ -11,7 +11,7 @@ _tree() {
   for ((i = 0; i < n; i++)); do
     plugin_name="${plugins[i]%% *}"
     plugin_deps="${plugins[i]#* }"
-    if ((i == n - 1)); then bullet="└── "; else bullet="├── "; fi
+    ((i == n - 1)) && bullet="└── " || bullet="├── "
     echo "${indent}${bullet}${plugin_name}"
 #    echo "${indent}${bullet}${plugin_name}" >&3
     if [[ "${plugin_name}" != "${plugin_deps}" ]]; then
