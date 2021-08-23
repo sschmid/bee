@@ -23,10 +23,10 @@ bee::help::print_entries() {
       read -r entry <&${help}
       if [[ "${entry}" == "# bee::help" ]]; then
         while read -r entry; do
-          [[ "${entry}" == "# bee::help" ]] && echo && break
+          [[ "${entry}" == "# bee::help" ]] && break
           echo "${entry:2}"
         done <&${help}
       fi
       exec {help}>&-
-    done | awk -F ':' '{ printf "%-24s%s\n", $1, $2 }'
+    done | awk -F ':' '{ printf "%-37s%s\n", $1, $2 }'
 }

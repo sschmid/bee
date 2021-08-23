@@ -1,7 +1,6 @@
 # bee::help
-# hub
-#    pull [<urls>] : update hubs
-#    install [<plugins>] : install plugins
+# hub pull [<urls>] : update hubs
+# hub install [<plugins>] : install plugins
 # bee::help
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
