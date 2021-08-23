@@ -6,11 +6,10 @@ bee::plugins() {
   local -i show_version=0
   local -i show_outdated=0
   while (($#)); do case "$1" in
-    -o | --outdated) show_outdated=1 ;;
-    -v | --version) show_version=1 ;;
-    --) shift; break ;;
-    *) break ;;
-  esac; shift; done
+    -o | --outdated) show_outdated=1; shift ;;
+    -v | --version) show_version=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
 
   if (($#)); then
     :

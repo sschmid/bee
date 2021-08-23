@@ -28,10 +28,9 @@ bee::hub() {
 bee::hub::ls() {
   local -i show_all=0
   while (($#)); do case "$1" in
-    -a |--all) show_all=1 ;;
-    --) shift; break ;;
-    *) break ;;
-  esac; shift; done
+    -a |--all) show_all=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
 
   local cache_path plugin_name plugin_version indent bullet
   local -a plugins versions

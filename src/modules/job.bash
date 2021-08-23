@@ -15,10 +15,9 @@ BEE_JOB_LOGFILE=""
 bee::job() {
   if (($# >= 2)); then
     while (($#)); do case "$1" in
-      -t | --time) BEE_JOB_SHOW_TIME=1 ;;
-      --) shift; break ;;
-      *) break ;;
-    esac; shift; done
+      -t | --time) BEE_JOB_SHOW_TIME=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac done
 
     bee::job::start "$@"
     bee::job::finish

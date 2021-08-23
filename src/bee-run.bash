@@ -218,12 +218,11 @@ bee::run() {
   while (($#)); do case "$1" in
     -b | --batch) shift; bee::batch "$@"; return ;;
     -h | --help) bee::usage; return ;;
-    -q | --quiet) BEE_QUIET=1 ;;
-    -v | --verbose) set -x ;;
+    -q | --quiet) BEE_QUIET=1; shift; ;;
+    -v | --verbose) set -x; shift; ;;
     --version) cat "${BEE_HOME}/version.txt"; return ;;
-    --) shift; break ;;
-    *) break ;;
-  esac; shift; done
+    --) shift; break ;; *) break ;;
+  esac done
 
   if (($#)); then
     # run bee module, e.g. bee plugins ls

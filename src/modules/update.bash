@@ -24,9 +24,8 @@ bee::update() {
 bee::update::print() {
   while (($#)); do case "$1" in
     --cached) bee::update::print_cached; return ;;
-    --) shift; break ;;
-    *) break ;;
-  esac; shift; done
+    --) shift; break ;; *) break ;;
+  esac done
 
   if (($#)); then
     bee::usage
