@@ -3,6 +3,14 @@ bee::help() {
   version="$(cat "${BEE_HOME}/version.txt")"
   entries="$(bee::help::print_entries)"
   cat << EOF
+
+██████╗ ███████╗███████╗
+██╔══██╗██╔════╝██╔════╝
+██████╔╝█████╗  █████╗
+██╔══██╗██╔══╝  ██╔══╝
+██████╔╝███████╗███████╗
+╚═════╝ ╚══════╝╚══════╝
+
 🐝 bee ${version} - plugin-based bash automation
 
 usage: bee [-h | --help] [--version]
@@ -10,6 +18,7 @@ usage: bee [-h | --help] [--version]
            [-b | --batch] <command> [<args>]
 
 ${entries}
+
 EOF
 }
 
@@ -24,9 +33,9 @@ bee::help::print_entries() {
       if [[ "${entry}" == "# bee::help" ]]; then
         while read -r entry; do
           [[ "${entry}" == "# bee::help" ]] && break
-          echo "${entry:2}"
+          echo "  ${entry:2}"
         done <&${help}
       fi
       exec {help}>&-
-    done | awk -F ':' '{ printf "%-37s%s\n", $1, $2 }'
+    done | awk -F ':' '{ printf "%-39s%s\n", $1, $2 }'
 }
