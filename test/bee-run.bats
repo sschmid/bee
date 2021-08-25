@@ -26,36 +26,48 @@ setup() {
 
 @test "runs bee module" {
   run bee testmodule
-  assert_line --index 0 "# testmodule sourced"
-  assert_line --index 1 "hello from testmodule"
+  cat << 'EOF' | assert_output -
+# testmodule sourced
+hello from testmodule
+EOF
 }
 
 @test "runs bee module with args" {
   run bee testmodule "test"
-  assert_line --index 0 "# testmodule sourced"
-  assert_line --index 1 "hello from testmodule - test"
+  cat << 'EOF' | assert_output -
+# testmodule sourced
+hello from testmodule - test
+EOF
 }
 
 @test "runs bee plugin" {
-  run bee testplugin
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --index 1 "testplugin 2.0.0 help"
+  run bee -q testplugin
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+testplugin 2.0.0 help
+EOF
 }
 
 @test "runs bee plugin with args" {
-  run bee testplugin greet "test"
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --index 1 "greeting test from testplugin 2.0.0"
+  run bee -q testplugin greet "test"
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+greeting test from testplugin 2.0.0
+EOF
 }
 
 @test "runs bee plugin with exact version" {
-  run bee testplugin:1.0.0
-  assert_line --index 0 "# testplugin 1.0.0 sourced"
-  assert_line --index 1 "testplugin 1.0.0 help"
+  run bee -q testplugin:1.0.0
+  cat << 'EOF' | assert_output -
+# testplugin 1.0.0 sourced
+testplugin 1.0.0 help
+EOF
 }
 
 @test "runs bee plugin with exact version with args" {
-  run bee testplugin:1.0.0 greet "test"
-  assert_line --index 0 "# testplugin 1.0.0 sourced"
-  assert_line --index 1 "greeting test from testplugin 1.0.0"
+  run bee -q testplugin:1.0.0 greet "test"
+  cat << 'EOF' | assert_output -
+# testplugin 1.0.0 sourced
+greeting test from testplugin 1.0.0
+EOF
 }

@@ -169,18 +169,21 @@ _prepare_module() {
   run _strict bee::hub ls
   assert_success
 
-  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
-  assert_line --index 1 "├── othertestplugin"
-  assert_line --index 2 "├── testplugin"
-  assert_line --index 3 "├── testplugindeps"
-  assert_line --index 4 "├── testplugindepsdep"
-  assert_line --index 5 "└── testpluginmissingdep"
-  assert_line --index 6 "file://${BATS_TEST_TMPDIR}/othertesthub"
-  assert_line --index 7 "├── othertestplugin"
-  assert_line --index 8 "├── testplugin"
-  assert_line --index 9 "├── testplugindeps"
-  assert_line --index 10 "├── testplugindepsdep"
-  assert_line --index 11 "└── testpluginmissingdep"
+  cat << EOF | assert_output -
+file://${BATS_TEST_TMPDIR}/testhub
+├── othertestplugin
+├── testplugin
+├── testplugindeps
+├── testplugindepsdep
+└── testpluginmissingdep
+
+file://${BATS_TEST_TMPDIR}/othertesthub
+├── othertestplugin
+├── testplugin
+├── testplugindeps
+├── testplugindepsdep
+└── testpluginmissingdep
+EOF
 }
 
 @test "lists specified hub urls with their plugins" {
@@ -191,20 +194,40 @@ _prepare_module() {
   run _strict bee::hub ls "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_success
 
-  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/othertesthub"
-  assert_line --index 1 "├── othertestplugin"
-  assert_line --index 2 "├── testplugin"
-  assert_line --index 3 "├── testplugindeps"
-  assert_line --index 4 "├── testplugindepsdep"
-  assert_line --index 5 "└── testpluginmissingdep"
+  cat << EOF | assert_output -
+file://${BATS_TEST_TMPDIR}/othertesthub
+├── othertestplugin
+├── testplugin
+├── testplugindeps
+├── testplugindepsdep
+└── testpluginmissingdep
+EOF
+}
+
+@test "lists all hub plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  run _strict bee::hub plugins
+  assert_success
+  cat << 'EOF' | assert_output -
+othertestplugin
+testplugin
+testplugindeps
+testplugindepsdep
+testpluginmissingdep
+EOF
 }
 
 @test "won't list hub urls when not pulled" {
   _prepare_module
   run _strict bee::hub ls
   assert_success
-  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
-  assert_line --index 1 "file://${BATS_TEST_TMPDIR}/othertesthub"
+  cat << EOF | assert_output -
+file://${BATS_TEST_TMPDIR}/testhub
+file://${BATS_TEST_TMPDIR}/othertesthub
+EOF
 }
 
 @test "lists hub urls with their plugins and all versions" {
@@ -215,25 +238,40 @@ _prepare_module() {
   run _strict bee::hub ls -a
   assert_success
 
-  assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
-  assert_line --index 1 "├── othertestplugin"
-  assert_line --index 2 "│    └── 1.0.0"
-  assert_line --index 3 "├── testplugin"
-  assert_line --index 4 "│    ├── 1.0.0"
-  assert_line --index 5 "│    └── 2.0.0"
-  assert_line --index 6 "├── testplugindeps"
-  assert_line --index 7 "│    └── 1.0.0"
-  assert_line --index 8 "├── testplugindepsdep"
-  assert_line --index 9 "│    └── 1.0.0"
-  assert_line --index 10 "└── testpluginmissingdep"
-  assert_line --index 11 "    └── 1.0.0"
+  cat << EOF | assert_output -
+file://${BATS_TEST_TMPDIR}/testhub
+├── othertestplugin
+│    └── 1.0.0
+├── testplugin
+│    ├── 1.0.0
+│    └── 2.0.0
+├── testplugindeps
+│    └── 1.0.0
+├── testplugindepsdep
+│    └── 1.0.0
+└── testpluginmissingdep
+    └── 1.0.0
+
+file://${BATS_TEST_TMPDIR}/othertesthub
+├── othertestplugin
+│    └── 1.0.0
+├── testplugin
+│    ├── 1.0.0
+│    └── 2.0.0
+├── testplugindeps
+│    └── 1.0.0
+├── testplugindepsdep
+│    └── 1.0.0
+└── testpluginmissingdep
+    └── 1.0.0
+EOF
 }
 
-@test "completes hub with ls pull install" {
+@test "completes hub with ls plugins pull install" {
   _source_comp
   COMP_WORDS=(bee hub)
   COMP_CWORD=2
-  assert_comp "ls" "pull" "install"
+  assert_comp "ls" "plugins" "pull" "install"
 }
 
 @test "completes hub ls with hub urls" {

@@ -37,8 +37,10 @@ _test_exit() {
 
 @test "runs module in internal mode" {
   run bee testmodule
-  assert_line --index 0 "# testmodule sourced"
-  assert_line --index 1 "hello from testmodule"
+  cat << 'EOF' | assert_output -
+# testmodule sourced
+hello from testmodule
+EOF
 }
 
 @test "fails in internal mode" {
@@ -64,8 +66,10 @@ _test_exit() {
 
 @test "runs quiet in plugin mode" {
   run bee --quiet testplugin
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --index 1 "testplugin 2.0.0 help"
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+testplugin 2.0.0 help
+EOF
   refute_output --partial "bzzzz"
 }
 

@@ -26,8 +26,10 @@ setup() {
 
 @test "prints deps" {
   run testplugindepsdep::deps
-  assert_line --index 0 "testplugindeps:1.0.0"
-  assert_line --index 1 "testplugin:1.0.0"
+  cat << 'EOF' | assert_output -
+testplugindeps:1.0.0
+testplugin:1.0.0
+EOF
 }
 
 @test "fails to call deps" {

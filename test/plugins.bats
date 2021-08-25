@@ -23,9 +23,11 @@ setup() {
   _setup_beefile "BEE_PLUGINS=(testplugin customtestplugin)"
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
-  assert_line --index 0 "testplugin"
-  assert_line --index 1 "customtestplugin"
-}
+  cat << 'EOF' | assert_output -
+testplugin
+customtestplugin
+EOF
+ }
 
 @test "lists nothing when no beefile" {
   run bee plugins
@@ -59,9 +61,11 @@ setup() {
 
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
-  run bee plugins -o
-  assert_line --index 0 "testplugin:1.0.0 ➜ testplugin:2.0.0"
-  assert_line --index 1 "othertestplugin:1.0.0"
+  run bee plugins --outdated
+  cat << 'EOF' | assert_output -
+testplugin:1.0.0 ➜ testplugin:2.0.0
+othertestplugin:1.0.0
+EOF
 }
 
 # list plugins with all dependencies (and version)

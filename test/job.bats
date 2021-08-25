@@ -78,8 +78,10 @@ _prepare_job_logs() {
   _prepare_job_logs
   run bee job "testjob" testplugin greet "test"
   run cat "${BEE_RESOURCES}/logs/"*
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --index 1 "greeting test from testplugin 2.0.0"
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+greeting test from testplugin 2.0.0
+EOF
 }
 
 @test "completes job with -t --time" {

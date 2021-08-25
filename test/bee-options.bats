@@ -13,26 +13,36 @@ setup() {
 
 @test "batches multiple commands with args" {
   run bee --batch "echo test1 test2" "echo test3 test4"
-  assert_line --index 0 "test1 test2"
-  assert_line --index 1 "test3 test4"
+  cat << 'EOF' | assert_output -
+test1 test2
+test3 test4
+EOF
 
   run bee --batch "echo test1 test2" "echo test3 test4"
-  assert_line --index 0 "test1 test2"
-  assert_line --index 1 "test3 test4"
+  cat << 'EOF' | assert_output -
+test1 test2
+test3 test4
+EOF
 }
 
 @test "batches multiple commands without args" {
   run bee --batch "echo" "echo test1" "echo" "bee::log_echo test2"
-  assert_line --index 0 "test1"
-  assert_line --index 1 "test2"
+  cat << 'EOF' | assert_output -
+
+test1
+
+test2
+EOF
 }
 
 @test "runs multiple plugin commands" {
-  run bee --batch "testplugin:1.0.0 greet test1" "testplugin:2.0.0 greet test2"
-  assert_line --index 0 "# testplugin 1.0.0 sourced"
-  assert_line --index 1 "greeting test1 from testplugin 1.0.0"
-  assert_line --index 2 "# testplugin 2.0.0 sourced"
-  assert_line --index 3 "greeting test2 from testplugin 2.0.0"
+  run bee -q --batch "testplugin:1.0.0 greet test1" "testplugin:2.0.0 greet test2"
+  cat << 'EOF' | assert_output -
+# testplugin 1.0.0 sourced
+greeting test1 from testplugin 1.0.0
+# testplugin 2.0.0 sourced
+greeting test2 from testplugin 2.0.0
+EOF
 }
 
 @test "enable quiet mode" {

@@ -103,10 +103,12 @@ assert_no_plugin() {
 
 @test "loads plugin dependencies" {
   run _strict bee::load_plugin testplugindepsdep
-  assert_line --index 0 "# testplugindepsdep 1.0.0 sourced"
-  assert_line --index 1 "# testplugindeps 1.0.0 sourced"
-  assert_line --index 2 "# testplugin 1.0.0 sourced"
-  assert_line --index 3 "# othertestplugin 1.0.0 sourced"
+  cat << 'EOF' | assert_output -
+# testplugindepsdep 1.0.0 sourced
+# testplugindeps 1.0.0 sourced
+# testplugin 1.0.0 sourced
+# othertestplugin 1.0.0 sourced
+EOF
 
   bee::load_plugin testplugindepsdep
   assert_equal "${BEE_LOAD_PLUGIN_NAME}" "testplugindepsdep"
@@ -115,13 +117,15 @@ assert_no_plugin() {
 @test "fails on missing plugin dependency" {
   run _strict bee::load_plugin testpluginmissingdep
   assert_failure
-  assert_line --index 0 "# testpluginmissingdep 1.0.0 sourced"
-  assert_line --index 1 "# testplugindepsdep 1.0.0 sourced"
-  assert_line --index 2 "# testplugindeps 1.0.0 sourced"
-  assert_line --index 3 "# testplugin 1.0.0 sourced"
-  assert_line --index 4 "# othertestplugin 1.0.0 sourced"
-  assert_line --index 5 "${BEE_ERR} Missing plugin: 'missing:1.0.0'"
-  assert_line --index 6 "${BEE_ERR} Missing plugin: 'othermissing:1.0.0'"
+  cat << EOF | assert_output -
+# testpluginmissingdep 1.0.0 sourced
+# testplugindepsdep 1.0.0 sourced
+# testplugindeps 1.0.0 sourced
+# testplugin 1.0.0 sourced
+# othertestplugin 1.0.0 sourced
+${BEE_ERR} Missing plugin: 'missing:1.0.0'
+${BEE_ERR} Missing plugin: 'othermissing:1.0.0'
+EOF
 }
 
 @test "runs plugin help when no args" {
@@ -146,6 +150,8 @@ assert_no_plugin() {
     "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"
   )
   run _strict bee::load_plugin customtestplugin
-  assert_line --index 0 "# customtestplugin 1.0.0 sourced"
-  assert_line --index 1 "# testplugin 1.0.0 sourced"
+  cat << 'EOF' | assert_output -
+# customtestplugin 1.0.0 sourced
+# testplugin 1.0.0 sourced
+EOF
 }

@@ -15,9 +15,11 @@ setup() {
 
 @test "logs multiple echo messages" {
   run _strict bee::log_echo "message1" "message2" "message3"
-  assert_line --index 0 "message1"
-  assert_line --index 1 "message2"
-  assert_line --index 2 "message3"
+  cat << 'EOF' | assert_output -
+message1
+message2
+message3
+EOF
 }
 
 @test "doesn't log echo when quiet" {
@@ -37,9 +39,11 @@ setup() {
 
 @test "logs multiple messages" {
   run _strict bee::log "message1" "message2" "message3"
-  assert_line --index 0 "🐝 message1"
-  assert_line --index 1 "message2"
-  assert_line --index 2 "message3"
+  cat << 'EOF' | assert_output -
+🐝 message1
+message2
+message3
+EOF
 }
 
 @test "doesn't log when quiet" {
@@ -54,18 +58,22 @@ setup() {
 
 @test "logs info message" {
   run _strict bee::log_info "message"
-  assert_line --index 0 "################################################################################"
-  assert_line --index 1 "🐝 message"
-  assert_line --index 2 "################################################################################"
+  cat << 'EOF' | assert_output -
+################################################################################
+🐝 message
+################################################################################
+EOF
 }
 
 @test "logs multiple info messages" {
   run _strict bee::log_info "message1" "message2" "message3"
-  assert_line --index 0 "################################################################################"
-  assert_line --index 1 "🐝 message1"
-  assert_line --index 2 "message2"
-  assert_line --index 3 "message3"
-  assert_line --index 4 "################################################################################"
+  cat << 'EOF' | assert_output -
+################################################################################
+🐝 message1
+message2
+message3
+################################################################################
+EOF
 }
 
 @test "doesn't log info when quiet" {
@@ -80,18 +88,22 @@ setup() {
 
 @test "logs func with message" {
   run _strict bee::log_func "message"
-  assert_line --index 0 "################################################################################"
-  assert_line --index 1 "🐝 _strict message"
-  assert_line --index 2 "################################################################################"
+  cat << 'EOF' | assert_output -
+################################################################################
+🐝 _strict message
+################################################################################
+EOF
 }
 
 @test "logs func with multiple messages" {
   run _strict bee::log_func "message1" "message2" "message3"
-  assert_line --index 0 "################################################################################"
-  assert_line --index 1 "🐝 _strict message1"
-  assert_line --index 2 "message2"
-  assert_line --index 3 "message3"
-  assert_line --index 4 "################################################################################"
+  cat << 'EOF' | assert_output -
+################################################################################
+🐝 _strict message1
+message2
+message3
+################################################################################
+EOF
 }
 
 @test "doesn't log func when quiet" {
@@ -111,9 +123,11 @@ setup() {
 
 @test "logs multiple warn messages" {
   run _strict bee::log_warn "message1" "message2" "message3"
-  assert_line --index 0 "${BEE_WARN} message1"
-  assert_line --index 1 "message2"
-  assert_line --index 2 "message3"
+  cat << EOF | assert_output -
+${BEE_WARN} message1
+message2
+message3
+EOF
 }
 
 @test "logs warn message even when quiet" {
@@ -133,9 +147,11 @@ setup() {
 
 @test "logs multiple error messages" {
   run _strict bee::log_error "message1" "message2" "message3"
-  assert_line --index 0 "${BEE_ERR} message1"
-  assert_line --index 1 "message2"
-  assert_line --index 2 "message3"
+  cat << EOF | assert_output -
+${BEE_ERR} message1
+message2
+message3
+EOF
 }
 
 @test "logs error message even when quiet" {

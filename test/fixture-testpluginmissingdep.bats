@@ -26,7 +26,9 @@ setup() {
 
 @test "prints deps" {
   run testpluginmissingdep::deps
-  assert_line --index 0 "testplugindepsdep:1.0.0"
-  assert_line --index 1 "missing:1.0.0"
-  assert_line --index 2 "othermissing:1.0.0"
+  cat << 'EOF' | assert_output -
+testplugindepsdep:1.0.0
+missing:1.0.0
+othermissing:1.0.0
+EOF
 }
