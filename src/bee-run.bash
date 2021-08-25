@@ -23,8 +23,7 @@ bee::load_module() {
 }
 
 bee::run_module() {
-  local module="$1"
-  shift
+  local module="$1"; shift
   "bee::${module}" "$@"
 }
 
@@ -105,11 +104,9 @@ bee::load_plugin_deps() {
 }
 
 bee::run_plugin() {
-  local plugin="$1"
-  shift
+  local plugin="$1"; shift
   if (($#)); then
-    local cmd="$1"
-    shift
+    local cmd="$1"; shift
     "${plugin}::${cmd}" "$@"
   else
     "${plugin}::help"

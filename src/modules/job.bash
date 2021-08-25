@@ -32,8 +32,7 @@ bee::job() {
 }
 
 bee::job::start() {
-  BEE_JOB_TITLE="$1"
-  shift
+  BEE_JOB_TITLE="$1"; shift
   bee::job::start_spinner
   if [[ -v BEE_RESOURCES ]]; then
     mkdir -p "${BEE_RESOURCES}/logs"

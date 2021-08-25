@@ -3,8 +3,7 @@ setup() {
 }
 
 _tree() {
-  local indent="$1"
-  shift
+  local indent="$1"; shift
   local -a plugins=("$@")
   local plugin_name plugin_deps bullet
   local -i i n=${#plugins[@]}

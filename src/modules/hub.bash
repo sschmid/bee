@@ -100,8 +100,7 @@ bee::hub::install() {
 }
 
 bee::hub::install_recursively() {
-  local indent="$1"
-  shift
+  local indent="$1"; shift
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path bullet
   local -i i n=${#plugins[@]} found=0
