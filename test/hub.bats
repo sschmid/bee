@@ -204,22 +204,6 @@ file://${BATS_TEST_TMPDIR}/othertesthub
 EOF
 }
 
-@test "lists all hub plugins" {
-  _setup_test_bee_hub_repo
-  _setup_test_bee_hub_repo "othertesthub"
-  _prepare_module
-  _strict bee::hub pull
-  run _strict bee::hub plugins
-  assert_success
-  cat << 'EOF' | assert_output -
-othertestplugin
-testplugin
-testplugindeps
-testplugindepsdep
-testpluginmissingdep
-EOF
-}
-
 @test "won't list hub urls when not pulled" {
   _prepare_module
   run _strict bee::hub ls
@@ -267,6 +251,22 @@ file://${BATS_TEST_TMPDIR}/othertesthub
 EOF
 }
 
+@test "lists all hub plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  run _strict bee::hub plugins
+  assert_success
+  cat << 'EOF' | assert_output -
+othertestplugin
+testplugin
+testplugindeps
+testplugindepsdep
+testpluginmissingdep
+EOF
+}
+
 @test "completes hub with ls plugins pull install" {
   _source_comp
   COMP_WORDS=(bee hub)
@@ -302,3 +302,24 @@ EOF
   assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
 }
 
+@test "completes hub install with plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  _source_comp
+  COMP_WORDS=(bee hub install)
+  COMP_CWORD=3
+  assert_comp "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep"
+}
+
+@test "completes hub install multiple with plugins" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  _source_comp
+  COMP_WORDS=(bee hub install myplugin)
+  COMP_CWORD=4
+  assert_comp "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep"
+}

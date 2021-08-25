@@ -7,11 +7,11 @@ BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 
 bee::hub::comp() {
   if ((!$#)); then
-    echo "ls pull install"
+    echo "ls plugins pull install"
   else case "$1" in
     ls) echo "${BEE_HUBS[@]}" ;;
     pull) echo "${BEE_HUBS[@]}" ;;
-    install) bee::hub::ls ;;
+    install) bee::hub::plugins ;;
   esac fi
 }
 
@@ -19,6 +19,7 @@ bee::hub() {
   if (($#)); then
     case "$1" in
       ls) shift; bee::hub::ls "$@" ;;
+      plugins) shift; bee::hub::plugins "$@" ;;
       pull) shift; bee::hub::pull "$@" ;;
       install) shift; echo "Installing"; bee::hub::install "$@" ;;
       *) bee::usage ;;
@@ -65,6 +66,14 @@ bee::hub::ls() {
       fi
     fi
   done
+}
+
+bee::hub::plugins() {
+  local cache_path
+  for url in "${@:-"${BEE_HUBS[@]}"}"; do
+    cache_path="$(bee::hub::to_cache_path "${url}")"
+    [[ -n "$cache_path" && -d "${cache_path}" ]] && ls "${cache_path}"
+  done | sort -u
 }
 
 bee::hub::pull() {
