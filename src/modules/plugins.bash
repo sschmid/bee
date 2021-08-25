@@ -24,10 +24,11 @@ bee::plugins() {
         if ((show_outdated)); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
           if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
-            plugin_entry="${plugin_entry} ➜ ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
+            echo "${plugin_entry} ➜ ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
           fi
+        else
+          echo "${plugin_entry}"
         fi
-        echo "${plugin_entry}"
       else
         echo -e "\033[31m✗ ${plugin}\033[0m"
       fi

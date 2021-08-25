@@ -62,10 +62,7 @@ EOF
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
   run bee plugins --outdated
-  cat << 'EOF' | assert_output -
-testplugin:1.0.0 ➜ testplugin:2.0.0
-othertestplugin:1.0.0
-EOF
+  assert_output "testplugin:1.0.0 ➜ testplugin:2.0.0"
 }
 
 # list plugins with all dependencies (and version)
