@@ -1,4 +1,6 @@
 # bee::help
+# hub ls [-a | --all] [<urls>] : list hubs and their plugins (--all versions)
+# hub plugins [<urls>] : list plugins
 # hub pull [<urls>] : update hubs
 # hub install [<plugins>] : install plugins
 # bee::help
@@ -32,7 +34,7 @@ bee::hub() {
 bee::hub::ls() {
   local -i show_all=0
   while (($#)); do case "$1" in
-    -a |--all) show_all=1; shift ;;
+    -a | --all) show_all=1; shift ;;
     --) shift; break ;; *) break ;;
   esac done
 
