@@ -2,6 +2,10 @@
 BEE_ORIGIN="file://${BATS_TEST_TMPDIR}/testbee"
 BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion.txt"
 BEE_LATEST_VERSION_CACHE_EXPIRE=0
+BEE_HUBS=(
+  "file://${BATS_TEST_TMPDIR}/testhub"
+  "file://${BATS_TEST_TMPDIR}/othertesthub"
+)
 BEE_CACHES_PATH="${BATS_TEST_TMPDIR}/caches"
 
 if [[ -v TEST_BEE_PLUGINS_PATHS_UNKNOWN ]]; then

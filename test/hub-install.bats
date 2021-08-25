@@ -31,6 +31,7 @@ _setup_testplugin_repo() {
 
 _prepare_module() {
   _source_bee
+  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   # shellcheck disable=SC1090
   source "${MODULE_PATH}"
 }
@@ -63,6 +64,7 @@ _prepare_module() {
   _setup_testplugin_repo
   _strict bee::hub pull
 
+  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${BATS_TEST_TMPDIR}/empty1"
     "file://${BATS_TEST_TMPDIR}/testhub"
@@ -77,7 +79,6 @@ _prepare_module() {
 @test "installs latest plugin version" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _strict bee::hub pull
 
@@ -90,7 +91,6 @@ _prepare_module() {
 @test "installs specified plugin version" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _strict bee::hub pull
 
@@ -103,7 +103,6 @@ _prepare_module() {
 @test "doesn't install unknown plugin version" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _strict bee::hub pull
 
@@ -118,7 +117,6 @@ _prepare_module() {
 @test "installs multiple plugins" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _strict bee::hub pull
 
@@ -133,7 +131,6 @@ _prepare_module() {
 @test "installs plugins with dependencies" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
@@ -152,7 +149,6 @@ _prepare_module() {
 @test "skips installing already installed plugins" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _strict bee::hub pull
   _strict bee::hub install testplugin
@@ -167,7 +163,6 @@ _prepare_module() {
 @test "installs plugins with dependencies recursively" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
@@ -189,8 +184,6 @@ _prepare_module() {
 @test "fails late when plugins are missing" {
   _setup_test_bee_hub_repo
   _prepare_module
-  # shellcheck disable=SC2034
-  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps

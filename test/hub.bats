@@ -149,9 +149,8 @@ _prepare_module() {
 @test "pulls test hub" {
   _setup_test_bee_hub_repo
   _prepare_module
-  BEE_HUBS=(
-    "file://${BATS_TEST_TMPDIR}/testhub"
-  )
+  # shellcheck disable=SC2034
+  BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   run _strict bee::hub pull
 
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/spec.json"
@@ -166,10 +165,6 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
-  BEE_HUBS=(
-    "file://${BATS_TEST_TMPDIR}/testhub"
-    "file://${BATS_TEST_TMPDIR}/othertesthub"
-  )
   _strict bee::hub pull
   run _strict bee::hub ls
   assert_success
@@ -192,10 +187,6 @@ _prepare_module() {
   _setup_test_bee_hub_repo
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
-  BEE_HUBS=(
-    "file://${BATS_TEST_TMPDIR}/testhub"
-    "file://${BATS_TEST_TMPDIR}/othertesthub"
-  )
   _strict bee::hub pull
   run _strict bee::hub ls "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_success
@@ -210,10 +201,6 @@ _prepare_module() {
 
 @test "won't list hub urls when not pulled" {
   _prepare_module
-  BEE_HUBS=(
-    "file://${BATS_TEST_TMPDIR}/testhub"
-    "file://${BATS_TEST_TMPDIR}/othertesthub"
-  )
   run _strict bee::hub ls
   assert_success
   assert_line --index 0 "file://${BATS_TEST_TMPDIR}/testhub"
@@ -222,11 +209,8 @@ _prepare_module() {
 
 @test "lists hub urls with their plugins and all versions" {
   _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
-  # shellcheck disable=SC2034
-  BEE_HUBS=(
-    "file://${BATS_TEST_TMPDIR}/testhub"
-  )
   _strict bee::hub pull
   run _strict bee::hub ls -a
   assert_success
@@ -244,3 +228,39 @@ _prepare_module() {
   assert_line --index 10 "└── testpluginmissingdep"
   assert_line --index 11 "    └── 1.0.0"
 }
+
+@test "completes hub with ls pull install" {
+  _source_comp
+  COMP_WORDS=(bee hub)
+  COMP_CWORD=2
+  assert_comp "ls" "pull" "install"
+}
+
+@test "completes hub ls with hub urls" {
+  _source_comp
+  COMP_WORDS=(bee hub ls)
+  COMP_CWORD=3
+  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+}
+
+@test "completes hub ls with multiple hub urls" {
+  _source_comp
+  COMP_WORDS=(bee hub ls myurl)
+  COMP_CWORD=4
+  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+}
+
+@test "completes hub pull with hub urls" {
+  _source_comp
+  COMP_WORDS=(bee hub pull)
+  COMP_CWORD=3
+  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+}
+
+@test "completes hub pull with multiple hub urls" {
+  _source_comp
+  COMP_WORDS=(bee hub pull myurl)
+  COMP_CWORD=4
+  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+}
+

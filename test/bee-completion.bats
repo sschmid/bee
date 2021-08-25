@@ -3,13 +3,7 @@ setup() {
   load "test-helper.bash"
   _set_beerc
   _set_test_modules
-  FILE_PATH="${PROJECT_ROOT}/etc/bash_completion.d/bee-completion.bash"
-  # shellcheck disable=SC1090
-  source "${FILE_PATH}"
-}
-
-@test "is not executable" {
-  assert_file_not_executable "${FILE_PATH}"
+  _source_comp
 }
 
 # shellcheck disable=SC2207

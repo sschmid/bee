@@ -23,3 +23,17 @@ setup() {
   run _strict bee::run cache rm
   assert_dir_not_exist "${BEE_CACHES_PATH}"
 }
+
+@test "completes cache with rm" {
+  _source_comp
+  COMP_WORDS=(bee cache)
+  COMP_CWORD=2
+  assert_comp "rm"
+}
+
+@test "no comp for cache rm" {
+  _source_comp
+  COMP_WORDS=(bee cache rm)
+  COMP_CWORD=3
+  assert_comp
+}

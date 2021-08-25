@@ -4,7 +4,9 @@
 # bee::help
 
 bee::cache::comp() {
-  echo "rm"
+  if ((!$#)); then
+    echo "rm"
+  fi
 }
 
 bee::cache() {

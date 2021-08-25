@@ -132,15 +132,17 @@ bee::comp_plugins() {
 bee::comp_module_or_plugin() {
   bee::load_module "$1"
   if [[ -n "${BEE_LOAD_MODULE_NAME}" ]]; then
+    shift
     local comp="bee::${BEE_LOAD_MODULE_NAME}::comp"
-    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}"
+    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}" "$@"
     return
   fi
 
   bee::load_plugin "$1"
   if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+    shift
     local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
-    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}"
+    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}" "$@"
     return
   fi
 }

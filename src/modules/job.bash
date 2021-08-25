@@ -11,6 +11,12 @@ BEE_JOB_SHOW_TIME=0
 BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
+bee::job::comp() {
+  if ((!$#)); then
+    echo "-t --time"
+  fi
+}
+
 bee::job() {
   if (($# >= 2)); then
     while (($#)); do case "$1" in

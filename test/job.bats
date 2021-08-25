@@ -81,3 +81,24 @@ _prepare_job_logs() {
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --index 1 "greeting test from testplugin 2.0.0"
 }
+
+@test "completes job with -t --time" {
+  _source_comp
+  COMP_WORDS=(bee job)
+  COMP_CWORD=2
+  assert_comp "-t" "--time"
+}
+
+@test "no comp for job -t" {
+  _source_comp
+  COMP_WORDS=(bee job -t)
+  COMP_CWORD=3
+  assert_comp
+}
+
+@test "no comp for job --time" {
+  _source_comp
+  COMP_WORDS=(bee job --time)
+  COMP_CWORD=3
+  assert_comp
+}

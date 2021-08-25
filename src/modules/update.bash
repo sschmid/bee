@@ -4,7 +4,11 @@
 # bee::help
 
 bee::update::comp() {
-  echo "print"
+  if ((!$#)); then
+    echo "print"
+  elif (($# == 1)); then case "$1" in
+    print) echo "--cached" ;;
+  esac fi
 }
 
 bee::update() {
