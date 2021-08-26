@@ -41,8 +41,8 @@ _set_test_modules() { export TEST_BEE_MODULES_PATH=1; }
 _unset_test_modules() { unset TEST_BEE_MODULES_PATH; }
 
 _setup_beefile() {
-  echo "$@" > "${BATS_TEST_TMPDIR}/beefile"
-  export BEE_FILE="${BATS_TEST_TMPDIR}/beefile"
+  echo "$@" > "${BATS_TEST_TMPDIR}/Beefile"
+  export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }
 
 _source_bee() {

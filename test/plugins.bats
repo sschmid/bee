@@ -29,7 +29,7 @@ customtestplugin
 EOF
  }
 
-@test "lists nothing when no beefile" {
+@test "lists nothing when no Beefile" {
   run bee plugins
   assert_success
   refute_output

@@ -37,10 +37,10 @@ assert_bee_system_home() {
   assert_bee_help
 }
 
-@test "sources beefile" {
-  _setup_beefile "echo '# test beefile sourced'"
+@test "sources Beefile" {
+  _setup_beefile "echo '# test Beefile sourced'"
   run bee
-  assert_line --index 0 "# test beefile sourced"
+  assert_line --index 0 "# test Beefile sourced"
 }
 
 @test "installs specified bee version" {
