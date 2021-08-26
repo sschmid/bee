@@ -166,7 +166,7 @@ EOF
 
 @test "logs var" {
   my_var="test1"
-  run _strict bee::log_var my_var
+  run _strict bee::env my_var
   assert_output "test1"
 }
 
@@ -174,6 +174,6 @@ EOF
 @test "logs var even when quiet" {
   BEE_QUIET=1
   my_var="test2"
-  run _strict bee::log_var my_var
+  run _strict bee::env my_var
   assert_output "test2"
 }

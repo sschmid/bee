@@ -14,7 +14,7 @@ bee::log_info() {
 bee::log_func() { bee::log_info "${FUNCNAME[1]} $*"; }
 bee::log_warn() { echo "🟠 $*" >&2; }
 bee::log_error() { echo "🔴 $*" >&2; }
-bee::log_var() { echo "${!1}"; }
+bee::env() { echo "${!1}"; }
 
 BEE_SYSTEM_HOME="${BASH_SOURCE[0]}"
 while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
