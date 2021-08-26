@@ -147,11 +147,11 @@ bee::comp_module_or_plugin() {
 ################################################################################
 # traps
 ################################################################################
-BEE_CANCELED=0
-BEE_MODE_INTERNAL=0
-BEE_MODE_PLUGIN=1
-BEE_MODE=${BEE_MODE_INTERNAL}
-T=${SECONDS}
+declare -ig BEE_CANCELED=0
+declare -ig BEE_MODE_INTERNAL=0
+declare -ig BEE_MODE_PLUGIN=1
+declare -ig BEE_MODE=${BEE_MODE_INTERNAL}
+declare -ig T=${SECONDS}
 
 declare -Ag BEE_TRAPS_INT=()
 declare -Ag BEE_TRAPS_TERM=()

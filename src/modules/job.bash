@@ -4,10 +4,10 @@
 
 BEE_JOB_SPINNER_INTERVAL=0.1
 BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
-BEE_JOB_SPINNER_PID=0
-BEE_JOB_RUNNING=0
-BEE_JOB_T=0
-BEE_JOB_SHOW_TIME=0
+declare -ig BEE_JOB_SPINNER_PID=0
+declare -ig BEE_JOB_RUNNING=0
+declare -ig BEE_JOB_T=0
+declare -ig BEE_JOB_SHOW_TIME=0
 BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
