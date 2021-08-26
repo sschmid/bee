@@ -46,9 +46,9 @@ bee::job::start() {
 bee::job::finish() {
   bee::job::stop_spinner
   if ((BEE_JOB_SHOW_TIME)); then
-    echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎ ($((SECONDS - BEE_JOB_T)) seconds)\033[0m"
+    echo -e "\r\033[2K${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}︎ ($((SECONDS - BEE_JOB_T)) seconds)${BEE_COLOR_RESET}"
   else
-    echo -e "\r\033[2K\033[0;32m${BEE_JOB_TITLE} ✔︎\033[0m"
+    echo -e "\r\033[2K${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}︎${BEE_COLOR_RESET}"
   fi
 }
 
@@ -109,9 +109,9 @@ bee::job::EXIT() {
   if ((status)); then
     bee::job::stop_spinner
     if ((BEE_JOB_SHOW_TIME)); then
-      echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗ ($((SECONDS - BEE_JOB_T)) seconds)\033[0m"
+      echo -e "\r\033[2K${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL} ($((SECONDS - BEE_JOB_T)) seconds)${BEE_COLOR_RESET}"
     else
-      echo -e "\r\033[2K\033[0;31m${BEE_JOB_TITLE} ✗\033[0m"
+      echo -e "\r\033[2K${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}${BEE_COLOR_RESET}"
     fi
   fi
 }

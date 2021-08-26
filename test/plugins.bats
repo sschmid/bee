@@ -1,6 +1,7 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
+  BEE_CHECK_FAIL="✗" BEE_RESULT="➜"
 }
 
 @test "is not executable" {
@@ -39,7 +40,7 @@ EOF
   _setup_beefile "BEE_PLUGINS=(unknown)"
   run bee plugins
   assert_success
-  assert_output --partial "✗ unknown"
+  assert_output --partial "${BEE_CHECK_FAIL} unknown"
 }
 
 @test "lists enabled plugins with version" {
@@ -56,13 +57,13 @@ EOF
   _setup_beefile "BEE_PLUGINS=(unknown:9.0.0)"
   run bee plugins -v
   assert_success
-  assert_output --partial "✗ unknown"
+  assert_output --partial "${BEE_CHECK_FAIL} unknown"
 }
 
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
   run bee plugins --outdated
-  assert_output "testplugin:1.0.0 ➜ testplugin:2.0.0"
+  assert_output "testplugin:1.0.0 ${BEE_RESULT} testplugin:2.0.0"
 }
 
 # list plugins with all dependencies (and version)

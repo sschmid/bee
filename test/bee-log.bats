@@ -34,13 +34,13 @@ EOF
 
 @test "logs message" {
   run _strict bee::log "message"
-  assert_output "🐝 message"
+  assert_output "${BEE_ICON} message"
 }
 
 @test "logs multiple messages" {
   run _strict bee::log "message1" "message2" "message3"
-  cat << 'EOF' | assert_output -
-🐝 message1
+  cat << EOF | assert_output -
+${BEE_ICON} message1
 message2
 message3
 EOF
@@ -58,18 +58,18 @@ EOF
 
 @test "logs info message" {
   run _strict bee::log_info "message"
-  cat << 'EOF' | assert_output -
+  cat << EOF | assert_output -
 ################################################################################
-🐝 message
+${BEE_ICON} message
 ################################################################################
 EOF
 }
 
 @test "logs multiple info messages" {
   run _strict bee::log_info "message1" "message2" "message3"
-  cat << 'EOF' | assert_output -
+  cat << EOF | assert_output -
 ################################################################################
-🐝 message1
+${BEE_ICON} message1
 message2
 message3
 ################################################################################
@@ -88,18 +88,18 @@ EOF
 
 @test "logs func with message" {
   run _strict bee::log_func "message"
-  cat << 'EOF' | assert_output -
+  cat << EOF | assert_output -
 ################################################################################
-🐝 _strict message
+${BEE_ICON} _strict message
 ################################################################################
 EOF
 }
 
 @test "logs func with multiple messages" {
   run _strict bee::log_func "message1" "message2" "message3"
-  cat << 'EOF' | assert_output -
+  cat << EOF | assert_output -
 ################################################################################
-🐝 _strict message1
+${BEE_ICON} _strict message1
 message2
 message3
 ################################################################################

@@ -22,13 +22,13 @@ _prepare_job_logs() {
 @test "runs job and succeeds" {
   run bee job "testjob" echo "test"
   assert_success
-  assert_output --partial "testjob ✔"
+  assert_output --partial "testjob ${BEE_CHECK_SUCCESS}"
 }
 
 @test "runs job and fails" {
   run bee job "testjob" not_a_command
   assert_failure
-  assert_output --partial "testjob ✗"
+  assert_output --partial "testjob ${BEE_CHECK_FAIL}"
 }
 
 @test "runs job and succeeds with time" {

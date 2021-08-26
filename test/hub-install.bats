@@ -48,7 +48,7 @@ _prepare_module() {
   run _strict bee::hub install unknown
   assert_failure
   assert_line --index 0 "Installing"
-  assert_line --index 1 --partial "✗ unknown"
+  assert_line --index 1 --partial "${BEE_CHECK_FAIL} unknown"
   assert_line --index 2 "${BEE_ERR} Couldn't install plugin: unknown"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
 }
@@ -109,7 +109,7 @@ _prepare_module() {
   run _strict bee::hub install testplugin:9.0.0
   assert_failure
   assert_line --index 0 "Installing"
-  assert_line --index 1 --partial "✗ testplugin:9.0.0"
+  assert_line --index 1 --partial "${BEE_CHECK_FAIL} testplugin:9.0.0"
   assert_line --index 2 "${BEE_ERR} Couldn't install plugin: testplugin:9.0.0"
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/testplugin"
 }
@@ -155,7 +155,7 @@ _prepare_module() {
 
   run _strict bee::hub install testplugin
   assert_success
-  refute_line --index 1 --partial "✔︎"
+  refute_line --index 1 --partial "${BEE_CHECK_SUCCESS}︎"
   assert_line --index 1 --partial "testplugin:2.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
@@ -193,13 +193,13 @@ _prepare_module() {
   run _strict bee::hub install testpluginmissingdep
   assert_failure
   assert_line --index 1 --partial "testpluginmissingdep:1.0.0"
-  assert_line --index 2 --partial "✗ missing:1.0.0"
+  assert_line --index 2 --partial "${BEE_CHECK_FAIL} missing:1.0.0"
   assert_line --index 3 --partial "testplugindepsdep:1.0.0"
   assert_line --index 4 --partial "testplugindeps:1.0.0"
   assert_line --index 5 --partial "testplugin:1.0.0"
   assert_line --index 6 --partial "othertestplugin:1.0.0"
   assert_line --index 7 --partial "testplugin:1.0.0"
-  assert_line --index 8 --partial "✗ othermissing:1.0.0"
+  assert_line --index 8 --partial "${BEE_CHECK_FAIL} othermissing:1.0.0"
   assert_line --index 9 "${BEE_ERR} Couldn't install plugin: missing:1.0.0"
   assert_line --index 10 "${BEE_ERR} Couldn't install plugin: othermissing:1.0.0"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testpluginmissingdep/1.0.0/testplugindepsdep.bash"

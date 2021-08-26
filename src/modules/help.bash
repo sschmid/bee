@@ -11,7 +11,7 @@ bee::help() {
 ██████╔╝███████╗███████╗
 ╚═════╝ ╚══════╝╚══════╝
 
-🐝 bee ${version} - plugin-based bash automation
+${BEE_ICON} bee ${version} - plugin-based bash automation
 
 usage: bee [-h | --help] [--version]
            [-q | --quiet] [-v | --verbose]

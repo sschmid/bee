@@ -8,11 +8,6 @@ export PROJECT_ROOT
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
-# shellcheck disable=SC2034
-BEE_WARN="🟠"
-# shellcheck disable=SC2034
-BEE_ERR="🔴"
-
 assert_bee_help() {
   assert_output --partial "plugin-based bash automation"
 }

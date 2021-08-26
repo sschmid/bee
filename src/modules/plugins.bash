@@ -24,13 +24,13 @@ bee::plugins() {
         if ((show_outdated)); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
           if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
-            echo "${plugin_entry} ➜ ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
+            echo "${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
           fi
         else
           echo "${plugin_entry}"
         fi
       else
-        echo -e "\033[31m✗ ${plugin}\033[0m"
+        echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
       fi
     done
   fi
