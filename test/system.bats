@@ -12,6 +12,8 @@ _test_dependencies() {
 }
 
 @test "system has all required dependencies installed" {
+  assert_file_exist "${PROJECT_ROOT}/DEPENDENCIES.md"
   run _test_dependencies
+  assert_success
   refute_output --partial "MISSING"
 }

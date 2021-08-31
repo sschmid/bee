@@ -1,4 +1,3 @@
-bash
 curl
 git
 jq
