@@ -159,9 +159,9 @@ declare -Ag BEE_TRAPS_EXIT=()
 bee::add_int_trap() { BEE_TRAPS_INT["$1"]="$1"; }
 bee::add_term_trap() { BEE_TRAPS_TERM["$1"]="$1"; }
 bee::add_exit_trap() { BEE_TRAPS_EXIT["$1"]="$1"; }
-bee::remove_int_trap() { unset BEE_TRAPS_INT["$1"]; }
-bee::remove_term_trap() { unset BEE_TRAPS_TERM["$1"]; }
-bee::remove_exit_trap() { unset BEE_TRAPS_EXIT["$1"]; }
+bee::remove_int_trap() { unset 'BEE_TRAPS_INT["$1"]'; }
+bee::remove_term_trap() { unset 'BEE_TRAPS_TERM["$1"]'; }
+bee::remove_exit_trap() { unset 'BEE_TRAPS_EXIT["$1"]'; }
 
 bee::INT() { BEE_CANCELED=1; for t in "${BEE_TRAPS_INT[@]}"; do "$t"; done; }
 bee::TERM() { BEE_CANCELED=1; for t in "${BEE_TRAPS_TERM[@]}"; do "$t"; done; }
