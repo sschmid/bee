@@ -66,4 +66,4 @@ EOF
   assert_output "testplugin:1.0.0 ${BEE_RESULT} testplugin:2.0.0"
 }
 
-# list plugins with all dependencies (and version)
+# TODO list plugins with all dependencies (and version)
