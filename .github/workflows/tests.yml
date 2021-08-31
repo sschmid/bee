@@ -1,0 +1,16 @@
+name: Tests
+on:
+  push:
+    branches: [ rewrite ]
+  pull_request:
+    branches: [ rewrite ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Run tests
+      run: test/run --docker
