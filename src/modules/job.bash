@@ -33,23 +33,28 @@ bee::job() {
 
 bee::job::start() {
   BEE_JOB_TITLE="$1"; shift
-  bee::job::start_spinner
   if [[ -v BEE_RESOURCES ]]; then
     mkdir -p "${BEE_RESOURCES}/logs"
     BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y%m%d%H%M%S')-job-${BEE_JOB_TITLE// /-}-${RANDOM}${RANDOM}.log"
   else
     BEE_JOB_LOGFILE=/dev/null
   fi
-  bee::run "$@" &> "${BEE_JOB_LOGFILE}"
+
+  if ((BEE_VERBOSE)); then
+    echo "${BEE_JOB_TITLE}"
+    bee::run "$@" 2>&1 | tee "${BEE_JOB_LOGFILE}"
+  else
+    bee::job::start_spinner
+    bee::run "$@" &> "${BEE_JOB_LOGFILE}"
+  fi
 }
 
 bee::job::finish() {
   bee::job::stop_spinner
-  if ((BEE_JOB_SHOW_TIME)); then
-    echo -e "\r\033[2K${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}︎ ($((SECONDS - BEE_JOB_T)) seconds)${BEE_COLOR_RESET}"
-  else
-    echo -e "\r\033[2K${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}︎${BEE_COLOR_RESET}"
-  fi
+  local line_reset="" duration=""
+  ((!BEE_VERBOSE)) && line_reset="\r\033[2K"
+  ((BEE_JOB_SHOW_TIME)) && duration="︎ ($((SECONDS - BEE_JOB_T)) seconds)"
+  echo -e "${line_reset}${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}${duration}${BEE_COLOR_RESET}"
 }
 
 bee::job::start_spinner() {

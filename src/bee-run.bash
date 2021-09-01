@@ -219,7 +219,7 @@ bee::run() {
     -b | --batch) shift; bee::batch "$@"; return ;;
     -h | --help) bee::usage; return ;;
     -q | --quiet) BEE_QUIET=1; shift; ;;
-    -v | --verbose) set -x; BEE_VERBOSE=1; shift; ;;
+    -v | --verbose) BEE_VERBOSE=1; shift; ;;
     --version) cat "${BEE_HOME}/version.txt"; return ;;
     --) shift; break ;; *) break ;;
   esac done

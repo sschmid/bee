@@ -74,6 +74,29 @@ _prepare_job_logs() {
   assert_output --partial "not_a_command: command not found"
 }
 
+@test "runs job and succeeds verbose" {
+  _prepare_job_logs
+  run bee --verbose job "testjob" echo "test"
+
+  assert_line --index 0 "testjob"
+  assert_line --index 1 "test"
+  assert_line --index 2 --partial "testjob"
+
+  run cat "${BEE_RESOURCES}/logs/"*
+  assert_output "test"
+}
+
+@test "runs job and fails verbose" {
+  _prepare_job_logs
+  run bee --verbose job "testjob" not_a_command
+
+  assert_line --index 0 "testjob"
+  assert_line --index 1 --partial "not_a_command: command not found"
+
+  run cat "${BEE_RESOURCES}/logs/"*
+  assert_output --partial "not_a_command: command not found"
+}
+
 @test "runs plugin as job" {
   _prepare_job_logs
   run bee job "testjob" testplugin greet "test"
