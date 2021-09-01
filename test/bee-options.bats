@@ -53,6 +53,15 @@ EOF
   refute_output
 }
 
+@test "enable verbose mode" {
+  _source_bee
+  run _strict bee::run -v bee::env BEE_VERBOSE
+  assert_output "1"
+
+  run _strict bee::run -v bee::env BEE_VERBOSE
+  assert_output "1"
+}
+
 @test "-- ends options" {
   run bee -- echo "test"
   assert_output "test"

@@ -147,6 +147,7 @@ bee::comp_module_or_plugin() {
 ################################################################################
 # traps
 ################################################################################
+declare -ig BEE_VERBOSE=0
 declare -ig BEE_CANCELED=0
 declare -ig BEE_MODE_INTERNAL=0
 declare -ig BEE_MODE_PLUGIN=1
@@ -218,7 +219,7 @@ bee::run() {
     -b | --batch) shift; bee::batch "$@"; return ;;
     -h | --help) bee::usage; return ;;
     -q | --quiet) BEE_QUIET=1; shift; ;;
-    -v | --verbose) set -x; shift; ;;
+    -v | --verbose) set -x; BEE_VERBOSE=1; shift; ;;
     --version) cat "${BEE_HOME}/version.txt"; return ;;
     --) shift; break ;; *) break ;;
   esac done
