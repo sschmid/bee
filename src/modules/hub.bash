@@ -130,7 +130,7 @@ bee::hub::install_recursively() {
             fi
           done < <(jq -r '[.git, .tag, .dependencies[]?] | @tsv' "${spec_path}")
         fi
-      done < <(bee::resolve "${plugin}" "${cache_path}" "spec.json")
+      done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
       ((found)) && break
     done
     if ((!found)); then

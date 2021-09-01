@@ -8,7 +8,7 @@ setup() {
 _setup_mock_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1/$2/1.0.0"
   pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
-    touch "$2/1.0.0/spec.json"
+    touch "$2/1.0.0/plugin.json"
     git init -b main; git add . ; git commit -m "Initial commit"
   popd > /dev/null || exit 1
 }
@@ -16,7 +16,7 @@ _setup_mock_bee_hub_repo() {
 _update_mock_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1/$2/$3"
   pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
-    touch "$2/$3/spec.json"; git add . ; git commit -m "Release $3"
+    touch "$2/$3/plugin.json"; git add . ; git commit -m "Release $3"
   popd > /dev/null || exit 1
 }
 
@@ -92,8 +92,8 @@ _prepare_module() {
   run _strict bee::hub pull
   assert_success
 
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.json"
 }
 
 @test "clones specified hubs" {
@@ -107,7 +107,7 @@ _prepare_module() {
   run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub1"
   assert_success
 
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.json"
   assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2"
 }
 
@@ -124,9 +124,9 @@ _prepare_module() {
   assert_success
   assert_output --partial "${BEE_WARN} Unsupported hub url: unknown"
 
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.json"
   assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/unknown"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.json"
 }
 
 @test "pulls existing hubs" {
@@ -138,12 +138,12 @@ _prepare_module() {
     "file://${BATS_TEST_TMPDIR}/testbeehub2"
   )
   bee::hub pull
-  assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/spec.json"
+  assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.json"
 
   _update_mock_bee_hub_repo testbeehub1 testplugin 2.0.0
   run _strict bee::hub pull
   assert_success
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/2.0.0/plugin.json"
 }
 
 @test "pulls test hub" {
@@ -153,12 +153,12 @@ _prepare_module() {
   BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   run _strict bee::hub pull
 
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/othertestplugin/1.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindeps/1.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindepsdep/1.0.0/spec.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testpluginmissingdep/1.0.0/spec.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/othertestplugin/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindeps/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindepsdep/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testpluginmissingdep/1.0.0/plugin.json"
 }
 
 @test "lists all hub urls with their plugins" {
