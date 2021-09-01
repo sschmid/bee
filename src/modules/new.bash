@@ -3,10 +3,7 @@
 # bee::help
 
 bee::new() {
-  # test mode: use this instead
-  # local beefile="${1:-Beefile}"
-  local beefile="Beefile"
-
+  local beefile="${1:-Beefile}"
   if [[ -f "${beefile}" ]]; then
     bee::log_error "${beefile} already exists"
     exit 1
