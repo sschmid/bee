@@ -37,8 +37,19 @@ assert_bee_system_home() {
   assert_bee_help
 }
 
-@test "sources Beefile" {
+@test "sources BEE_FILE when specified" {
   _setup_beefile "echo '# test Beefile sourced'"
+  run bee
+  assert_line --index 0 "# test Beefile sourced"
+}
+
+@test "sets and sources Beefile in working dir" {
+  cd "${BATS_TEST_TMPDIR}"
+  echo "test Beefile" > "Beefile"
+  run bee bee::env BEE_FILE
+  assert_output "Beefile"
+
+  echo "echo '# test Beefile sourced'" > "Beefile"
   run bee
   assert_line --index 0 "# test Beefile sourced"
 }

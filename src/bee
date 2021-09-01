@@ -37,7 +37,8 @@ BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
 EOF
 source "${BEE_RC}"
 
-[[ -v BEE_FILE ]] && source "${BEE_FILE}"
+if [[ -v BEE_FILE ]]; then source "${BEE_FILE}"
+elif [[ -f "Beefile" ]]; then BEE_FILE="Beefile"; source "${BEE_FILE}"; fi
 
 if [[ -v BEE_VERSION ]]; then
   BEE_HOME="${BEE_CACHES_PATH}/bee/${BEE_VERSION}"
