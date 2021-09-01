@@ -1,11 +1,13 @@
 # bee::help
-# plugins : list enabled plugins
+# plugins [-a | --all] : list (all) plugins
 # bee::help
 
 bee::plugins() {
+  local -i show_all=0
   local -i show_version=0
   local -i show_outdated=0
   while (($#)); do case "$1" in
+    -a | --all) show_all=1; shift ;;
     -o | --outdated) show_outdated=1; shift ;;
     -v | --version) show_version=1; shift ;;
     --) shift; break ;; *) break ;;
@@ -15,7 +17,14 @@ bee::plugins() {
     :
   else
     local plugin_entry plugin_version
-    for plugin in "${BEE_PLUGINS[@]}"; do
+    local -a plugins
+    if ((show_all)); then
+      mapfile -t plugins < <(bee::comp_plugins)
+      plugins=("${BEE_PLUGINS[@]}" "${plugins[@]}")
+    else
+      plugins=("${BEE_PLUGINS[@]}")
+    fi
+    for plugin in "${plugins[@]}"; do
       bee::resolve_plugin "${plugin}"
       if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
         plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"

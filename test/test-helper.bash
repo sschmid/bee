@@ -8,6 +8,10 @@ export PROJECT_ROOT
 
 PATH="${PROJECT_ROOT}/src:${PATH}"
 
+BEE_COLOR_SUCCESS="\033[0;32m" BEE_COLOR_FAIL="\033[0;31m" BEE_COLOR_RESET="\033[0m"
+BEE_CHECK_SUCCESS="✔" BEE_CHECK_FAIL="✗" BEE_RESULT="➜"
+BEE_ICON="🐝" BEE_WARN="🟠" BEE_ERR="🔴"
+
 assert_bee_help() {
   assert_output --partial "plugin-based bash automation"
 }

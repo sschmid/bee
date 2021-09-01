@@ -57,8 +57,33 @@ EOF
   _setup_beefile "BEE_PLUGINS=(unknown:9.0.0)"
   run bee plugins -v
   assert_success
-  assert_output --partial "${BEE_CHECK_FAIL} unknown"
+  assert_output --partial "${BEE_CHECK_FAIL} unknown:9.0.0"
 }
+
+@test "lists all plugins from all plugin paths" {
+  _setup_beefile "BEE_PLUGINS=(unknown)"
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee plugins -a
+
+  local -i i=0
+  assert_line --index $((i++)) --partial "${BEE_CHECK_FAIL} unknown"
+  assert_line --index $((i++)) "testplugindepsdep"
+  assert_line --index $((i++)) "testplugin"
+  assert_line --index $((i++)) "testplugindeps"
+  assert_line --index $((i++)) "othertestplugin"
+  assert_line --index $((i++)) "testpluginmissingdep"
+  assert_line --index $((i++)) "customtestplugin"
+
+  run bee plugins --all
+  i=0
+  assert_line --index $((i++)) --partial "${BEE_CHECK_FAIL} unknown"
+  assert_line --index $((i++)) "testplugindepsdep"
+  assert_line --index $((i++)) "testplugin"
+  assert_line --index $((i++)) "testplugindeps"
+  assert_line --index $((i++)) "othertestplugin"
+  assert_line --index $((i++)) "testpluginmissingdep"
+  assert_line --index $((i++)) "customtestplugin"
+ }
 
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
