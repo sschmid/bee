@@ -51,10 +51,9 @@ bee::job::start() {
 
 bee::job::finish() {
   bee::job::stop_spinner
-  local line_reset="" duration=""
-  ((!BEE_VERBOSE)) && line_reset="\r\033[2K"
-  ((BEE_JOB_SHOW_TIME)) && duration="︎ ($((SECONDS - BEE_JOB_T)) seconds)"
-  echo -e "${line_reset}${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}${duration}${BEE_COLOR_RESET}"
+  local line_reset
+  ((!BEE_VERBOSE)) && line_reset="\r\033[2K" || line_reset=""
+  echo -e "${line_reset}${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}$(bee::job::duration)${BEE_COLOR_RESET}"
 }
 
 bee::job::start_spinner() {
@@ -88,11 +87,7 @@ bee::job::stop_spinner() {
 bee::job::spin() {
   while true; do
     for i in "${BEE_JOB_SPINNER_FRAMES[@]}"; do
-      if ((BEE_JOB_SHOW_TIME)); then
-        echo -ne "\r\033[2K${BEE_JOB_TITLE} ($((SECONDS - BEE_JOB_T)) seconds) ${i}"
-      else
-        echo -ne "\r\033[2K${BEE_JOB_TITLE} ${i}"
-      fi
+      echo -ne "\r\033[2K${BEE_JOB_TITLE}$(bee::job::duration) ${i}"
       sleep ${BEE_JOB_SPINNER_INTERVAL}
     done
   done
@@ -101,11 +96,7 @@ bee::job::spin() {
 bee::job::INT() {
   ((!BEE_JOB_RUNNING)) && return
   bee::job::stop_spinner
-  if ((BEE_JOB_SHOW_TIME)); then
-    echo "Aborted by $(whoami) ($((SECONDS - BEE_JOB_T)) seconds)" >> "${BEE_JOB_LOGFILE}"
-  else
-    echo "Aborted by $(whoami)" >> "${BEE_JOB_LOGFILE}"
-  fi
+  echo "Aborted by $(whoami)$(bee::job::duration)" >> "${BEE_JOB_LOGFILE}"
 }
 
 bee::job::EXIT() {
@@ -113,10 +104,12 @@ bee::job::EXIT() {
   ((!BEE_JOB_RUNNING)) && return
   if ((status)); then
     bee::job::stop_spinner
-    if ((BEE_JOB_SHOW_TIME)); then
-      echo -e "\r\033[2K${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL} ($((SECONDS - BEE_JOB_T)) seconds)${BEE_COLOR_RESET}"
-    else
-      echo -e "\r\033[2K${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}${BEE_COLOR_RESET}"
-    fi
+    echo -e "\r\033[2K${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}$(bee::job::duration)${BEE_COLOR_RESET}"
+  fi
+}
+
+bee::job::duration() {
+  if ((BEE_JOB_SHOW_TIME)); then
+    echo " ($((SECONDS - BEE_JOB_T)) seconds)"
   fi
 }
