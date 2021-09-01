@@ -22,6 +22,7 @@ setup() {
 
 @test "lists enabled plugins from all plugin paths" {
   _setup_beefile "BEE_PLUGINS=(testplugin customtestplugin)"
+  # shellcheck disable=SC2030
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   cat << 'EOF' | assert_output -
@@ -62,6 +63,7 @@ EOF
 
 @test "lists all plugins from all plugin paths" {
   _setup_beefile "BEE_PLUGINS=(unknown)"
+  # shellcheck disable=SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins -a
 

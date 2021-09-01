@@ -215,6 +215,7 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
+  # shellcheck disable=SC2034
   while (($#)); do case "$1" in
     -b | --batch) shift; bee::batch "$@"; return ;;
     -h | --help) bee::usage; return ;;
