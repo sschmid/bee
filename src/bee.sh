@@ -707,8 +707,8 @@ res() {
 }
 
 new_bee() {
-  if [[ -f .beerc ]]; then
-    echo ".beerc already exists"
+  if [[ -f "Beefile" ]]; then
+    echo "Beefile already exists"
     exit 1
   else
     local local_version
@@ -721,9 +721,9 @@ new_bee() {
       echo ""
       echo '# Run bee new <plugins> to print all required variables'
       echo '# e.g. bee new git utils version'
-    } > .beerc
+    } > "Beefile"
 
-    echo "created ${PWD}/.beerc"
+    echo "created ${PWD}/Beefile"
   fi
 }
 
@@ -742,13 +742,13 @@ new_plugin() {
   if [[ -n "${template}" ]]; then
     echo -ne "${template/'\n'/}"
     if echo -ne "${template/'\n'/}" | pbcopy_compat; then
-      echo -e "\n(template has been copied to clipboard, please paste into your .beerc)"
+      echo -e "\n(template has been copied to clipboard, please paste into your Beefile)"
     fi
   fi
 }
 
 declare -a bee_help_new=(
-  "new | create new .beerc"
+  "new | create new Beefile"
   "new <plugins> | show code templates for plugins"
 )
 new() {
