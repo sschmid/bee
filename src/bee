@@ -72,7 +72,7 @@ bee_migration_0400
 
 # TODO: remove when expired (March 2021)
 bee_migration_0390_sub() {
-  if [[ -f .beerc ]]; then
+  if [[ ! -v BEE_RC && -f .beerc ]]; then
     source .beerc
     if [[ -v BEE_VERSION ]]; then
       local version=${BEE_VERSION//./}
