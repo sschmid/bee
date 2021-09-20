@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.40.0] - 2021-09-20
+### Added
+- Add help text when plugins are missing
+- Cache docker apk add
+
+### Changed
+- Rename project's `.beerc` to `Beefile`
+- Update install url to use main branch
+
 ## [0.39.1] - 2021-05-11
 ### Added
 - Pass exit code to BEE_EXIT_TRAPS
@@ -377,7 +386,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/0.39.1...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/0.40.0...HEAD
+[0.40.0]: https://github.com/sschmid/bee/compare/0.39.1...0.40.0
 [0.39.1]: https://github.com/sschmid/bee/compare/0.39.0...0.39.1
 [0.39.0]: https://github.com/sschmid/bee/compare/0.38.0...0.39.0
 [0.38.0]: https://github.com/sschmid/bee/compare/0.37.3...0.38.0

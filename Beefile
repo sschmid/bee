@@ -8,6 +8,8 @@ PLUGINS=(changelog github version)
 CHANGELOG_PATH=CHANGELOG.md
 CHANGELOG_CHANGES=CHANGES.md
 CHANGELOG_URL=https://github.com/sschmid/bee
+CHANGELOG_TAG_PREFIX=""
+CHANGELOG_TAG_SUFFIX=""
 
 # github => version
 GITHUB_CHANGES=CHANGES.md
