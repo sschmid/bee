@@ -64,15 +64,15 @@ BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
 
 # TODO: remove when expired (September 2021)
 bee_migration_0400() {
-  if [[ ! -v BEE_RC && -f ".beerc" ]]; then
-    BEE_RC=".beerc"
+  if [[ ! -v BEEFILE && -f ".beerc" ]]; then
+    BEEFILE=".beerc"
   fi
 }
 bee_migration_0400
 
 # TODO: remove when expired (March 2021)
 bee_migration_0390_sub() {
-  if [[ ! -v BEE_RC && -f .beerc ]]; then
+  if [[ ! -v BEEFILE && -f .beerc ]]; then
     source .beerc
     if [[ -v BEE_VERSION ]]; then
       local version=${BEE_VERSION//./}
@@ -133,11 +133,11 @@ bee_migration_0380() {
 }
 bee_migration_0380
 
-if [[ -v BEE_RC ]]; then
-  source "${BEE_RC}"
+if [[ -v BEEFILE ]]; then
+  source "${BEEFILE}"
 elif [[ -f "Beefile" ]]; then
-  BEE_RC="Beefile"
-  source "${BEE_RC}"
+  BEEFILE="Beefile"
+  source "${BEEFILE}"
 fi
 
 assert_min_bee_version() {
