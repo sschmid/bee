@@ -1,8 +1,8 @@
 # bee::help
+# hub install [<plugins>] : install plugins
 # hub ls [-a | --all] [<urls>] : list hubs and their plugins (--all versions)
 # hub plugins [<urls>] : list plugins
 # hub pull [<urls>] : update hubs
-# hub install [<plugins>] : install plugins
 # bee::help
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
@@ -54,7 +54,7 @@ bee::hub::ls() {
           echo "${bullet}${plugin_name}"
 
           if ((show_all)); then
-            mapfile -t versions < <(find "${cache_path}/${plugin_name}" -type d -mindepth 1 -maxdepth 1 | sort -V)
+            mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -V)
             m=${#versions[@]}
             for ((j = 0; j < m; j++)); do
               plugin_version="$(basename "${versions[j]}")"

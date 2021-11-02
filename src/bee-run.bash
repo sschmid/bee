@@ -2,7 +2,7 @@
 ################################################################################
 # modules
 ################################################################################
-BEE_MODULES_PATH="${BEE_MODULES_PATH:-"${BEE_HOME}/src/modules"}"
+: "${BEE_MODULES_PATH:="${BEE_HOME}/src/modules"}"
 
 BEE_LOAD_MODULE_NAME=""
 declare -Ag BEE_LOAD_MODULE_LOADED=()
@@ -35,7 +35,7 @@ bee::resolve() {
   local plugin="$1" plugins_path="$2" file="$3"
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
   if [[ "${plugin_name}" == "${plugin_version}" && -d "${plugins_path}/${plugin_name}" ]]; then
-    plugin_version="$(basename "$(find "${plugins_path}/${plugin_name}" -type d -mindepth 1 -maxdepth 1 | sort -rV | head -n 1)")"
+    plugin_version="$(basename "$(find "${plugins_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -rV | head -n 1)")"
   fi
   path="${plugins_path}/${plugin_name}/${plugin_version}/${file}"
   [[ -f "${path}" ]] && echo -e "${plugin_name}\t${plugin_version}\t${path}"
@@ -116,13 +116,15 @@ bee::run_plugin() {
 ################################################################################
 # completion
 ################################################################################
+
 bee::comp_modules() {
-  find "${BEE_MODULES_PATH}" -type f -mindepth 1 -maxdepth 1 -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
+  find "${BEE_MODULES_PATH}" -mindepth 1 -maxdepth 1 -type f -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
 }
 
 bee::comp_plugins() {
+  # shellcheck disable=SC2015
   for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
-    [[ -d "${plugins_path}" ]] && find "${plugins_path}" -type d -mindepth 1 -maxdepth 1 -exec basename {} \;
+    [[ -d "${plugins_path}" ]] && find "${plugins_path}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; || true
   done
 }
 
