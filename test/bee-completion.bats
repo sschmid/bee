@@ -24,11 +24,13 @@ setup() {
 @test "completes module" {
   _source_bee
   _comp "bee testmodule "
+  # shellcheck disable=SC2154
   assert_equal "${actual[-1]}" "testmodulecomp"
 }
 
 @test "completes plugins" {
   _source_bee
   _comp "bee testplugin "
+  # shellcheck disable=SC2154
   assert_equal "${actual[-1]}" "testplugincomp"
 }
