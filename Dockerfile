@@ -9,6 +9,8 @@ FROM base AS bee
 WORKDIR /usr/local/opt/bee
 COPY src src
 COPY version.txt .
+RUN echo "complete -C bee bee" > /root/.bashrc
+RUN echo 'COMP_WORDBREAKS=${COMP_WORDBREAKS//:}' >> /root/.bashrc
 RUN ln -s /usr/local/opt/bee/src/bee /usr/local/bin/bee
 VOLUME /root/project
 WORKDIR /root/project
