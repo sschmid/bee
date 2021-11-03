@@ -4,12 +4,15 @@
 
 bee::plugins::comp() {
   local -i partial="$1"; shift
-  local cmd="${1:-}"
-  if ((!$# || $# == 1 && partial)); then
-    local comps=(--all -a --outdated -o --version -v)
-    local IFS=' '
-    compgen -W "${comps[*]}" -- "${cmd}"
-  fi
+  local comps=(--all -a --outdated -o --version -v)
+  local IFS=' '
+  while (($#)); do case "$1" in
+    -a | --all) comps=("${comps[@]/--all}"); comps=("${comps[@]/-a}"); shift ;;
+    -o | --outdated) comps=("${comps[@]/--outdated}"); comps=("${comps[@]/-o}"); shift ;;
+    -v | --version) comps=("${comps[@]/--version}"); comps=("${comps[@]/-v}"); shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+  compgen -W "${comps[*]}" -- "${1:-}"
 }
 
 bee::plugins() {
