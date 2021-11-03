@@ -2,6 +2,6 @@
 # shellcheck disable=SC2046
 docker pull koalaman/shellcheck
 docker run --rm -v "${PWD}:/mnt" koalaman/shellcheck $(
-  find "src" "etc" "test/fixtures" -type f -name "*.bash" -or -name "*.bats" &&
+  find "src" "test/fixtures" -type f -name "*.bash" -or -name "*.bats" &&
   find "test" -type f -maxdepth 1 -name "*.bash" -or -name "*.bats"
 )
