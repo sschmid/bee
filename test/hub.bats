@@ -314,3 +314,15 @@ EOF
   local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
   assert_comp "bee hub install myplugin " "${expected[*]}"
 }
+
+@test "completes hub plugins with hub urls" {
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub plugins " "${expected[*]}"
+}
+
+@test "completes hub plugins with multiple hub urls" {
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub plugins myurl " "${expected[*]}"
+}
