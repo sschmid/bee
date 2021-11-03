@@ -8,13 +8,20 @@
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 
 bee::hub::comp() {
-  if ((!$#)); then
-    echo "ls plugins pull install"
-  else case "$1" in
-    ls) echo "${BEE_HUBS[@]}" ;;
-    pull) echo "${BEE_HUBS[@]}" ;;
-    install) bee::hub::plugins ;;
-  esac fi
+  local -i partial="$1"; shift
+  local cmd="${1:-}"
+  if ((!$# || $# == 1 && partial)); then
+    local comps=(install ls plugins pull)
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    case "${cmd}" in
+      install) bee::hub::plugins ;;
+      ls) echo "${BEE_HUBS[*]}" ;;
+      plugins) echo "${BEE_HUBS[*]}" ;;
+      pull) echo "${BEE_HUBS[*]}" ;;
+    esac
+  fi
 }
 
 bee::hub() {

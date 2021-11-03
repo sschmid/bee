@@ -12,8 +12,11 @@ BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
 bee::job::comp() {
-  if ((!$#)); then
-    echo "-t --time"
+  local -i partial="$1"; shift
+  if ((!$# || $# == 1 && partial)); then
+    local cmd="${1:-}" comps=(--time -t)
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
   fi
 }
 

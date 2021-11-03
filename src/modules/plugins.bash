@@ -2,6 +2,16 @@
 # plugins [-a | --all] : list (all) plugins
 # bee::help
 
+bee::plugins::comp() {
+  local -i partial="$1"; shift
+  local cmd="${1:-}"
+  if ((!$# || $# == 1 && partial)); then
+    local comps=(--all -a --outdated -o --version -v)
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  fi
+}
+
 bee::plugins() {
   local -i show_all=0
   local -i show_version=0

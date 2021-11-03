@@ -116,6 +116,26 @@ bee::run_plugin() {
 ################################################################################
 # completion
 ################################################################################
+bee::comp() {
+  # complete -C bee bee
+  # COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
+  # shellcheck disable=SC2207
+  local words=($(bee::split_args "${COMP_LINE}"))
+  local -i head=0 cursor=0
+  for word in "${words[@]}"; do
+    ((head += ${#word} + 1))
+    ((head <= COMP_POINT)) && ((cursor+=1))
+  done
+  local cur="${words[cursor]:-}" wordlist
+  local -i partial=1
+  ((cursor == ${#words[@]})) && partial=0
+  if ((cursor == 1)); then # e.g. bee plu
+    wordlist="$(bee::comp_modules && bee::comp_plugins)"
+  else # e.g. bee hub inst
+    wordlist="$(bee::comp_module_or_plugin "${words[1]}" "${partial}" "${words[@]:2}")"
+  fi
+  compgen -W "${wordlist}" -- "${cur}"
+}
 
 bee::comp_modules() {
   find "${BEE_MODULES_PATH}" -mindepth 1 -maxdepth 1 -type f -name "*.bash" ! -name "help.bash" -exec basename {} ".bash" \;
@@ -213,6 +233,11 @@ bee::usage() {
 }
 
 bee::run() {
+  if [[ -v COMP_LINE ]]; then
+    bee::comp "$@"
+    exit 0
+  fi
+
   trap bee::INT INT
   trap bee::TERM TERM
   trap bee::EXIT EXIT

@@ -4,11 +4,17 @@
 # bee::help
 
 bee::update::comp() {
-  if ((!$#)); then
-    echo "print"
-  elif (($# == 1)); then case "$1" in
-    print) echo "--cached" ;;
-  esac fi
+  local -i partial="$1"; shift
+  local cmd="${1:-}"
+  if ((!$# || $# == 1 && partial)); then
+    local comps=(print)
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  elif (($# == 1 || $# == 2 && partial)); then
+    case "${cmd}" in
+      print) echo "--cached" ;;
+    esac
+  fi
 }
 
 bee::update() {
