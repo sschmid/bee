@@ -25,15 +25,9 @@ setup() {
 }
 
 @test "completes cache with rm" {
-  _source_comp
-  COMP_WORDS=(bee cache)
-  COMP_CWORD=2
-  assert_comp "rm"
+  assert_comp "bee cache " "rm"
 }
 
 @test "no comp for cache rm" {
-  _source_comp
-  COMP_WORDS=(bee cache rm)
-  COMP_CWORD=3
-  assert_comp
+  assert_comp "bee cache rm "
 }

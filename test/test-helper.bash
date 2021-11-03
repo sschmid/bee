@@ -13,20 +13,11 @@ assert_bee_help() {
 }
 
 assert_comp() {
-  set +e
-  _bee_completions
-  set -e
+  _comp "$@"
   if(($#)); then
-    local expected=("$@")
-    local -i i n m
-    n=${#COMPREPLY[@]}
-    m=${#expected[@]}
-    assert_equal "$n" "$m"
-    for ((i = 0; i < n; i++)); do
-      assert_equal "${COMPREPLY[i]}" "${expected[i]}"
-    done
+    assert_equal "${actual[*]}" "${expected[*]}"
   else
-    [ ! -v COMPREPLY ]
+    refute_output
   fi
 }
 
@@ -45,13 +36,21 @@ _source_bee() {
   source "${PROJECT_ROOT}/src/bee"
 }
 
-_source_comp() {
-  # shellcheck disable=SC1090,SC1091
-  source "${PROJECT_ROOT}/etc/bash_completion.d/bee-completion.bash"
-}
-
 _strict() {
   set -euo pipefail
   IFS=$'\n\t'
   "$@"
+}
+
+# shellcheck disable=SC2207
+_comp() {
+  COMP_LINE="$1"
+  COMP_POINT="${#COMP_LINE}"
+  run _strict bee::comp
+  actual=("${output}")
+  actual=($(for i in "${actual[@]}"; do echo "$i"; done | sort))
+  if [[ -v 2 ]]; then
+    expected=("$2")
+    expected=($(for i in "${expected[@]}"; do echo "$i"; done | sort))
+  fi
 }

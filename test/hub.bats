@@ -268,38 +268,33 @@ EOF
 }
 
 @test "completes hub with ls plugins pull install" {
-  _source_comp
-  COMP_WORDS=(bee hub)
-  COMP_CWORD=2
-  assert_comp "ls" "plugins" "pull" "install"
+  _source_bee
+  local expected=("ls" "plugins" "pull" "install")
+  assert_comp "bee hub " "${expected[*]}"
 }
 
 @test "completes hub ls with hub urls" {
-  _source_comp
-  COMP_WORDS=(bee hub ls)
-  COMP_CWORD=3
-  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub ls " "${expected[*]}"
 }
 
 @test "completes hub ls with multiple hub urls" {
-  _source_comp
-  COMP_WORDS=(bee hub ls myurl)
-  COMP_CWORD=4
-  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub ls myurl " "${expected[*]}"
 }
 
 @test "completes hub pull with hub urls" {
-  _source_comp
-  COMP_WORDS=(bee hub pull)
-  COMP_CWORD=3
-  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub pull " "${expected[*]}"
 }
 
 @test "completes hub pull with multiple hub urls" {
-  _source_comp
-  COMP_WORDS=(bee hub pull myurl)
-  COMP_CWORD=4
-  assert_comp "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub"
+  _source_bee
+  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  assert_comp "bee hub pull myurl " "${expected[*]}"
 }
 
 @test "completes hub install with plugins" {
@@ -307,10 +302,8 @@ EOF
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
   _strict bee::hub pull
-  _source_comp
-  COMP_WORDS=(bee hub install)
-  COMP_CWORD=3
-  assert_comp "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep"
+  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
+  assert_comp "bee hub install " "${expected[*]}"
 }
 
 @test "completes hub install multiple with plugins" {
@@ -318,8 +311,6 @@ EOF
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
   _strict bee::hub pull
-  _source_comp
-  COMP_WORDS=(bee hub install myplugin)
-  COMP_CWORD=4
-  assert_comp "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep"
+  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
+  assert_comp "bee hub install myplugin " "${expected[*]}"
 }

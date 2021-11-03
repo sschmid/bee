@@ -49,22 +49,16 @@ setup() {
 }
 
 @test "completes update with print" {
-  _source_comp
-  COMP_WORDS=(bee update)
-  COMP_CWORD=2
-  assert_comp "print"
+  _source_bee
+  assert_comp "bee update " "print"
 }
 
 @test "completes update print with --cached" {
-  _source_comp
-  COMP_WORDS=(bee update print)
-  COMP_CWORD=3
-  assert_comp "--cached"
+  _source_bee
+  assert_comp "bee update print " "--cached"
 }
 
 @test "no comp for update print --cached" {
-  _source_comp
-  COMP_WORDS=(bee update --cached)
-  COMP_CWORD=3
-  assert_comp
+  _source_bee
+  assert_comp "bee update print --cached "
 }

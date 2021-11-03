@@ -108,22 +108,17 @@ EOF
 }
 
 @test "completes job with -t --time" {
-  _source_comp
-  COMP_WORDS=(bee job)
-  COMP_CWORD=2
-  assert_comp "-t" "--time"
+  _source_bee
+  local expected=("-t" "--time")
+  assert_comp "bee job " "${expected[*]}"
 }
 
 @test "no comp for job -t" {
-  _source_comp
-  COMP_WORDS=(bee job -t)
-  COMP_CWORD=3
-  assert_comp
+  _source_bee
+  assert_comp "bee job -t "
 }
 
 @test "no comp for job --time" {
-  _source_comp
-  COMP_WORDS=(bee job --time)
-  COMP_CWORD=3
-  assert_comp
+  _source_bee
+  assert_comp "bee job --time "
 }
