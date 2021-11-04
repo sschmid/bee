@@ -2,6 +2,7 @@
 BEE_ORIGIN="file://${BATS_TEST_TMPDIR}/testbee"
 BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion.txt"
 declare -ig BEE_LATEST_VERSION_CACHE_EXPIRE=0
+declare -ig BEE_HUB_PULL_COOLDOWN=0
 BEE_HUBS=(
   "file://${BATS_TEST_TMPDIR}/testhub"
   "file://${BATS_TEST_TMPDIR}/othertesthub"

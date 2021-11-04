@@ -86,20 +86,42 @@ bee::hub::plugins() {
 }
 
 bee::hub::pull() {
+  local -i force=0 pull=0
+  while (($#)); do case "$1" in
+    -f | --force) force=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+
   mkdir -p "${BEE_HUBS_CACHE_PATH}"
-  local cache_path
-  for url in "${@:-"${BEE_HUBS[@]}"}"; do
-    cache_path="$(bee::hub::to_cache_path "${url}")"
-    if [[ -n "$cache_path" ]]; then
-      if [[ -d "${cache_path}" ]]; then
-        pushd "${cache_path}" > /dev/null || exit 1
-          git pull
-        popd > /dev/null || exit 1
-      else
-        git clone "${url}" "${cache_path}"
+  local cache_file="${BEE_HUBS_CACHE_PATH}/.ts"
+
+  if ((force)); then
+    pull=1
+  else
+    local -i now ts delta
+    [[ ! -f "${cache_file}" ]] && echo "0" > "${cache_file}"
+    now=$(date +%s)
+    ts="$(cat "${cache_file}")"
+    delta=$((now - ts))
+    ((delta > BEE_HUB_PULL_COOLDOWN)) && pull=1
+  fi
+
+  if ((pull)); then
+    local cache_path
+    for url in "${@:-"${BEE_HUBS[@]}"}"; do
+      cache_path="$(bee::hub::to_cache_path "${url}")"
+      if [[ -n "$cache_path" ]]; then
+        if [[ -d "${cache_path}" ]]; then
+          pushd "${cache_path}" > /dev/null || exit 1
+            git pull
+          popd > /dev/null || exit 1
+        else
+          git clone "${url}" "${cache_path}"
+        fi
       fi
-    fi
-  done
+    done
+    date +%s > "${cache_file}"
+  fi
 }
 
 bee::hub::install() {

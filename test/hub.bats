@@ -133,6 +133,8 @@ _prepare_module() {
   _setup_mock_bee_hub_repo testbeehub1 testplugin
   _setup_mock_bee_hub_repo testbeehub2 othertestplugin
   _prepare_module
+  # shellcheck disable=SC2034
+  BEE_HUB_PULL_COOLDOWN=-1
   BEE_HUBS=(
     "file://${BATS_TEST_TMPDIR}/testbeehub1"
     "file://${BATS_TEST_TMPDIR}/testbeehub2"
@@ -149,7 +151,6 @@ _prepare_module() {
 @test "pulls test hub" {
   _setup_test_bee_hub_repo
   _prepare_module
-  # shellcheck disable=SC2034
   BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
   run _strict bee::hub pull
 
@@ -159,6 +160,61 @@ _prepare_module() {
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindeps/1.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugindepsdep/1.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testpluginmissingdep/1.0.0/plugin.json"
+}
+
+@test "pull sets ts" {
+  _setup_mock_bee_hub_repo testbeehub1 testplugin
+  _prepare_module
+  BEE_HUBS=(
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+  )
+  run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub1"
+  assert_success
+
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/.ts"
+}
+
+@test "skips pull when within cooldown period" {
+  _setup_mock_bee_hub_repo testbeehub1 testplugin
+  _setup_mock_bee_hub_repo testbeehub2 othertestplugin
+  _prepare_module
+  # shellcheck disable=SC2034
+  # BEE_HUB_PULL_COOLDOWN=1
+  BEE_HUBS=(
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
+  )
+  _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub1"
+  run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub2"
+  assert_success
+
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.json"
+  assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.json"
+
+  sleep 3
+  run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub2"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.json"
+}
+
+@test "forces pull even when within cooldown period" {
+  _setup_mock_bee_hub_repo testbeehub1 testplugin
+  _setup_mock_bee_hub_repo testbeehub2 othertestplugin
+  _prepare_module
+  # shellcheck disable=SC2034
+  # BEE_HUB_PULL_COOLDOWN=999
+  BEE_HUBS=(
+    "file://${BATS_TEST_TMPDIR}/testbeehub1"
+    "file://${BATS_TEST_TMPDIR}/testbeehub2"
+  )
+  run _strict bee::hub pull "file://${BATS_TEST_TMPDIR}/testbeehub1"
+  assert_success
+
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub1/testplugin/1.0.0/plugin.json"
+  assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2"
+
+  run _strict bee::hub pull --force
+  assert_success
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testbeehub2/othertestplugin/1.0.0/plugin.json"
 }
 
 @test "lists all hub urls with their plugins" {
