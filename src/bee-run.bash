@@ -116,6 +116,7 @@ bee::run_plugin() {
 ################################################################################
 # completion
 ################################################################################
+declare -ig COMP_PARTIAL=1
 bee::comp() {
   # complete -C bee bee
   # COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
@@ -127,12 +128,11 @@ bee::comp() {
     ((head <= COMP_POINT)) && ((cursor+=1))
   done
   local cur="${words[cursor]:-}" wordlist
-  local -i partial=1
-  ((cursor == ${#words[@]})) && partial=0
+  ((cursor == ${#words[@]})) && COMP_PARTIAL=0
   if ((cursor == 1)); then # e.g. bee plu
     wordlist="$(bee::comp_modules && bee::comp_plugins)"
   else # e.g. bee hub inst
-    wordlist="$(bee::comp_module_or_plugin "${words[1]}" "${partial}" "${words[@]:2}")"
+    wordlist="$(bee::comp_module_or_plugin "${words[1]}" "${words[@]:2}")"
   fi
   compgen -W "${wordlist}" -- "${cur}"
 }

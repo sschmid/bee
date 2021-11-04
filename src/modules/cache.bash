@@ -4,8 +4,7 @@
 # bee::help
 
 bee::cache::comp() {
-  local -i partial="$1"; shift
-  if ((!$# || $# == 1 && partial)); then
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}" comps=(rm)
     local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"

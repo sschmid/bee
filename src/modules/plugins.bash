@@ -3,9 +3,6 @@
 # bee::help
 
 bee::plugins::comp() {
-  # local -i partial="$1"
-  shift
-
   local comps=(--all -a --outdated -o --version -v)
   local IFS=' '
   while (($#)); do case "$1" in

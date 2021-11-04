@@ -4,13 +4,12 @@
 # bee::help
 
 bee::update::comp() {
-  local -i partial="$1"; shift
   local cmd="${1:-}"
-  if ((!$# || $# == 1 && partial)); then
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local comps=(print)
     local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"
-  elif (($# == 1 || $# == 2 && partial)); then
+  elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
     case "${cmd}" in
       print) echo "--cached" ;;
     esac

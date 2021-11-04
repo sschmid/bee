@@ -8,25 +8,23 @@
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 
 bee::hub::comp() {
-  local -i partial="$1"; shift
   local cmd="${1:-}"
-  if ((!$# || $# == 1 && partial)); then
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local comps=(install ls plugins pull)
     local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"
   else
     case "${cmd}" in
       install) bee::hub::plugins ;;
-      ls) shift; bee::hub::ls::comp "${partial}" "$@" ;;
+      ls) shift; bee::hub::ls::comp "$@" ;;
       plugins) echo "${BEE_HUBS[*]}" ;;
-      pull) shift; bee::hub::pull::comp "${partial}" "$@" ;;
+      pull) shift; bee::hub::pull::comp "$@" ;;
     esac
   fi
 }
 
 bee::hub::ls::comp() {
-  local -i partial="$1"; shift
-  if ((!$# || $# == 1 && partial)); then
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}"
     local comps=("-a --all ${BEE_HUBS[*]}")
     local IFS=' '
@@ -37,8 +35,7 @@ bee::hub::ls::comp() {
 }
 
 bee::hub::pull::comp() {
-  local -i partial="$1"; shift
-  if ((!$# || $# == 1 && partial)); then
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}"
     local comps=("-f --force ${BEE_HUBS[*]}")
     local IFS=' '
