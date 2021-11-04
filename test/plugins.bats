@@ -67,24 +67,22 @@ EOF
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins -a
 
-  local -i i=0
-  assert_line --index $((i++)) --partial "${BEE_CHECK_FAIL} unknown"
-  assert_line --index $((i++)) "testplugindepsdep"
-  assert_line --index $((i++)) "testplugin"
-  assert_line --index $((i++)) "testplugindeps"
-  assert_line --index $((i++)) "othertestplugin"
-  assert_line --index $((i++)) "testpluginmissingdep"
-  assert_line --index $((i++)) "customtestplugin"
+  assert_line --partial "${BEE_CHECK_FAIL} unknown"
+  assert_line "othertestplugin"
+  assert_line "testplugin"
+  assert_line "testplugindeps"
+  assert_line "testplugindepsdep"
+  assert_line "testpluginmissingdep"
+  assert_line "customtestplugin"
 
   run bee plugins --all
-  i=0
-  assert_line --index $((i++)) --partial "${BEE_CHECK_FAIL} unknown"
-  assert_line --index $((i++)) "testplugindepsdep"
-  assert_line --index $((i++)) "testplugin"
-  assert_line --index $((i++)) "testplugindeps"
-  assert_line --index $((i++)) "othertestplugin"
-  assert_line --index $((i++)) "testpluginmissingdep"
-  assert_line --index $((i++)) "customtestplugin"
+  assert_line --partial "${BEE_CHECK_FAIL} unknown"
+  assert_line "othertestplugin"
+  assert_line "testplugin"
+  assert_line "testplugindeps"
+  assert_line "testplugindepsdep"
+  assert_line "testpluginmissingdep"
+  assert_line "customtestplugin"
  }
 
 @test "lists outdated" {
