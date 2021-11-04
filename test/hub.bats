@@ -329,9 +329,9 @@ EOF
   assert_comp "bee hub " "${expected[*]}"
 }
 
-@test "completes hub ls with hub urls" {
+@test "completes hub ls with options and hub urls" {
   _source_bee
-  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  local expected=("-a" "--all" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
   assert_comp "bee hub ls " "${expected[*]}"
 }
 

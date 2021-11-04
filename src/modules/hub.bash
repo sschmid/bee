@@ -17,10 +17,22 @@ bee::hub::comp() {
   else
     case "${cmd}" in
       install) bee::hub::plugins ;;
-      ls) echo "${BEE_HUBS[*]}" ;;
+      ls) shift; bee::hub::ls::comp "${partial}" "$@" ;;
       plugins) echo "${BEE_HUBS[*]}" ;;
       pull) shift; bee::hub::pull::comp "${partial}" "$@" ;;
     esac
+  fi
+}
+
+bee::hub::ls::comp() {
+  local -i partial="$1"; shift
+  if ((!$# || $# == 1 && partial)); then
+    local cmd="${1:-}"
+    local comps=("-a --all ${BEE_HUBS[*]}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${BEE_HUBS[*]}"
   fi
 }
 
