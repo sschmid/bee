@@ -24,13 +24,28 @@ setup() {
 @test "completes module" {
   _source_bee
   _comp "bee testmodule "
-  # shellcheck disable=SC2154
-  assert_equal "${actual[-1]}" "testmodulecomp"
+  actual=("${actual[@]:1}")
+  assert_equal "${actual[*]}" "testmodulecomp"
 }
 
 @test "completes plugins" {
   _source_bee
   _comp "bee testplugin "
-  # shellcheck disable=SC2154
-  assert_equal "${actual[-1]}" "testplugincomp"
+  actual=("${actual[@]:1}")
+  assert_equal "${actual[*]}" "testplugincomp"
+}
+
+@test "completes plugins without comp function" {
+  _source_bee
+  _comp "bee othertestplugin "
+  actual=("${actual[@]:1}")
+  local expected=(greet help)
+  assert_equal "${actual[*]}" "${expected[*]}"
+}
+
+@test "only completes first arg for plugins without comp function" {
+  _source_bee
+  _comp "bee othertestplugin help "
+  actual=("${actual[@]:1}")
+  assert_equal "${actual[*]}" ""
 }

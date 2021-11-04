@@ -161,7 +161,15 @@ bee::comp_module_or_plugin() {
   if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
     shift
     local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
-    [[ $(command -v "${comp}") == "${comp}" ]] && "${comp}" "$@"
+    if [[ $(command -v "${comp}") == "${comp}" ]]; then
+      "${comp}" "$@"
+    elif ((!$# || $# == 1 && COMP_PARTIAL)); then
+      local -i n=$((${#BEE_LOAD_PLUGIN_NAME} + 3))
+      compgen -A function \
+        | grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" \
+        | cut -c $n- \
+        || true
+    fi
     return
   fi
 }
