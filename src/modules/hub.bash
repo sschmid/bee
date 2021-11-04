@@ -19,8 +19,20 @@ bee::hub::comp() {
       install) bee::hub::plugins ;;
       ls) echo "${BEE_HUBS[*]}" ;;
       plugins) echo "${BEE_HUBS[*]}" ;;
-      pull) echo "${BEE_HUBS[*]}" ;;
+      pull) shift; bee::hub::pull::comp "${partial}" "$@" ;;
     esac
+  fi
+}
+
+bee::hub::pull::comp() {
+  local -i partial="$1"; shift
+  if ((!$# || $# == 1 && partial)); then
+    local cmd="${1:-}"
+    local comps=("-f --force ${BEE_HUBS[*]}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${BEE_HUBS[*]}"
   fi
 }
 
