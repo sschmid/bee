@@ -14,10 +14,11 @@ _setup_empty_bee_hub_repo() {
 }
 
 _setup_generic_plugin_repo() {
+  local version="${2:-"1.0.0"}"
   mkdir -p "${BATS_TEST_TMPDIR}/plugins"
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/$1/1.0.0/." "${BATS_TEST_TMPDIR}/plugins/$1"
+  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/$1/${version}/." "${BATS_TEST_TMPDIR}/plugins/$1"
   pushd "${BATS_TEST_TMPDIR}/plugins/$1" > /dev/null || exit 1
-    git init -b main; git add . ; git commit -m "Initial commit"; git tag "v1.0.0"
+    git init -b main; git add . ; git commit -m "Initial commit"; git tag "v${version}"
   popd > /dev/null || exit 1
 }
 
@@ -209,5 +210,39 @@ _prepare_module() {
   assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
-# TODO if installed plugin exists, check hash to verify it's original
-# TODO when installing plugin, check hash to verify it's original
+@test "deletes newly installed plugin when hash doesn't match" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  _setup_generic_plugin_repo testplugin 0.1.0
+  _strict bee::hub pull
+
+  run _strict bee::hub install testplugin:0.1.0
+  assert_success
+  assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_output --partial "${BEE_ERR} testplugin:0.1.0 sha256 mismatch"
+}
+
+@test "forces install plugin with wrong hash" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  _setup_generic_plugin_repo testplugin 0.1.0
+  _strict bee::hub pull
+
+  run _strict bee::hub install --force testplugin:0.1.0
+  assert_success
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_output --partial "${BEE_WARN} testplugin:0.1.0 sha256 mismatch"
+}
+
+@test "deletes already installed plugin when hash doesn't match" {
+  _setup_test_bee_hub_repo
+  _prepare_module
+  _setup_generic_plugin_repo testplugin 0.1.0
+  _strict bee::hub pull
+  _strict bee::hub install --force testplugin:0.1.0
+
+  run _strict bee::hub install testplugin:0.1.0
+  assert_success
+  assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_output --partial "${BEE_ERR} testplugin:0.1.0 sha256 mismatch"
+}

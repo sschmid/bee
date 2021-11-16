@@ -353,12 +353,12 @@ EOF
   assert_comp "bee hub pull myurl " "${expected[*]}"
 }
 
-@test "completes hub install with plugins" {
+@test "completes hub install with options and plugins" {
   _setup_test_bee_hub_repo
   _setup_test_bee_hub_repo "othertesthub"
   _prepare_module
   _strict bee::hub pull
-  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
+  local expected=("-f" "--force" "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
   assert_comp "bee hub install " "${expected[*]}"
 }
 

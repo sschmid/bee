@@ -15,11 +15,24 @@ bee::hub::comp() {
     compgen -W "${comps[*]}" -- "${cmd}"
   else
     case "${cmd}" in
-      install) bee::hub::plugins ;;
+      install) shift; bee::hub::install::comp "$@" ;;
       ls) shift; bee::hub::ls::comp "$@" ;;
       plugins) echo "${BEE_HUBS[*]}" ;;
       pull) shift; bee::hub::pull::comp "$@" ;;
     esac
+  fi
+}
+
+bee::hub::install::comp() {
+  local plugins
+  plugins="$(bee::hub::plugins)"
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    local cmd="${1:-}"
+    local comps=("-f --force" "${plugins}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${plugins}"
   fi
 }
 
@@ -52,6 +65,7 @@ bee::hub() {
       plugins) shift; bee::hub::plugins "$@" ;;
       pull) shift; bee::hub::pull "$@" ;;
       install) shift; echo "Installing"; bee::hub::install "$@" ;;
+      hash) shift; bee::hub::hash "$@" ;;
       *) bee::usage ;;
     esac
   else
@@ -146,11 +160,18 @@ bee::hub::pull() {
 }
 
 bee::hub::install() {
-  bee::hub::install_recursively "" "$@"
+  local -i force=0
+  while (($#)); do case "$1" in
+    -f | --force) force=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+  bee::hub::install_recursively ${force} "" "$@"
 }
 
 bee::hub::install_recursively() {
-  local indent="$1"; shift
+  local -i force="$1";
+  local indent="$2";
+  shift 2
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path bullet
   local -i i n=${#plugins[@]} found=0
@@ -163,23 +184,35 @@ bee::hub::install_recursively() {
       while read -r plugin_name plugin_version spec_path; do
         found=1
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
-        if [[ -d "${plugin_path}" ]]; then
-          echo "${indent}${bullet}${plugin_name}:${plugin_version}"
-        else
-          local git tag deps
-          while read -r git tag deps; do
-            git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}"
-            echo -e "${indent}${bullet}${BEE_COLOR_SUCCESS}${BEE_CHECK_SUCCESS}︎ ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
-            # shellcheck disable=SC2086
-            if [[ -n "${deps}" ]]; then
-              if ((i == n - 1)); then
-                bee::hub::install_recursively "${indent}    " ${deps}
-              else
-                bee::hub::install_recursively "${indent}│   " ${deps}
-              fi
+        local git tag sha deps
+        while read -r git tag sha deps; do
+          [[ ! -d "${plugin_path}" ]] && git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}"
+          bee::hub::hash "${plugin_path}" > /dev/null
+          if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
+            if ((force)); then
+              bee::log_warn "${plugin_name}:${plugin_version} sha256 mismatch!" \
+                "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
+                "Consider deleting ${plugin_path} and run 'bee hub install ${plugin_name}:${plugin_version}'."
+              echo -e "${indent}${bullet}${BEE_COLOR_WARN}${BEE_CHECK_SUCCESS}︎ ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
+            else
+              bee::log_error "${plugin_name}:${plugin_version} sha256 mismatch!" "Deleting ${plugin_path}" \
+                "Use 'bee hub info ${plugin_name}:${plugin_version}' to inspect the plugin definition." \
+                "Use 'bee hub install -f ${plugin_name}:${plugin_version}' to install anyway and proceed at your own risk."
+              rm -rf "${plugin_path}"
+              echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_name}:${plugin_version}${BEE_COLOR_RESET}"
             fi
-          done < <(jq -r '[.git, .tag, .dependencies[]?] | @tsv' "${spec_path}")
-        fi
+          else
+            echo -e "${indent}${bullet}${BEE_COLOR_SUCCESS}${BEE_CHECK_SUCCESS}︎ ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
+          fi
+          # shellcheck disable=SC2086
+          if [[ -n "${deps}" ]]; then
+            if ((i == n - 1)); then
+              bee::hub::install_recursively ${force} "${indent}    " ${deps}
+            else
+              bee::hub::install_recursively ${force} "${indent}│   " ${deps}
+            fi
+          fi
+        done < <(jq -r '[.git, .tag, .sha256, .dependencies[]?] | @tsv' "${spec_path}")
       done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
       ((found)) && break
     done
@@ -194,6 +227,25 @@ bee::hub::install_recursively() {
     done
     exit 1
   fi
+}
+
+BEE_HUB_HASH_RESULT=""
+bee::hub::hash() {
+  [[ ! -v BEE_HUB_HASH_EXCLUDE ]] && BEE_HUB_HASH_EXCLUDE=(".git" ".DS_Store")
+  local path="$1" file_hash all
+  local -a hashes=()
+  echo "$path"
+  pushd "${path}" > /dev/null || exit 1
+    local file
+    while read -r file; do
+      file_hash="$(os_sha256sum "${file}")"
+      echo "${file_hash}"
+      hashes+=("${file_hash// */}")
+    done < <(find . -type f | grep -vFf <(echo "${BEE_HUB_HASH_EXCLUDE[*]}"))
+  popd > /dev/null || exit 1
+  all="$(echo "${hashes[*]}" | sort | os_sha256sum)"
+  echo "${all}"
+  BEE_HUB_HASH_RESULT="${all// */}"
 }
 
 bee::hub::to_cache_path() {
