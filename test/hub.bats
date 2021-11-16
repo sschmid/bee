@@ -323,9 +323,32 @@ testpluginmissingdep
 EOF
 }
 
-@test "completes hub with ls plugins pull install" {
+@test "prints plugin info" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  run _strict bee::hub info testplugin:1.0.0
+  assert_success
+  assert_output --partial '"name": "testplugin"'
+  assert_output --partial '"version": "1.0.0"'
+}
+
+@test "prints plugin info when parsing error" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  run _strict bee::hub info testplugin:0.2.0
+  assert_success
+  assert_output --partial '"name": "testplugin"'
+  assert_output --partial '"version": "0.2.0"'
+  assert_output --partial 'FORMAT-ERROR'
+}
+
+@test "completes hub with ls plugins pull info install" {
   _source_bee
-  local expected=("ls" "plugins" "pull" "install")
+  local expected=("ls" "plugins" "pull" "info" "install")
   assert_comp "bee hub " "${expected[*]}"
 }
 
@@ -351,6 +374,15 @@ EOF
   _source_bee
   local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
   assert_comp "bee hub pull myurl " "${expected[*]}"
+}
+
+@test "completes hub info with plugin" {
+  _setup_test_bee_hub_repo
+  _setup_test_bee_hub_repo "othertesthub"
+  _prepare_module
+  _strict bee::hub pull
+  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
+  assert_comp "bee hub info " "${expected[*]}"
 }
 
 @test "completes hub install with options and plugins" {

@@ -10,7 +10,7 @@ BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 bee::hub::comp() {
   local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local comps=(install ls plugins pull)
+    local comps=(install ls plugins pull info)
     local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"
   else
@@ -19,6 +19,7 @@ bee::hub::comp() {
       ls) shift; bee::hub::ls::comp "$@" ;;
       plugins) echo "${BEE_HUBS[*]}" ;;
       pull) shift; bee::hub::pull::comp "$@" ;;
+      info) shift; bee::hub::info::comp "$@" ;;
     esac
   fi
 }
@@ -58,12 +59,21 @@ bee::hub::pull::comp() {
   fi
 }
 
+bee::hub::info::comp() {
+  local plugins
+  plugins="$(bee::hub::plugins)"
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    echo "${plugins}"
+  fi
+}
+
 bee::hub() {
   if (($#)); then
     case "$1" in
       ls) shift; bee::hub::ls "$@" ;;
       plugins) shift; bee::hub::plugins "$@" ;;
       pull) shift; bee::hub::pull "$@" ;;
+      info) shift; bee::hub::info "$@" ;;
       install) shift; echo "Installing"; bee::hub::install "$@" ;;
       hash) shift; bee::hub::hash "$@" ;;
       *) bee::usage ;;
@@ -157,6 +167,19 @@ bee::hub::pull() {
     done
     date +%s > "${cache_file}"
   fi
+}
+
+bee::hub::info() {
+  local plugin="$1" plugin_name plugin_version cache_path spec_path
+  local -i found=0
+  for url in "${BEE_HUBS[@]}"; do
+    cache_path="$(bee::hub::to_cache_path "${url}")"
+    while read -r plugin_name plugin_version spec_path; do
+      jq . "${spec_path}" || cat "${spec_path}"
+      found=1
+    done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
+    ((found)) && break
+  done
 }
 
 bee::hub::install() {
