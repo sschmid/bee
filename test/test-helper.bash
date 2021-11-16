@@ -54,3 +54,7 @@ _comp() {
     expected=($(for i in "${expected[@]}"; do echo "$i"; done | sort))
   fi
 }
+
+_git_commit() {
+  git -c commit.gpgsign=false commit "$@"
+}

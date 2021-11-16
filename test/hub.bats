@@ -9,14 +9,14 @@ _setup_mock_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1/$2/1.0.0"
   pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
     touch "$2/1.0.0/plugin.json"
-    git init -b main; git add . ; git commit -m "Initial commit"
+    git init -b main; git add . ; _git_commit -m "Initial commit"
   popd > /dev/null || exit 1
 }
 
 _update_mock_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1/$2/$3"
   pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
-    touch "$2/$3/plugin.json"; git add . ; git commit -m "Release $3"
+    touch "$2/$3/plugin.json"; git add . ; _git_commit -m "Release $3"
   popd > /dev/null || exit 1
 }
 

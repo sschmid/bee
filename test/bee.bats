@@ -61,10 +61,10 @@ assert_bee_system_home() {
     echo "echo '# test bee-run.bash 0.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
     cp -r "${PROJECT_ROOT}/src/os" src
-    git init -b main; git add . ; git commit -m "Initial commit"; git tag 0.1.0
+    git init -b main; git add . ; _git_commit -m "Initial commit"; git tag 0.1.0
     echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash;
-    git add . ; git commit -m "Bump version"; git tag "1.0.0"
+    git add . ; _git_commit -m "Bump version"; git tag "1.0.0"
   popd > /dev/null || exit 1
   run bee
   assert_line --index 0 "# test bee-run.bash 0.1.0 sourced"

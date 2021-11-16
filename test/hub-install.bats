@@ -9,7 +9,7 @@ _setup_empty_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1"
   pushd "${BATS_TEST_TMPDIR}/$1" > /dev/null || exit 1
     echo "empty" > empty.txt
-    git init -b main; git add . ; git commit -m "Initial commit"
+    git init -b main; git add . ; _git_commit -m "Initial commit"
   popd > /dev/null || exit 1
 }
 
@@ -18,7 +18,7 @@ _setup_generic_plugin_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/plugins"
   cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/$1/${version}/." "${BATS_TEST_TMPDIR}/plugins/$1"
   pushd "${BATS_TEST_TMPDIR}/plugins/$1" > /dev/null || exit 1
-    git init -b main; git add . ; git commit -m "Initial commit"; git tag "v${version}"
+    git init -b main; git add . ; _git_commit -m "Initial commit"; git tag "v${version}"
   popd > /dev/null || exit 1
 }
 
@@ -26,7 +26,7 @@ _setup_testplugin_repo() {
   _setup_generic_plugin_repo testplugin
   cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
   pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; git commit -m "Release 2.0.0"; git tag "v2.0.0"
+    git add . ; _git_commit -m "Release 2.0.0"; git tag "v2.0.0"
   popd > /dev/null || exit 1
 }
 
