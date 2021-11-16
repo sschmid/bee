@@ -1,5 +1,5 @@
 # bee::help
-# cache : show cache path
+# cache : print cache path
 # cache rm : delete cache
 # bee::help
 

@@ -3,6 +3,7 @@
 # hub ls [-a | --all] [<urls>] : list hubs and their plugins (--all versions)
 # hub plugins [<urls>] : list plugins
 # hub pull [<urls>] : update hubs
+# hub info <plugin> : print plugin spec
 # bee::help
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
