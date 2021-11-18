@@ -198,7 +198,7 @@ bee::hub::install_recursively() {
   shift 2
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path bullet
-  local -i i n=${#plugins[@]} found=0
+  local -i i n=${#plugins[@]} found=0 already_installed=0
   for ((i = 0; i < n; i++)); do
     found=0
     plugin="${plugins[i]}"
@@ -210,7 +210,12 @@ bee::hub::install_recursively() {
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
-          [[ ! -d "${plugin_path}" ]] && git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}"
+          if [[ -d "${plugin_path}" ]]; then
+            already_installed=1
+          else
+            already_installed=0
+            git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}"
+          fi
           bee::hub::hash "${plugin_path}" > /dev/null
           if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
             if ((force)); then
@@ -226,7 +231,11 @@ bee::hub::install_recursively() {
               echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_name}:${plugin_version}${BEE_COLOR_RESET}"
             fi
           else
-            echo -e "${indent}${bullet}${BEE_COLOR_SUCCESS}${BEE_CHECK_SUCCESS}︎ ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
+            if ((already_installed)); then
+              echo -e "${indent}${bullet}︎${plugin_name}:${plugin_version} (${url})"
+            else
+              echo -e "${indent}${bullet}${BEE_COLOR_SUCCESS}${BEE_CHECK_SUCCESS}︎ ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
+            fi
           fi
           # shellcheck disable=SC2086
           if [[ -n "${deps}" ]]; then

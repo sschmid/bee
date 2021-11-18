@@ -179,8 +179,8 @@ bee::comp_module_or_plugin() {
 ################################################################################
 declare -ig BEE_VERBOSE=0
 declare -ig BEE_CANCELED=0
-declare -ig BEE_MODE_INTERNAL=0
-declare -ig BEE_MODE_PLUGIN=1
+declare -igr BEE_MODE_INTERNAL=0
+declare -igr BEE_MODE_PLUGIN=1
 declare -ig BEE_MODE=${BEE_MODE_INTERNAL}
 declare -ig T=${SECONDS}
 

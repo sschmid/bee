@@ -283,6 +283,8 @@ file://${BATS_TEST_TMPDIR}/testhub
 ├── othertestplugin
 │    └── 1.0.0
 ├── testplugin
+│    ├── 0.1.0
+│    ├── 0.2.0
 │    ├── 1.0.0
 │    └── 2.0.0
 ├── testplugindeps
@@ -296,6 +298,8 @@ file://${BATS_TEST_TMPDIR}/othertesthub
 ├── othertestplugin
 │    └── 1.0.0
 ├── testplugin
+│    ├── 0.1.0
+│    ├── 0.2.0
 │    ├── 1.0.0
 │    └── 2.0.0
 ├── testplugindeps
