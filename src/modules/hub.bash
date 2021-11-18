@@ -1,8 +1,8 @@
 # bee::help
-# hub install [<plugins>] : install plugins
+# hub install [-f | --force] [<plugins>] : install plugins (--force ignore sha256 mismatch)
 # hub ls [-a | --all] [<urls>] : list hubs and their plugins (--all versions)
 # hub plugins [<urls>] : list plugins
-# hub pull [<urls>] : update hubs
+# hub pull [-f | --force] [<urls>] : update hubs (--force ignore pull cooldown)
 # hub info <plugin> : print plugin spec
 # bee::help
 

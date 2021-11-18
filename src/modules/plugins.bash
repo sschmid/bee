@@ -1,5 +1,6 @@
 # bee::help
-# plugins [-a | --all] : list (all) plugins
+# plugins [-a | --all | -o | --outdated]
+#         [-v | --version] : list (all or outdated) plugins (with version)
 # bee::help
 
 bee::plugins::comp() {
