@@ -22,10 +22,7 @@ BEE_RESOURCES=.bee
 #   )
 #
 # Custom plugins may be added by customizing ~/.beerc
-#   BEE_PLUGINS_PATHS=(
-#     "${BEE_CACHES_PATH}/plugins"
-#     "${HOME}/path/to/my/plugins"
-#   )
+#   BEE_PLUGINS_PATHS=("${HOME}/path/to/my/plugins")
 #
 # Example format: BEE_PLUGINS=(changelog github:2.0.0 slack:1.0.0 version)
 # You can specify a plugin version like this: plugin:x.y.z,

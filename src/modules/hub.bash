@@ -6,6 +6,8 @@
 # hub info <plugin> : print plugin spec
 # bee::help
 
+: "${BEE_HUB_PULL_COOLDOWN:=900}"
+
 BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
 
 bee::hub::comp() {

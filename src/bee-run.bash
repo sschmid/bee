@@ -4,6 +4,12 @@
 ################################################################################
 : "${BEE_MODULES_PATH:="${BEE_HOME}/src/modules"}"
 
+if [[ -v BEE_PLUGINS_PATHS ]]; then
+  BEE_PLUGINS_PATHS+=("${BEE_CACHES_PATH}/plugins")
+else
+  BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
+fi
+
 BEE_LOAD_MODULE_NAME=""
 declare -Ag BEE_LOAD_MODULE_LOADED=()
 bee::load_module() {

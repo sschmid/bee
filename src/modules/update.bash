@@ -3,6 +3,9 @@
 # update print [--cached] : print latest version [--cached locally]
 # bee::help
 
+: "${BEE_LATEST_VERSION_PATH:=https://raw.githubusercontent.com/sschmid/bee/main/version.txt}"
+: "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}"
+
 bee::update::comp() {
   local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
