@@ -54,6 +54,6 @@ bee::plugins() {
       else
         echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
       fi
-    done
+    done | sort -u
   fi
 }

@@ -26,8 +26,8 @@ setup() {
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   cat << 'EOF' | assert_output -
-testplugin
 customtestplugin
+testplugin
 EOF
  }
 
