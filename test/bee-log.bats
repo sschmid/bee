@@ -26,6 +26,7 @@ EOF
   BEE_QUIET=1
   run _strict bee::log_echo "message"
   refute_output
+  assert_success
 }
 
 #################################################################################
