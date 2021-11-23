@@ -2,7 +2,6 @@ setup() {
   load "test-helper.bash"
   load "test-helper-hub.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/hub.bash"
 }
 
 _setup_mock_bee_hub_repo() {
@@ -43,35 +42,35 @@ _prepare_module() {
   # shellcheck disable=SC2016
   run _strict bee::hub::to_cache_path 'file://${HOME}/bee/beehub'
   assert_success
-  assert_output "${BEE_HUBS_CACHE_PATH}/beehub"
+  assert_output "beehub"
 }
 
 @test "https:// to cache path" {
   _prepare_module
   run _strict bee::hub::to_cache_path "https://github.com/sschmid/beehub.git"
   assert_success
-  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+  assert_output "github.com/sschmid/beehub"
 }
 
 @test "git:// to cache path" {
   _prepare_module
   run _strict bee::hub::to_cache_path "git://github.com/sschmid/beehub"
   assert_success
-  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+  assert_output "github.com/sschmid/beehub"
 }
 
 @test "git@ to cache path" {
   _prepare_module
   run _strict bee::hub::to_cache_path "git@github.com:sschmid/beehub.git"
   assert_success
-  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+  assert_output "github.com/sschmid/beehub"
 }
 
 @test "ssh:// to cache path" {
   _prepare_module
   run _strict bee::hub::to_cache_path "ssh://git@github.com/sschmid/beehub"
   assert_success
-  assert_output "${BEE_HUBS_CACHE_PATH}/github.com/sschmid/beehub"
+  assert_output "github.com/sschmid/beehub"
 }
 
 @test "warns when unsupported url" {
@@ -178,8 +177,7 @@ _prepare_module() {
   _setup_mock_bee_hub_repo testbeehub1 testplugin
   _setup_mock_bee_hub_repo testbeehub2 othertestplugin
   _prepare_module
-  # shellcheck disable=SC2034
-  # BEE_HUB_PULL_COOLDOWN=1
+  BEE_HUB_PULL_COOLDOWN=1
   BEE_HUBS=(
     "file://${BATS_TEST_TMPDIR}/testbeehub1"
     "file://${BATS_TEST_TMPDIR}/testbeehub2"
@@ -201,7 +199,8 @@ _prepare_module() {
   _setup_mock_bee_hub_repo testbeehub2 othertestplugin
   _prepare_module
   # shellcheck disable=SC2034
-  # BEE_HUB_PULL_COOLDOWN=999
+  BEE_HUB_PULL_COOLDOWN=999
+  # shellcheck disable=SC2034
   BEE_HUBS=(
     "file://${BATS_TEST_TMPDIR}/testbeehub1"
     "file://${BATS_TEST_TMPDIR}/testbeehub2"
@@ -350,9 +349,9 @@ EOF
   assert_output --partial 'FORMAT-ERROR'
 }
 
-@test "completes hub with ls plugins pull info install" {
+@test "completes hub with ls plugins pull info install hash lint" {
   _source_bee
-  local expected=("ls" "plugins" "pull" "info" "install")
+  local expected=("ls" "plugins" "pull" "info" "install" "hash" "lint")
   assert_comp "bee hub " "${expected[*]}"
 }
 

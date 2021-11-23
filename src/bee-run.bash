@@ -57,9 +57,9 @@ bee::resolve_plugin() {
   if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
     for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
       while read -r plugin_name plugin_version plugin_path; do
+        found=1
         BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
         BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
-        found=1
       done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash")
       ((found)) && break
     done

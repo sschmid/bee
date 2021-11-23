@@ -89,7 +89,7 @@ assert_no_plugin() {
 }
 
 @test "doesn't load unknown plugin" {
-  run _strict bee::load_plugin unkown
+  run _strict bee::load_plugin unknown
   assert_success
   refute_output
   assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
@@ -97,7 +97,7 @@ assert_no_plugin() {
 
 @test "unknown plugin resets plugin name" {
   bee::load_plugin testplugin:1.0.0
-  bee::load_plugin unkown
+  bee::load_plugin unknown
   assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
 }
 

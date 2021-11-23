@@ -14,7 +14,7 @@ setup() {
 }
 
 @test "shows help when unknown args" {
-  run _strict bee::run cache unkown
+  run _strict bee::run cache unknown
   assert_bee_help
 }
 
