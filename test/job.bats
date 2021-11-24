@@ -7,10 +7,6 @@ _prepare_job_logs() {
   export BEE_RESOURCES="${BATS_TEST_TMPDIR}"
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/modules/job.bash"
-}
-
 @test "shows help when not enough args" {
   run bee job
   assert_bee_help

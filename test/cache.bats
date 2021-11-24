@@ -4,10 +4,6 @@ setup() {
   _source_bee
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/modules/cache.bash"
-}
-
 @test "prints cache path" {
   run _strict bee::run cache
   assert_output "${BEE_CACHES_PATH}"

@@ -1,7 +1,6 @@
 setup() {
   load 'test-helper.bash'
   _set_beerc
-  _set_test_modules
   _source_bee
 }
 
@@ -33,14 +32,6 @@ _test_exit() {
 @test "runs args in internal mode" {
   run bee echo "test"
   assert_output "test"
-}
-
-@test "runs module in internal mode" {
-  run bee testmodule
-  cat << 'EOF' | assert_output -
-# testmodule sourced
-hello from testmodule
-EOF
 }
 
 @test "fails in internal mode" {

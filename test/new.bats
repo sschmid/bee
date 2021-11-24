@@ -1,14 +1,7 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  MODULE_PATH="${PROJECT_ROOT}/src/modules/new.bash"
   _source_bee
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
-}
-
-@test "is not executable" {
-  assert_file_not_executable "${MODULE_PATH}"
 }
 
 @test "creates Beefile" {

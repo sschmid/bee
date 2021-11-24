@@ -7,8 +7,6 @@ setup() {
 _prepare_module() {
   _source_bee
   BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 @test "doesn't install unknown plugin" {

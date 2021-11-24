@@ -19,10 +19,6 @@ _update_mock_bee_hub_repo() {
   popd > /dev/null || exit 1
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${MODULE_PATH}"
-}
-
 @test "shows help when not enough args" {
   run bee hub
   assert_bee_help
@@ -33,8 +29,6 @@ _update_mock_bee_hub_repo() {
 
 _prepare_module() {
   _source_bee
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 @test "file:// to cache path" {

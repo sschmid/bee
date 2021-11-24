@@ -23,8 +23,6 @@ assert_comp() {
 
 _set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
 _set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
-_set_test_modules() { export TEST_BEE_MODULES_PATH=1; }
-_unset_test_modules() { unset TEST_BEE_MODULES_PATH; }
 
 _setup_beefile() {
   echo "$@" > "${BATS_TEST_TMPDIR}/Beefile"

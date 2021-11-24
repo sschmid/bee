@@ -3,10 +3,6 @@ setup() {
   _set_beerc
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/modules/update.bash"
-}
-
 @test "shows help when args" {
   run bee update "test"
   assert_bee_help

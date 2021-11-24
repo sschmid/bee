@@ -1,7 +1,6 @@
 setup() {
   load 'test-helper.bash'
   _set_beerc
-  _set_test_modules
 }
 
 @test "is not executable" {
@@ -9,7 +8,6 @@ setup() {
 }
 
 @test "prints bee help when no args" {
-  _unset_test_modules
   run bee
   assert_bee_help
 }
@@ -22,22 +20,6 @@ setup() {
 @test "runs internal bee command" {
   run bee bee::log_echo "test"
   assert_output "test"
-}
-
-@test "runs bee module" {
-  run bee testmodule
-  cat << 'EOF' | assert_output -
-# testmodule sourced
-hello from testmodule
-EOF
-}
-
-@test "runs bee module with args" {
-  run bee testmodule "test"
-  cat << 'EOF' | assert_output -
-# testmodule sourced
-hello from testmodule - test
-EOF
 }
 
 @test "runs bee plugin" {

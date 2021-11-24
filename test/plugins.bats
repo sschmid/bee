@@ -4,10 +4,6 @@ setup() {
   BEE_CHECK_FAIL="✗" BEE_RESULT="➜"
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/modules/plugins.bash"
-}
-
 @test "lists enabled plugins" {
   _setup_beefile "BEE_PLUGINS=(testplugin)"
   run bee plugins

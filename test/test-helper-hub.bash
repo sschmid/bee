@@ -1,6 +1,3 @@
-# shellcheck disable=SC2034
-MODULE_PATH="${PROJECT_ROOT}/src/modules/hub.bash"
-
 _setup_test_bee_hub_repo() {
   local name="${1:-"testhub"}"
   mkdir -p "${BATS_TEST_TMPDIR}/${name}"

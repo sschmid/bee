@@ -19,7 +19,3 @@ elif [[ -v TEST_BEE_PLUGINS_PATHS_CUSTOM ]]; then
 else
   BEE_PLUGINS_PATHS=("${BATS_TEST_DIRNAME}/fixtures/plugins")
 fi
-
-if [[ -v TEST_BEE_MODULES_PATH ]]; then
-  BEE_MODULES_PATH="${BATS_TEST_DIRNAME}/fixtures/modules"
-fi

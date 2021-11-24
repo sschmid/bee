@@ -2,14 +2,13 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  _set_test_modules
 }
 
 # shellcheck disable=SC2207
-@test "completes with modules and plugins" {
+@test "completes with plugins" {
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   _source_bee
-  local expected=(testmodule othertestmodule testplugin othertestplugin testplugindeps testplugindepsdep testpluginmissingdep customtestplugin)
+  local expected=(testplugin othertestplugin testplugindeps testplugindepsdep testpluginmissingdep customtestplugin)
   assert_comp "bee " "${expected[*]}"
 }
 
@@ -17,15 +16,8 @@ setup() {
 @test "doesn't complete plugins when folder doesn't exists" {
   export TEST_BEE_PLUGINS_PATHS_UNKNOWN=1
   _source_bee
-  local expected=(testmodule othertestmodule)
+  local expected=()
   assert_comp "bee " "${expected[*]}"
-}
-
-@test "completes module" {
-  _source_bee
-  _comp "bee testmodule "
-  actual=("${actual[@]:1}")
-  assert_equal "${actual[*]}" "testmodulecomp"
 }
 
 @test "completes plugins" {

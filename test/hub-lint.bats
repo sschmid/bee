@@ -8,8 +8,6 @@ setup() {
 _prepare_module() {
   _setup_test_bee_hub_repo
   _source_bee
-  # shellcheck disable=SC1090
-  source "${MODULE_PATH}"
 }
 
 _lint() {
