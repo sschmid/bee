@@ -72,3 +72,20 @@ EOF
   run bee :
   assert_output "# test bee-run.bash 0.1.0 sourced"
 }
+
+@test "completes bee with commands" {
+  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull update version)
+  assert_comp "bee " "${expected[*]}"
+}
+
+@test "completes with plugins" {
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  local expected=(
+    --batch --help --quiet --verbose
+    cache env hash hubs info install job lint new plugins pull update version
+    testplugin testplugindeps testpluginmissingdep testplugindepsdep othertestplugin
+    customtestplugin
+  )
+  assert_comp "bee " "${expected[*]}"
+}

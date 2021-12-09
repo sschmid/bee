@@ -176,44 +176,80 @@ bee::cache() {
   fi
 }
 
+bee::hubs::comp() {
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    local cmd="${1:-}"
+    local comps=(--all --list "${BEE_HUBS[*]}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${BEE_HUBS[*]}"
+  fi
+}
+
 bee::hubs() {
-  local -i show_all=0
+  local -i show_all=0 list=0
   while (($#)); do case "$1" in
     --all) show_all=1; shift ;;
+    --list) list=1; shift ;;
     --) shift; break ;; *) break ;;
   esac done
 
-  local cache_path plugin_name plugin_version indent bullet
-  local -a plugins versions
-  local -i i j n m
-  for url in "${@:-"${BEE_HUBS[@]}"}"; do
-    cache_path="$(bee::hub::to_cache_path "${url}")"
-    if [[ -n "${cache_path}" ]]; then
-      cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
-      echo "${url}"
-      if [[ -d "${cache_path}" ]]; then
-        mapfile -t plugins < <(ls "${cache_path}")
-        n=${#plugins[@]}
-        for ((i = 0; i < n; i++)); do
-          plugin_name="${plugins[i]}"
-          ((i == n - 1)) && bullet="└── " || bullet="├── "
-          echo "${bullet}${plugin_name}"
-
-          if ((show_all)); then
-            mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -V)
-            m=${#versions[@]}
-            for ((j = 0; j < m; j++)); do
-              plugin_version="$(basename "${versions[j]}")"
-              ((i == n - 1)) && indent="    " || indent="│    "
-              ((j == m - 1)) && bullet="└── " || bullet="├── "
-              echo "${indent}${bullet}${plugin_version}"
-            done
-          fi
-        done
-        echo
+  if ((list)); then
+    local cache_path
+    for url in "${@:-"${BEE_HUBS[@]}"}"; do
+      cache_path="$(bee::hub::to_cache_path "${url}")"
+      if [[ -n "$cache_path" ]]; then
+        cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
+        if [[ -d "${cache_path}" ]]; then
+          ls "${cache_path}"
+        fi
       fi
-    fi
-  done
+    done
+  else
+    local cache_path plugin_name plugin_version indent bullet
+    local -a plugins versions
+    local -i i j n m
+    for url in "${@:-"${BEE_HUBS[@]}"}"; do
+      cache_path="$(bee::hub::to_cache_path "${url}")"
+      if [[ -n "${cache_path}" ]]; then
+        cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
+        echo "${url}"
+        if [[ -d "${cache_path}" ]]; then
+          mapfile -t plugins < <(ls "${cache_path}")
+          n=${#plugins[@]}
+          for ((i = 0; i < n; i++)); do
+            plugin_name="${plugins[i]}"
+            ((i == n - 1)) && bullet="└── " || bullet="├── "
+            echo "${bullet}${plugin_name}"
+
+            if ((show_all)); then
+              mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -V)
+              m=${#versions[@]}
+              for ((j = 0; j < m; j++)); do
+                plugin_version="$(basename "${versions[j]}")"
+                ((i == n - 1)) && indent="    " || indent="│    "
+                ((j == m - 1)) && bullet="└── " || bullet="├── "
+                echo "${indent}${bullet}${plugin_version}"
+              done
+            fi
+          done
+          echo
+        fi
+      fi
+    done
+  fi
+}
+
+bee::hub::pull::comp() {
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    local cmd="${1:-}"
+    local comps=(--force "${BEE_HUBS[*]}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${BEE_HUBS[*]}"
+  fi
 }
 
 bee::hub::pull() {
@@ -256,6 +292,12 @@ bee::hub::pull() {
   fi
 }
 
+bee::hub::info::comp() {
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    bee::hubs --list
+  fi
+}
+
 bee::hub::info() {
   local plugin="$1" plugin_name plugin_version cache_path spec_path
   local -i found=0
@@ -267,6 +309,19 @@ bee::hub::info() {
     done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
     ((found)) && break
   done
+}
+
+bee::hub::install::comp() {
+  local plugins
+  plugins="$(bee::hubs --list)"
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    local cmd="${1:-}"
+    local comps=(--force "${plugins}")
+    local IFS=' '
+    compgen -W "${comps[*]}" -- "${cmd}"
+  else
+    echo "${plugins}"
+  fi
 }
 
 bee::hub::install() {
@@ -688,10 +743,12 @@ bee::job::comp() {
 
 bee::job() {
   if (($# >= 2)); then
-    while (($#)); do case "$1" in
-      --time) BEE_JOB_SHOW_TIME=1; shift ;;
-      --) shift; break ;; *) break ;;
-    esac done
+    while (($#)); do
+      case "$1" in
+        --time) BEE_JOB_SHOW_TIME=1; shift ;;
+        --) shift; break ;; *) break ;;
+      esac
+    done
 
     bee::job::start "$@"
     bee::job::finish
@@ -821,12 +878,16 @@ bee::EXIT() {
 ################################################################################
 # completion
 ################################################################################
-declare -ag BEE_COMMANDS=("cache" "env" "job" "plugins" "update" "version")
+declare -ag BEE_COMMANDS=(
+  --batch --help --quiet --verbose
+  cache env hash hubs info install job lint new plugins pull update version
+)
 
 declare -ig COMP_PARTIAL=1
+# Add this to your .bashrc
+# complete -C bee bee
+# COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 bee::comp() {
-  # complete -C bee bee
-  # COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
   # shellcheck disable=SC2207
   local words=($(bee::split_args "${COMP_LINE}"))
   local -i head=0 cursor=0
@@ -857,7 +918,11 @@ bee::comp_command_or_plugin() {
   case "$1" in
     cache) shift; bee::cache::comp "$@"; return ;;
     env) shift; compgen -v; return ;;
+    hubs) shift; bee::hubs::comp "$@"; return ;;
+    info) shift; bee::hub::info::comp "$@"; return ;;
+    install) shift; bee::hub::install::comp "$@"; return ;;
     job) shift; bee::job::comp "$@"; return ;;
+    pull) shift; bee::hub::pull::comp "$@"; return ;;
     plugins) shift; bee::plugins::comp "$@"; return ;;
     update) return ;;
     version) shift; bee::version::comp "$@"; return ;;

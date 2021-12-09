@@ -48,10 +48,10 @@ setup() {
   assert_output "4.5.6"
 }
 
-@test "completes version with --latest" {
+@test "completes bee version with --latest" {
   assert_comp "bee version " "--latest"
 }
 
-@test "completes version --latest with --cached" {
+@test "completes bee version --latest with --cached" {
   assert_comp "bee version --latest " "--cached"
 }

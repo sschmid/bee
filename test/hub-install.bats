@@ -17,11 +17,11 @@ EOF
 }
 
 @test "finds plugin in correct hub" {
-  _setup_empty_bee_hub_repo "empty1"
+  _setup_empty_bee_hub_repo "empty"
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/empty1" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/unknown")'
+  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/empty" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/unknown")'
   bee pull
   run bee install testplugin
   assert_success
@@ -200,7 +200,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_generic_plugin_repo testplugin 0.1.0
   bee pull
-  bee install --force testplugin:0.1.0
+  bee install testplugin:0.1.0
   run bee install testplugin:0.1.0
   assert_success
   assert_output --partial "${BEE_ERR} testplugin:0.1.0 sha256 mismatch"

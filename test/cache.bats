@@ -37,11 +37,11 @@ setup() {
   assert_success
 }
 
-@test "completes cache with --clear" {
+@test "completes bee cache with --clear" {
   assert_comp "bee cache " "--clear"
 }
 
-@test "completes cache --clear with sub folders" {
+@test "completes bee cache --clear with sub folders" {
   mkdir -p "${BEE_CACHES_PATH}/test1"
   mkdir -p "${BEE_CACHES_PATH}/test2"
   local expected=(test1 test2)

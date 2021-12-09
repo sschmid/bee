@@ -104,11 +104,11 @@ greeting test from testplugin 2.0.0
 EOF
 }
 
-@test "completes job with --time" {
+@test "completes bee job with --time" {
   local expected=(--time)
   assert_comp "bee job " "${expected[*]}"
 }
 
-@test "no comp for job --time" {
+@test "no comp for bee job --time" {
   assert_comp "bee job --time "
 }

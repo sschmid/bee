@@ -5,36 +5,39 @@ setup() {
 }
 
 assert_plugin() {
-  run bee --batch "bee::resolve_plugin $1" \
+  local plugin="$1" expected_name="$2" expected_version="$3"
+  run bee --batch "bee::resolve_plugin ${plugin}" \
     "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
   assert_success
   cat << EOF | assert_output -
-$2
-$3
-${BEE_PLUGINS_PATHS}/$2/$3/$2.bash
+${expected_name}
+${expected_version}
+${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
 EOF
 }
 
 assert_no_plugin() {
-  run bee --batch "bee::resolve_plugin $1" \
+  local plugin="$1"
+  run bee --batch "bee::resolve_plugin ${plugin}" \
     "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
   assert_success
   refute_output
 }
 
 assert_last_plugin() {
+  local first_plugin="$1" last_plugin="$2" expected_name="$3" expected_version="$4"
   run bee --batch \
-    "bee::resolve_plugin $1" \
-    "bee::resolve_plugin $2" \
+    "bee::resolve_plugin ${first_plugin}" \
+    "bee::resolve_plugin ${last_plugin}" \
     "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
   cat << EOF | assert_output -
-$3
-$4
-${BEE_PLUGINS_PATHS}/$3/$4/$3.bash
+${expected_name}
+${expected_version}
+${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
 EOF
 }
 
-@test "resolves latest plugin" {
+@test "resolves latest plugin version" {
   assert_plugin testplugin testplugin 2.0.0
 }
 
@@ -59,20 +62,19 @@ EOF
 }
 
 # this is a manual test / sanity check
-@test "caches resolved plugin paths" {
-  run bee --batch \
-    "bee::resolve_plugin testplugin:1.0.0" \
-    "bee::resolve_plugin testplugin" \
-    "bee::resolve_plugin testplugin:2.0.0" \
-    "bee::resolve_plugin missing" \
-    "bee::resolve_plugin missing:1.0.0" \
-    "bee::resolve_plugin echo" \
-    "bee::resolve_plugin echo" \
-    "bee::resolve_plugin missing" \
-    "bee::resolve_plugin missing:1.0.0"
-  # assert_failure
-  # "fail on purpose to print steps"
-}
+#@test "caches resolved plugin paths" {
+#  run bee --batch \
+#    "bee::resolve_plugin testplugin:1.0.0" \
+#    "bee::resolve_plugin testplugin" \
+#    "bee::resolve_plugin testplugin:2.0.0" \
+#    "bee::resolve_plugin missing" \
+#    "bee::resolve_plugin missing:1.0.0" \
+#    "bee::resolve_plugin echo" \
+#    "bee::resolve_plugin echo" \
+#    "bee::resolve_plugin missing" \
+#    "bee::resolve_plugin missing:1.0.0"
+#  assert_failure # "fail on purpose to print steps"
+#}
 
 ################################################################################
 # dependencies
@@ -92,9 +94,13 @@ EOF
 @test "loads plugin only once" {
   run bee --batch \
     "bee::load_plugin testplugin:1.0.0" \
-    "bee::load_plugin testplugin:1.0.0"
+    "bee::load_plugin testplugin:1.0.0" \
+    "env BEE_LOAD_PLUGIN_NAME"
   assert_success
-  assert_output "# testplugin 1.0.0 sourced"
+  cat << EOF | assert_output -
+# testplugin 1.0.0 sourced
+testplugin
+EOF
 }
 
 @test "loads another plugin" {

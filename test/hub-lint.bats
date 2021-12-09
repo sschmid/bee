@@ -34,7 +34,8 @@ _setup_test_bee_hub_repo_version() {
 }
 
 _lint() {
-  run bee lint "${BATS_TEST_TMPDIR}/testplugin/$1/plugin.json"
+  local version="$1"
+  run bee lint "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 }
 
 @test "lints missing name" {

@@ -183,8 +183,7 @@ EOF
 }
 
 @test "logs multiple env vars" {
-  export my_var1="test1"
-  export my_var2="test2"
+  export my_var1="test1" my_var2="test2"
   run bee env my_var1 my_var2
   assert_success
   cat << EOF | assert_output -
