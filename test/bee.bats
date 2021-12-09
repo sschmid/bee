@@ -12,7 +12,8 @@ assert_bee_system_home() {
 }
 
 @test "resolves bee system home" {
-  _source_bee
+  # shellcheck disable=SC1090,SC1091
+  source "${PROJECT_ROOT}/src/bee"
   assert_bee_system_home
 }
 

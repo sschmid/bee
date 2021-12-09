@@ -84,13 +84,11 @@ EOF
 # TODO list plugins with all dependencies (and version)
 
 @test "completes plugins with options" {
-  _source_bee
   local expected=(--all --outdated --version)
   assert_comp "bee plugins " "${expected[*]}"
 }
 
 @test "completes plugins with multiple options and removes already used ones" {
-  _source_bee
   local expected=(--outdated --version)
   assert_comp "bee plugins --all " "${expected[*]}"
 }

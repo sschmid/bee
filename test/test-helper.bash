@@ -37,11 +37,6 @@ _setup_beefile() {
   export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }
 
-_source_bee() {
-  # shellcheck disable=SC1090,SC1091
-  source "${PROJECT_ROOT}/src/bee"
-}
-
 _git_commit() {
   git -c commit.gpgsign=false commit "$@"
 }

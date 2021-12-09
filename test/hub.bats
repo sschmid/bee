@@ -142,7 +142,6 @@ _update_mock_bee_hub_repo() {
 @test "forces pull even when within cooldown period" {
   _setup_mock_bee_hub_repo testhub testplugin
   _setup_mock_bee_hub_repo othertesthub othertestplugin
-  _source_bee
   _set_beerc_with 'BEE_HUB_PULL_COOLDOWN=999'
 
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"
@@ -265,31 +264,26 @@ EOF
 }
 
 #@test "completes hub with ls plugins pull info install hash lint" {
-#  _source_bee
 #  local expected=("ls" "plugins" "pull" "info" "install" "hash" "lint")
 #  assert_comp "bee hub " "${expected[*]}"
 #}
-
+#
 #@test "completes hub ls with options and hub urls" {
-#  _source_bee
 #  local expected=("-a" "--all" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub ls " "${expected[*]}"
 #}
 #
 #@test "completes hub ls with multiple hub urls" {
-#  _source_bee
 #  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub ls myurl " "${expected[*]}"
 #}
 #
 #@test "completes hub pull with options and hub urls" {
-#  _source_bee
 #  local expected=("-f" "--force" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub pull " "${expected[*]}"
 #}
 #
 #@test "completes hub pull with multiple hub urls" {
-#  _source_bee
 #  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub pull myurl " "${expected[*]}"
 #}
@@ -297,7 +291,6 @@ EOF
 #@test "completes hub info with plugin" {
 #  _setup_test_bee_hub_repo
 #  _setup_test_bee_hub_repo "othertesthub"
-#  _source_bee
 #  _strict bee::hub pull
 #  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
 #  assert_comp "bee hub info " "${expected[*]}"
@@ -306,7 +299,6 @@ EOF
 #@test "completes hub install with options and plugins" {
 #  _setup_test_bee_hub_repo
 #  _setup_test_bee_hub_repo "othertesthub"
-#  _source_bee
 #  _strict bee::hub pull
 #  local expected=("-f" "--force" "othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
 #  assert_comp "bee hub install " "${expected[*]}"
@@ -315,20 +307,17 @@ EOF
 #@test "completes hub install multiple with plugins" {
 #  _setup_test_bee_hub_repo
 #  _setup_test_bee_hub_repo "othertesthub"
-#  _source_bee
 #  _strict bee::hub pull
 #  local expected=("othertestplugin" "testplugin" "testplugindeps" "testplugindepsdep" "testpluginmissingdep")
 #  assert_comp "bee hub install myplugin " "${expected[*]}"
 #}
 #
 #@test "completes hub plugins with hub urls" {
-#  _source_bee
 #  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub plugins " "${expected[*]}"
 #}
 #
 #@test "completes hub plugins with multiple hub urls" {
-#  _source_bee
 #  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
 #  assert_comp "bee hub plugins myurl " "${expected[*]}"
 #}

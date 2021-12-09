@@ -105,12 +105,10 @@ EOF
 }
 
 @test "completes job with --time" {
-  _source_bee
   local expected=(--time)
   assert_comp "bee job " "${expected[*]}"
 }
 
 @test "no comp for job --time" {
-  _source_bee
   assert_comp "bee job --time "
 }
