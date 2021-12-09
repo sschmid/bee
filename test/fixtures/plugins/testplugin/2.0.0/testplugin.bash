@@ -4,7 +4,9 @@ if [[ -v TESTPLUGIN_2_SOURCED ]]; then
 fi
 
 TESTPLUGIN_2_SOURCED=1
-echo "# testplugin 2.0.0 sourced"
+if [[ ! -v TESTPLUGIN_QUIET ]]; then
+  echo "# testplugin 2.0.0 sourced"
+fi
 
 testplugin() {
   if (($#)); then

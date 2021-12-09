@@ -4,57 +4,6 @@ setup() {
 }
 
 @test "shows help when args" {
-  run bee update "test"
+  run bee update test
   assert_bee_help
-}
-
-@test "reads latest version" {
-  run bee update print
-  assert_output "1.2.3"
-  assert_file_not_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
-}
-
-@test "caches latest version" {
-  run bee update print --cached
-  assert_output "1.2.3"
-  assert_file_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
-}
-
-@test "reads cached latest version" {
-  _source_bee
-  output=$(bee::run update print --cached)
-  assert_output "1.2.3"
-
-  # shellcheck disable=SC2034
-  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"
-  output=$(bee::run update print --cached)
-  assert_output "1.2.3"
-}
-
-@test "updates cached latest version after cooldown" {
-  _source_bee
-  output=$(bee::run update print --cached)
-  assert_output "1.2.3"
-
-  sleep 2
-
-  # shellcheck disable=SC2034
-  BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"
-  output=$(bee::run update print --cached)
-  assert_output "4.5.6"
-}
-
-@test "completes update with print" {
-  _source_bee
-  assert_comp "bee update " "print"
-}
-
-@test "completes update print with --cached" {
-  _source_bee
-  assert_comp "bee update print " "--cached"
-}
-
-@test "no comp for update print --cached" {
-  _source_bee
-  assert_comp "bee update print --cached "
 }

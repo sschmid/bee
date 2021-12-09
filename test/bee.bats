@@ -34,24 +34,26 @@ assert_bee_system_home() {
 
 @test "sources bee-run.bash" {
   run bee
+  assert_success
   assert_bee_help
 }
 
 @test "sources BEE_FILE when specified" {
   _setup_beefile "echo '# test Beefile sourced'"
-  run bee
-  assert_line --index 0 "# test Beefile sourced"
+  run bee :
+  assert_success
+  assert_output "# test Beefile sourced"
 }
 
 @test "sets and sources Beefile in working dir" {
   cd "${BATS_TEST_TMPDIR}"
-  echo "test Beefile" > "Beefile"
-  run bee bee::env BEE_FILE
-  assert_output "Beefile"
-
   echo "echo '# test Beefile sourced'" > "Beefile"
-  run bee
-  assert_line --index 0 "# test Beefile sourced"
+  run bee env BEE_FILE
+  assert_success
+  cat << 'EOF' | assert_output -
+# test Beefile sourced
+Beefile
+EOF
 }
 
 @test "installs specified bee version" {
@@ -66,6 +68,6 @@ assert_bee_system_home() {
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash;
     git add . ; _git_commit -m "Bump version"; git tag "1.0.0"
   popd > /dev/null || exit 1
-  run bee
-  assert_line --index 0 "# test bee-run.bash 0.1.0 sourced"
+  run bee :
+  assert_output "# test bee-run.bash 0.1.0 sourced"
 }

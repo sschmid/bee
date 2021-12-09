@@ -1,29 +1,49 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  _source_bee
+  _source_beerc
+  export BEE_OSTYPE="generic"
 }
 
-@test "prints cache path" {
-  run _strict bee::run cache
+@test "opens cache path" {
+  run bee cache
+  assert_success
   assert_output "${BEE_CACHES_PATH}"
 }
 
 @test "shows help when unknown args" {
-  run _strict bee::run cache unknown
+  run bee cache unknown
+  assert_success
   assert_bee_help
 }
 
-@test "deletes cache" {
+@test "clears cache" {
   mkdir -p "${BEE_CACHES_PATH}"
-  run _strict bee::run cache rm
+  run bee cache --clear
+  assert_success
   assert_dir_not_exist "${BEE_CACHES_PATH}"
 }
 
-@test "completes cache with rm" {
-  assert_comp "bee cache " "rm"
+@test "clears cache sub folder" {
+  mkdir -p "${BEE_CACHES_PATH}/test"
+  run bee cache --clear test
+  assert_success
+  assert_dir_not_exist "${BEE_CACHES_PATH}/test"
+  assert_dir_exist "${BEE_CACHES_PATH}"
 }
 
-@test "no comp for cache rm" {
-  assert_comp "bee cache rm "
+@test "ignores clearing cache sub folder that doesn't exist" {
+  run bee cache --clear unknown
+  assert_success
+}
+
+@test "completes cache with --clear" {
+  assert_comp "bee cache " "--clear"
+}
+
+@test "completes cache --clear with sub folders" {
+  mkdir -p "${BEE_CACHES_PATH}/test1"
+  mkdir -p "${BEE_CACHES_PATH}/test2"
+  local expected=(test1 test2)
+  assert_comp "bee cache --clear " "${expected[*]}"
 }

@@ -1,4 +1,6 @@
-echo "# testplugindeps 1.0.0 sourced"
+if [[ ! -v TESTPLUGIN_QUIET ]]; then
+  echo "# testplugindeps 1.0.0 sourced"
+fi
 
 testplugindeps() {
   if (($#>0)); then

@@ -9,7 +9,7 @@
   "info": "bee testplugin",
   "git": "file://HOME/plugins/testplugindeps",
   "tag": "v1.0.0",
-  "sha256": "cf088fe7e5a5a69dbe5f69f839eaedae26b1009cb97e179520211de1b904314c",
+  "sha256": "0d26237d71070bd15bf030dd8edad23ef9702849c5a05e2c902dad7d2acaa083",
   "dependencies": [
     "testplugin:1.0.0",
     "othertestplugin:1.0.0"

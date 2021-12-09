@@ -1,64 +1,77 @@
 setup() {
   load 'test-helper.bash'
   _set_beerc
-  _source_bee
+  _source_beerc
 }
 
 assert_plugin() {
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" "$1"
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" "$2"
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" "${BEE_PLUGINS_PATHS}/$1/$2/$1.bash"
+  run bee --batch "bee::resolve_plugin $1" \
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+  assert_success
+  cat << EOF | assert_output -
+$2
+$3
+${BEE_PLUGINS_PATHS}/$2/$3/$2.bash
+EOF
 }
 
 assert_no_plugin() {
-  assert_equal "${BEE_RESOLVE_PLUGIN_NAME}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_VERSION}" ""
-  assert_equal "${BEE_RESOLVE_PLUGIN_PATH}" ""
+  run bee --batch "bee::resolve_plugin $1" \
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+  assert_success
+  refute_output
+}
+
+assert_last_plugin() {
+  run bee --batch \
+    "bee::resolve_plugin $1" \
+    "bee::resolve_plugin $2" \
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+  cat << EOF | assert_output -
+$3
+$4
+${BEE_PLUGINS_PATHS}/$3/$4/$3.bash
+EOF
 }
 
 @test "resolves latest plugin" {
-  bee::resolve_plugin testplugin
-  assert_plugin testplugin 2.0.0
+  assert_plugin testplugin testplugin 2.0.0
 }
 
 @test "resolves plugin with exact version" {
-  bee::resolve_plugin testplugin:1.0.0
-  assert_plugin testplugin 1.0.0
+  assert_plugin testplugin:1.0.0 testplugin 1.0.0
 }
 
 @test "doesn't resolve plugin with unknown version" {
-  bee::resolve_plugin testplugin:9.0.0
-  assert_no_plugin
+  assert_no_plugin testplugin:9.0.0
 }
 
 @test "resolves another plugin" {
-  bee::resolve_plugin testplugin:2.0.0
-  bee::resolve_plugin othertestplugin
-  assert_plugin othertestplugin 1.0.0
+  assert_last_plugin testplugin:2.0.0 othertestplugin othertestplugin 1.0.0
 }
 
 @test "doesn't resolve unknown plugin" {
-  bee::resolve_plugin unknown
-  assert_no_plugin
+  assert_no_plugin unknown
 }
 
 @test "doesn't resolve unknown plugin with exact version" {
-  bee::resolve_plugin unknown:1.0.0
-  assert_no_plugin
+  assert_no_plugin unknown:1.0.0
 }
 
 # this is a manual test / sanity check
 @test "caches resolved plugin paths" {
-  bee::resolve_plugin testplugin:1.0.0
-  bee::resolve_plugin testplugin
-  bee::resolve_plugin testplugin:2.0.0
-  bee::resolve_plugin missing
-  bee::resolve_plugin missing:1.0.0
-  bee::resolve_plugin echo
-  bee::resolve_plugin echo
-  bee::resolve_plugin missing
-  bee::resolve_plugin missing:1.0.0
-  # assert_output "fail on purpose to print steps"
+  run bee --batch \
+    "bee::resolve_plugin testplugin:1.0.0" \
+    "bee::resolve_plugin testplugin" \
+    "bee::resolve_plugin testplugin:2.0.0" \
+    "bee::resolve_plugin missing" \
+    "bee::resolve_plugin missing:1.0.0" \
+    "bee::resolve_plugin echo" \
+    "bee::resolve_plugin echo" \
+    "bee::resolve_plugin missing" \
+    "bee::resolve_plugin missing:1.0.0"
+  # assert_failure
+  # "fail on purpose to print steps"
 }
 
 ################################################################################
@@ -66,56 +79,72 @@ assert_no_plugin() {
 ################################################################################
 
 @test "loads plugin" {
-  run _strict bee::load_plugin testplugin:1.0.0
-  assert_output "# testplugin 1.0.0 sourced"
-
-  bee::load_plugin testplugin:1.0.0
-  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "testplugin"
+  run bee --batch \
+    "bee::load_plugin testplugin:1.0.0" \
+    "env BEE_LOAD_PLUGIN_NAME"
+  assert_success
+  cat << EOF | assert_output -
+# testplugin 1.0.0 sourced
+testplugin
+EOF
 }
 
 @test "loads plugin only once" {
-  bee::load_plugin testplugin:1.0.0
-  run _strict bee::load_plugin testplugin:1.0.0
-  refute_output
+  run bee --batch \
+    "bee::load_plugin testplugin:1.0.0" \
+    "bee::load_plugin testplugin:1.0.0"
+  assert_success
+  assert_output "# testplugin 1.0.0 sourced"
 }
 
 @test "loads another plugin" {
-  bee::load_plugin testplugin:1.0.0
-  run _strict bee::load_plugin othertestplugin:1.0.0
-  assert_output "# othertestplugin 1.0.0 sourced"
-
-  bee::load_plugin othertestplugin:1.0.0
-  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "othertestplugin"
+  run bee --batch \
+    "bee::load_plugin testplugin:1.0.0" \
+    "bee::load_plugin othertestplugin:1.0.0" \
+    "env BEE_LOAD_PLUGIN_NAME"
+  assert_success
+  cat << EOF | assert_output -
+# testplugin 1.0.0 sourced
+# othertestplugin 1.0.0 sourced
+othertestplugin
+EOF
 }
 
 @test "doesn't load unknown plugin" {
-  run _strict bee::load_plugin unknown
+  run bee --batch \
+    "bee::load_plugin unknown" \
+    "env BEE_LOAD_PLUGIN_NAME"
   assert_success
   refute_output
-  assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
 }
 
 @test "unknown plugin resets plugin name" {
-  bee::load_plugin testplugin:1.0.0
-  bee::load_plugin unknown
-  assert_equal "${BEE_LOAD_PLUGIN_NAME}" ""
+  run bee --batch \
+    "bee::load_plugin testplugin:1.0.0" \
+    "bee::load_plugin unknown" \
+    "env BEE_LOAD_PLUGIN_NAME"
+  assert_success
+  assert_output "# testplugin 1.0.0 sourced"
 }
 
 @test "loads plugin dependencies" {
-  run _strict bee::load_plugin testplugindepsdep
-  cat << 'EOF' | assert_output -
+  run bee --batch \
+    "bee::load_plugin testplugindepsdep" \
+    "env BEE_LOAD_PLUGIN_NAME"
+  assert_success
+  cat << EOF | assert_output -
 # testplugindepsdep 1.0.0 sourced
 # testplugindeps 1.0.0 sourced
 # testplugin 1.0.0 sourced
 # othertestplugin 1.0.0 sourced
+testplugindepsdep
 EOF
-
-  bee::load_plugin testplugindepsdep
-  assert_equal "${BEE_LOAD_PLUGIN_NAME}" "testplugindepsdep"
 }
 
 @test "fails on missing plugin dependency" {
-  run _strict bee::load_plugin testpluginmissingdep
+  run bee --batch \
+    "bee::load_plugin testpluginmissingdep" \
+    "env BEE_LOAD_PLUGIN_NAME"
   assert_failure
   cat << EOF | assert_output -
 # testpluginmissingdep 1.0.0 sourced
@@ -129,15 +158,25 @@ EOF
 }
 
 @test "runs plugin help when no args" {
-  bee::load_plugin testplugin
-  run _strict bee::run_plugin testplugin
-  assert_output "testplugin 2.0.0 help"
+  run bee --batch \
+    "bee::load_plugin testplugin" \
+    "bee::run_plugin testplugin"
+  assert_success
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+testplugin 2.0.0 help
+EOF
 }
 
 @test "runs plugin with args" {
-  bee::load_plugin testplugin
-  run _strict bee::run_plugin testplugin greet "test"
-  assert_output "greeting test from testplugin 2.0.0"
+  run bee --batch \
+    "bee::load_plugin testplugin" \
+    "bee::run_plugin testplugin greet test"
+  assert_success
+  cat << 'EOF' | assert_output -
+# testplugin 2.0.0 sourced
+greeting test from testplugin 2.0.0
+EOF
 }
 
 ################################################################################
@@ -145,11 +184,9 @@ EOF
 ################################################################################
 
 @test "loads plugin and dependencies from custom folder" {
-  BEE_PLUGINS_PATHS=(
-    "${BATS_TEST_DIRNAME}/fixtures/plugins"
-    "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"
-  )
-  run _strict bee::load_plugin customtestplugin
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee bee::load_plugin "customtestplugin"
+  assert_success
   cat << 'EOF' | assert_output -
 # customtestplugin 1.0.0 sourced
 # testplugin 1.0.0 sourced

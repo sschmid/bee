@@ -1,10 +1,10 @@
 setup() {
   load "test-helper.bash"
   _set_beerc
-  BEE_CHECK_FAIL="✗" BEE_RESULT="➜"
+  _source_beerc
 }
 
-@test "lists enabled plugins" {
+@test "lists enabled plugins without version" {
   _setup_beefile "BEE_PLUGINS=(testplugin)"
   run bee plugins
   assert_success
@@ -21,6 +21,7 @@ setup() {
   # shellcheck disable=SC2030
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
+  assert_success
   cat << 'EOF' | assert_output -
 customtestplugin
 testplugin
@@ -37,42 +38,34 @@ EOF
   _setup_beefile "BEE_PLUGINS=(unknown)"
   run bee plugins
   assert_success
-  assert_output --partial "${BEE_CHECK_FAIL} unknown"
+  assert_output "#E${BEE_CHECK_FAIL} unknown#"
 }
 
 @test "lists enabled plugins with version" {
   _setup_beefile "BEE_PLUGINS=(testplugin)"
-  run bee plugins -v
+  run bee plugins --version
+  assert_success
   assert_output "testplugin:2.0.0"
 
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0)"
-  run bee plugins -v
+  run bee plugins --version
+  assert_success
   assert_output "testplugin:1.0.0"
 }
 
 @test "lists unknown plugins with version as missing" {
   _setup_beefile "BEE_PLUGINS=(unknown:9.0.0)"
-  run bee plugins -v
+  run bee plugins --version
   assert_success
-  assert_output --partial "${BEE_CHECK_FAIL} unknown:9.0.0"
+  assert_output "#E${BEE_CHECK_FAIL} unknown:9.0.0#"
 }
 
 @test "lists all plugins from all plugin paths" {
   _setup_beefile "BEE_PLUGINS=(unknown)"
   # shellcheck disable=SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  run bee plugins -a
-
-  assert_line --partial "${BEE_CHECK_FAIL} unknown"
-  assert_line "othertestplugin"
-  assert_line "testplugin"
-  assert_line "testplugindeps"
-  assert_line "testplugindepsdep"
-  assert_line "testpluginmissingdep"
-  assert_line "customtestplugin"
-
   run bee plugins --all
-  assert_line --partial "${BEE_CHECK_FAIL} unknown"
+  assert_line "#E${BEE_CHECK_FAIL} unknown#"
   assert_line "othertestplugin"
   assert_line "testplugin"
   assert_line "testplugindeps"
@@ -84,6 +77,7 @@ EOF
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
   run bee plugins --outdated
+  assert_success
   assert_output "testplugin:1.0.0 ${BEE_RESULT} testplugin:2.0.0"
 }
 
@@ -91,19 +85,12 @@ EOF
 
 @test "completes plugins with options" {
   _source_bee
-  local expected=(
-    "--all" "-a"
-    "--outdated" "-o"
-    "--version" "-v"
-  )
+  local expected=(--all --outdated --version)
   assert_comp "bee plugins " "${expected[*]}"
 }
 
 @test "completes plugins with multiple options and removes already used ones" {
   _source_bee
-  local expected=(
-    "--outdated" "-o"
-    "--version" "-v"
-  )
-  assert_comp "bee plugins -a " "${expected[*]}"
+  local expected=(--outdated --version)
+  assert_comp "bee plugins --all " "${expected[*]}"
 }

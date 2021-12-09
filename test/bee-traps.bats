@@ -1,36 +1,36 @@
 setup() {
   load 'test-helper.bash'
   _set_beerc
-  _source_bee
 }
 
-_test_exit() {
-  echo "test exit $*"
-}
+_test_exit() { echo "test exit $*"; }
+export -f _test_exit
 
 @test "adds exit trap with status" {
-  bee::add_exit_trap _test_exit
-  run _strict bee::run :
+  run bee bee::add_exit_trap _test_exit
   assert_success
   assert_output "test exit 0"
 }
 
 @test "adds exit trap with error status" {
-  bee::add_exit_trap _test_exit
-  run _strict bee::run not_a_command
+  run bee --batch \
+    "bee::add_exit_trap _test_exit" \
+    "not_a_command"
   assert_failure
   assert_output --partial "test exit 127"
 }
 
 @test "removes exit trap" {
-  bee::add_exit_trap _test_exit
-  bee::remove_exit_trap _test_exit
-  run _strict bee::run :
+  run bee --batch \
+    "bee::add_exit_trap _test_exit" \
+    "bee::remove_exit_trap _test_exit"
+  assert_success
   refute_output
 }
 
 @test "runs args in internal mode" {
-  run bee echo "test"
+  run bee echo test
+  assert_success
   assert_output "test"
 }
 
@@ -42,9 +42,12 @@ _test_exit() {
 
 @test "runs plugin in plugin mode" {
   run bee testplugin
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --index 1 "testplugin 2.0.0 help"
-  assert_line --partial --index 2 "bzzzz"
+  assert_success
+  cat << EOF | assert_output -
+# testplugin 2.0.0 sourced
+testplugin 2.0.0 help
+${BEE_ICON} bzzzz (0 seconds)
+EOF
 }
 
 @test "fails in plugin mode" {
@@ -57,11 +60,11 @@ _test_exit() {
 
 @test "runs quiet in plugin mode" {
   run bee --quiet testplugin
+  assert_success
   cat << 'EOF' | assert_output -
 # testplugin 2.0.0 sourced
 testplugin 2.0.0 help
 EOF
-  refute_output --partial "bzzzz"
 }
 
 @test "fails quiet in plugin mode" {

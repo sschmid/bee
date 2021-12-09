@@ -11,72 +11,73 @@ _prepare_job_logs() {
   run bee job
   assert_bee_help
 
-  run bee job "test"
+  run bee job test
   assert_bee_help
 }
 
 @test "runs job and succeeds" {
-  run bee job "testjob" echo "test"
+  run bee job testjob echo test
   assert_success
-  assert_output --partial "testjob ${BEE_CHECK_SUCCESS}"
+  assert_output  "##Stestjob ${BEE_CHECK_SUCCESS}#"
 }
 
 @test "runs job and fails" {
-  run bee job "testjob" not_a_command
+  run bee job testjob not_a_command
   assert_failure
-  assert_output --partial "testjob ${BEE_CHECK_FAIL}"
+  assert_output "##Etestjob ${BEE_CHECK_FAIL}#"
 }
 
 @test "runs job and succeeds with time" {
-  run bee job -t "testjob" echo "test"
-  assert_output --partial "(0 seconds)"
-
-  run bee job --time "testjob" echo "test"
-  assert_output --partial "(0 seconds)"
+  run bee job --time testjob echo test
+  assert_success
+  assert_output "##Stestjob ${BEE_CHECK_SUCCESS} (0 seconds)#"
 }
 
 @test "runs jobs and resets time" {
-  run bee --batch "job -t testjob1 sleep 2" "job -t testjob2 sleep 2"
-  assert_line --index 0 --partial "(2 seconds)"
-  assert_line --index 1 --partial "(2 seconds)"
+  run bee --batch "job --time testjob1 sleep 2" "job --time testjob2 sleep 2"
+  assert_success
+  cat << EOF | assert_output -
+##Stestjob1 ${BEE_CHECK_SUCCESS} (2 seconds)#
+##Stestjob2 ${BEE_CHECK_SUCCESS} (2 seconds)#
+EOF
 }
 
 @test "runs job and fails with time" {
-  run bee job -t "testjob" not_a_command
-  assert_output --partial "(0 seconds)"
-
-  run bee job --time "testjob" not_a_command
-  assert_output --partial "(0 seconds)"
+  run bee job --time testjob not_a_command
+  assert_failure
+  assert_output "##Etestjob ${BEE_CHECK_FAIL} (0 seconds)#"
 }
 
 @test "logs success to logfile" {
   _prepare_job_logs
-  run bee job "testjob" echo "test"
+  run bee job testjob echo test
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output "test"
 }
 
 @test "uses job title for logfile" {
   _prepare_job_logs
-  run bee job "Do some work" echo "test"
+  run bee job "test job" echo test
   run ls "${BEE_RESOURCES}/logs"
-  assert_output --partial "Do-some-work"
+  assert_output --partial "test-job"
 }
 
 @test "logs error to logfile" {
   _prepare_job_logs
-  run bee job "testjob" not_a_command
+  run bee job testjob not_a_command
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output --partial "not_a_command: command not found"
 }
 
 @test "runs job and succeeds verbose" {
   _prepare_job_logs
-  run bee --verbose job "testjob" echo "test"
+  run bee --verbose job testjob echo test
 
-  assert_line --index 0 "testjob"
-  assert_line --index 1 "test"
-  assert_line --index 2 --partial "testjob"
+cat << EOF | assert_output -
+testjob
+test
+#Stestjob ${BEE_CHECK_SUCCESS}#
+EOF
 
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output "test"
@@ -84,7 +85,7 @@ _prepare_job_logs() {
 
 @test "runs job and fails verbose" {
   _prepare_job_logs
-  run bee --verbose job "testjob" not_a_command
+  run bee --verbose job testjob not_a_command
 
   assert_line --index 0 "testjob"
   assert_line --index 1 --partial "not_a_command: command not found"
@@ -95,7 +96,7 @@ _prepare_job_logs() {
 
 @test "runs plugin as job" {
   _prepare_job_logs
-  run bee job "testjob" testplugin greet "test"
+  run bee job testjob testplugin greet test
   run cat "${BEE_RESOURCES}/logs/"*
   cat << 'EOF' | assert_output -
 # testplugin 2.0.0 sourced
@@ -103,15 +104,10 @@ greeting test from testplugin 2.0.0
 EOF
 }
 
-@test "completes job with -t --time" {
+@test "completes job with --time" {
   _source_bee
-  local expected=("-t" "--time")
+  local expected=(--time)
   assert_comp "bee job " "${expected[*]}"
-}
-
-@test "no comp for job -t" {
-  _source_bee
-  assert_comp "bee job -t "
 }
 
 @test "no comp for job --time" {

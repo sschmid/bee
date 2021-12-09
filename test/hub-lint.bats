@@ -3,16 +3,38 @@ setup() {
   load "test-helper-hub.bash"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
   _set_beerc
+  _source_beerc
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
 }
 
-_prepare_module() {
-  _setup_test_bee_hub_repo
-  _source_bee
+assert_lint_error() {
+  assert_version_lint_error 2.0.0 "$@"
+}
+
+assert_version_lint_error() {
+  local version="$1"
+  shift
+  _lint "${version}"
+  assert_failure
+  assert_output "$@"
+}
+
+assert_lint_success() {
+  _lint 2.0.0
+  assert_success
+  assert_output "$@"
+}
+
+_setup_test_bee_hub_repo_version() {
+  rm -rf "${BATS_TEST_TMPDIR}/plugins"
+  local version="$1"
+  _setup_generic_plugin_repo testplugin "${version}"
+  _update_generic_plugin_repo testplugin
 }
 
 _lint() {
-  _setup_testplugin_repo
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  run bee lint "${BATS_TEST_TMPDIR}/testplugin/$1/plugin.json"
 }
 
 @test "lints missing name" {
@@ -25,14 +47,11 @@ _lint() {
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'name.*testplugin'
+  assert_lint_error --regexp 'name.*testplugin'
 }
 
 @test "lints missing version" {
@@ -45,14 +64,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'version.*2.0.0'
+  assert_lint_error --regexp 'version.*2.0.0'
 }
 
 @test "lints missing license" {
@@ -65,14 +81,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'license.*null'
+  assert_lint_error --regexp 'license.*null'
 }
 
 @test "lints missing homepage" {
@@ -85,14 +98,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'homepage.*null'
+  assert_lint_error --regexp 'homepage.*null'
 }
 
 @test "lints missing authors" {
@@ -105,14 +115,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'authors.*null'
+  assert_lint_error --regexp 'authors.*null'
 }
 
 @test "lints missing info" {
@@ -125,14 +132,11 @@ EOF
   "authors": ["sschmid"],
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'info.*null'
+  assert_lint_error --regexp 'info.*null'
 }
 
 @test "lints missing git" {
@@ -145,14 +149,11 @@ EOF
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'git.*null'
+  assert_lint_error --regexp 'git.*null'
 }
 
 @test "lints missing tag" {
@@ -165,14 +166,11 @@ EOF
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'tag.*null'
+  assert_lint_error --regexp 'tag.*null'
 }
 
 @test "lints missing sha256" {
@@ -189,10 +187,7 @@ EOF
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'sha256.*null'
+  assert_lint_error --regexp 'sha256.*null'
 }
 
 @test "lints missing dependencies" {
@@ -206,14 +201,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_success
-  assert_output --regexp 'dependencies.*null'
+  assert_lint_success --regexp 'dependencies.*null'
 }
 
 @test "lints name is not plugin folder name" {
@@ -227,14 +219,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'name.*testplugin'
+  assert_lint_error --regexp 'name.*xxx.*testplugin'
 }
 
 @test "lints version is parent folder name" {
@@ -248,92 +237,73 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'version.*2.0.0'
+  assert_lint_error --regexp 'version.*x.x.x.*2.0.0'
 }
 
 @test "lints missing version file" {
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/1.0.0"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/1.0.0/plugin.json"
+  local version="1.0.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
+  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
-  "version": "1.0.0",
+  "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "tag": "v1.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "tag": "v${version}",
+  "sha256": "bef36a8260e6784bf8fb4ca93ff8ce5f6c07f0e7a326f1cbf41e1f64c1aa3d4d"
 }
 EOF
 
-  _prepare_module
-  _setup_testplugin_repo
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/1.0.0/plugin.json"
-  assert_failure
-  assert_output --regexp 'version file.*null'
+  assert_version_lint_error "${version}" --regexp 'version file.*null'
 }
 
 @test "lints incorrect version file" {
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/1.1.0"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/1.1.0/plugin.json"
+  local version="1.1.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
+  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
-  "version": "1.1.0",
+  "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "tag": "v1.1.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "tag": "v${version}",
+  "sha256": "6a84ce7a4869e415eea117e4e55baedebc34d6d32a4fa48fe8a3c573d3cc870d"
 }
 EOF
 
-  _prepare_module
-  _setup_generic_plugin_repo testplugin
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/1.1.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 1.1.0"; git tag "v1.1.0"
-  popd > /dev/null || exit 1
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 2.0.0"; git tag "v2.0.0"
-  popd > /dev/null || exit 1
-
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/1.1.0/plugin.json"
-  assert_failure
-  assert_output --regexp 'version.*1.1.0'
+  _setup_test_bee_hub_repo_version "${version}"
+  assert_version_lint_error "${version}" --regexp 'version.*x.x.x.*1.1.0'
 }
 
 @test "lints missing license file" {
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/1.0.0"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/1.0.0/plugin.json"
+  local version="1.2.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
+  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
-  "version": "1.0.0",
+  "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "tag": "v1.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "tag": "v${version}",
+  "sha256": "bebcdf4c3e7483cdf243c6ee0a0416e8f5e169f4895ba98b7d54eb2aaf40ee45"
 }
 EOF
 
-  _prepare_module
-  _setup_testplugin_repo
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/1.0.0/plugin.json"
-  assert_failure
-  assert_output --regexp 'license file.*null'
+  _setup_test_bee_hub_repo_version "${version}"
+  assert_version_lint_error "${version}" --regexp 'license file.*null.*required'
 }
 
 @test "lints incorrect git" {
@@ -347,14 +317,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/unknown",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --partial "git clone ✗"
+  assert_lint_error --partial "##Egit clone ${BEE_CHECK_FAIL}#"
 }
 
 @test "lints incorrect tag" {
@@ -368,14 +335,11 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "vx.x.x",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --partial "git checkout tag ✗"
+  assert_lint_error --partial "##Egit checkout tag ${BEE_CHECK_FAIL}#"
 }
 
 @test "lints incorrect sha256" {
@@ -393,50 +357,34 @@ EOF
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_failure
-  assert_output --regexp 'sha256.*xxx'
-  assert_output --partial "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  assert_lint_error --regexp 'sha256.*xxx.*27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c'
 }
 
 @test "lints missing plugin bash file" {
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/1.3.0"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/1.3.0/plugin.json"
+  local version="1.3.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
+  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
-  "version": "1.3.0",
+  "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "tag": "v1.3.0",
-  "sha256": "318fe386882c12965ebfeb6648c5b3189386279cb17e2b86295c55f99950752d"
+  "tag": "v${version}",
+  "sha256": "283ae38b0e63b1aaf43ad76b6311da4cc7502c017dbc4f560de09d713c282925"
 }
 EOF
 
-  _prepare_module
-  _setup_generic_plugin_repo testplugin
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/1.3.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  rm "${BATS_TEST_TMPDIR}/plugins/testplugin/testplugin.bash"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 1.3.0"; git tag "v1.3.0"
-  popd > /dev/null || exit 1
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  rm "${BATS_TEST_TMPDIR}/plugins/testplugin/testplugin.bash"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 2.0.0"; git tag "v2.0.0"
-  popd > /dev/null || exit 1
-
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/1.3.0/plugin.json"
-  assert_failure
-  assert_output --regexp 'plugin file.*null'
+  _setup_test_bee_hub_repo_version "${version}"
+  assert_version_lint_error "${version}" --regexp 'plugin file.*null.*required'
 }
 
 @test "lints incorrect dependencies" {
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/1.4.0"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/1.4.0/plugin.json"
+  local version="1.4.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
+  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "1.4.0",
@@ -446,25 +394,13 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v1.4.0",
-  "sha256": "a7c32081d622f68fb6e4eaee97cd7f299509035a75f02a848f9e019993415618",
+  "sha256": "bf5f633dad2196c0df9a0e4dad55fd59331a40cf7ba2cfc78e2dd4168af7d46d",
   "dependencies": ["testdep:1.0.0", "othertestdep:2.0.0"]
 }
 EOF
 
-  _prepare_module
-  _setup_generic_plugin_repo testplugin
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/1.4.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 1.4.0"; git tag "v1.4.0"
-  popd > /dev/null || exit 1
-  cp -r "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0/." "${BATS_TEST_TMPDIR}/plugins/testplugin"
-  pushd "${BATS_TEST_TMPDIR}/plugins/testplugin" > /dev/null || exit 1
-    git add . ; _git_commit -m "Release 2.0.0"; git tag "v2.0.0"
-  popd > /dev/null || exit 1
-
-  run bee hub lint "${BATS_TEST_TMPDIR}/testplugin/1.4.0/plugin.json"
-  assert_failure
-  assert_output --regexp 'dependencies.*must'
+  _setup_test_bee_hub_repo_version "${version}"
+  assert_version_lint_error "${version}" --regexp 'dependencies.*testdep:1.2.3 othertestdep:1.2.3'
 }
 
 @test "lints successfully" {
@@ -478,11 +414,9 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "876be9890323fde9d3cdff84e2c76c02a2c4147b18c77533b1ded4014388f163"
+  "sha256": "27148c77a775131d6b480bc0987147b295c386dbd18434de30c66b96f949823c"
 }
 EOF
 
-  _prepare_module
-  _lint
-  assert_success
+  assert_lint_success
 }

@@ -1,7 +1,5 @@
 setup() {
   load 'test-helper.bash'
-  _set_beerc
-  _source_bee
 }
 
 ################################################################################
@@ -9,12 +7,14 @@ setup() {
 ################################################################################
 
 @test "logs echo message" {
-  run _strict bee::log_echo "message"
+  run bee bee::log_echo message
+  assert_success
   assert_output "message"
 }
 
 @test "logs multiple echo messages" {
-  run _strict bee::log_echo "message1" "message2" "message3"
+  run bee bee::log_echo message1 message2 message3
+  assert_success
   cat << 'EOF' | assert_output -
 message1
 message2
@@ -23,10 +23,9 @@ EOF
 }
 
 @test "doesn't log echo when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log_echo "message"
-  refute_output
+  run bee --quiet bee::log_echo message
   assert_success
+  refute_output
 }
 
 #################################################################################
@@ -34,12 +33,14 @@ EOF
 #################################################################################
 
 @test "logs message" {
-  run _strict bee::log "message"
+  run bee bee::log message
+  assert_success
   assert_output "${BEE_ICON} message"
 }
 
 @test "logs multiple messages" {
-  run _strict bee::log "message1" "message2" "message3"
+  run bee bee::log message1 message2 message3
+  assert_success
   cat << EOF | assert_output -
 ${BEE_ICON} message1
 message2
@@ -48,8 +49,8 @@ EOF
 }
 
 @test "doesn't log when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log "message"
+  run bee --quiet bee::log message
+  assert_success
   refute_output
 }
 
@@ -58,7 +59,8 @@ EOF
 #################################################################################
 
 @test "logs info message" {
-  run _strict bee::log_info "message"
+  run bee bee::log_info message
+  assert_success
   cat << EOF | assert_output -
 ################################################################################
 ${BEE_ICON} message
@@ -67,7 +69,8 @@ EOF
 }
 
 @test "logs multiple info messages" {
-  run _strict bee::log_info "message1" "message2" "message3"
+  run bee bee::log_info message1 message2 message3
+  assert_success
   cat << EOF | assert_output -
 ################################################################################
 ${BEE_ICON} message1
@@ -78,8 +81,8 @@ EOF
 }
 
 @test "doesn't log info when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log_info "message"
+  run bee --quiet bee::log_info message
+  assert_success
   refute_output
 }
 
@@ -88,19 +91,21 @@ EOF
 #################################################################################
 
 @test "logs func with message" {
-  run _strict bee::log_func "message"
+  run bee bee::log_func message
+  assert_success
   cat << EOF | assert_output -
 ################################################################################
-${BEE_ICON} _strict message
+${BEE_ICON} bee::run message
 ################################################################################
 EOF
 }
 
 @test "logs func with multiple messages" {
-  run _strict bee::log_func "message1" "message2" "message3"
+  run bee bee::log_func message1 message2 message3
+  assert_success
   cat << EOF | assert_output -
 ################################################################################
-${BEE_ICON} _strict message1
+${BEE_ICON} bee::run message1
 message2
 message3
 ################################################################################
@@ -108,8 +113,8 @@ EOF
 }
 
 @test "doesn't log func when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log_func "message"
+  run bee --quiet bee::log_func message
+  assert_success
   refute_output
 }
 
@@ -118,12 +123,14 @@ EOF
 #################################################################################
 
 @test "logs warn message" {
-  run _strict bee::log_warn "message"
+  run bee bee::log_warn message
+  assert_success
   assert_output "${BEE_WARN} message"
 }
 
 @test "logs multiple warn messages" {
-  run _strict bee::log_warn "message1" "message2" "message3"
+  run bee bee::log_warn message1 message2 message3
+  assert_success
   cat << EOF | assert_output -
 ${BEE_WARN} message1
 message2
@@ -132,8 +139,8 @@ EOF
 }
 
 @test "logs warn message even when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log_warn "message"
+  run bee --quiet bee::log_warn message
+  assert_success
   assert_output "${BEE_WARN} message"
 }
 
@@ -142,12 +149,14 @@ EOF
 #################################################################################
 
 @test "logs error message" {
-  run _strict bee::log_error "message"
+  run bee bee::log_error message
+  assert_success
   assert_output "${BEE_ERR} message"
 }
 
 @test "logs multiple error messages" {
-  run _strict bee::log_error "message1" "message2" "message3"
+  run bee bee::log_error message1 message2 message3
+  assert_success
   cat << EOF | assert_output -
 ${BEE_ERR} message1
 message2
@@ -156,25 +165,38 @@ EOF
 }
 
 @test "logs error message even when quiet" {
-  BEE_QUIET=1
-  run _strict bee::log_error "message"
+  run bee --quiet bee::log_error message
+  assert_success
   assert_output "${BEE_ERR} message"
 }
 
 #################################################################################
-## var
+## env
 #################################################################################
 
-@test "logs var" {
-  my_var="test1"
-  run _strict bee::env my_var
+@test "logs env var" {
+  # shellcheck disable=SC2030
+  export my_var="test1"
+  run bee env my_var
+  assert_success
   assert_output "test1"
 }
 
-# shellcheck disable=SC2034
-@test "logs var even when quiet" {
-  BEE_QUIET=1
-  my_var="test2"
-  run _strict bee::env my_var
+@test "logs multiple env vars" {
+  export my_var1="test1"
+  export my_var2="test2"
+  run bee env my_var1 my_var2
+  assert_success
+  cat << EOF | assert_output -
+test1
+test2
+EOF
+}
+
+@test "logs env var even when quiet" {
+  # shellcheck disable=SC2031
+  export my_var="test2"
+  run bee --quiet env my_var
+  assert_success
   assert_output "test2"
 }
