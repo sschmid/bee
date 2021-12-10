@@ -83,7 +83,7 @@ _update_mock_bee_hub_repo() {
   _setup_mock_bee_hub_repo testhub testplugin
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"
   assert_success
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/.ts"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/.bee_pull_cooldown"
 }
 
 @test "skips pull when within cooldown period" {

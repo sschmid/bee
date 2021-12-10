@@ -767,7 +767,7 @@ bee::pull() {
   esac done
 
   mkdir -p "${BEE_HUBS_CACHE_PATH}"
-  local cache_file="${BEE_HUBS_CACHE_PATH}/.ts"
+  local cache_file="${BEE_HUBS_CACHE_PATH}/.bee_pull_cooldown"
 
   if ((force)); then
     pull=1
