@@ -1,8 +1,7 @@
-#!/usr/bin/env bash
-BEE_PROJECT="bee"
-PLUGINS=(changelog github version)
+BEE_PROJECT=bee
+BEE_RESOURCES=.bee
 
-[[ -f "${HOME}/.bee/user.sh" ]] && source "${HOME}/.bee/user.sh"
+BEE_PLUGINS=(changelog github version)
 
 # changelog => version
 CHANGELOG_PATH=CHANGELOG.md
@@ -20,4 +19,31 @@ GITHUB_ATTACHMENTS_ZIP=()
 # version
 VERSION_PATH=version.txt
 
-source "${BEE_RESOURCES}"/bee.sh
+bee::release() {
+  local version
+  version="$(version::read)"
+  changelog::merge
+  git add .
+  git commit -am "Release ${version}"
+  git tag "${version}"
+  git push origin main
+  git push --tags
+  log "bzzz... giving GitHub some time to process..."
+  sleep 10
+  github::create_release
+}
+
+bee::release_major() {
+  version::bump_major
+  bee::release
+}
+
+bee::release_minor() {
+  version::bump_minor
+  bee::release
+}
+
+bee::release_patch() {
+  version::bump_patch
+  bee::release
+}

@@ -7,160 +7,70 @@
 #
 # "bash strict mode"
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
-
+#
+# shellcheck disable=SC1090
 set -euo pipefail
 IFS=$'\n\t'
 
-################################################################################
-# log
-################################################################################
+: "${BEE_RC:="${HOME}/.beerc"}"
+: "${BEE_ORIGIN:=https://github.com/sschmid/bee.git}"
+: "${BEE_CACHES_PATH:="${HOME}/.bee/caches"}"
 
-log() {
-  [[ ${BEE_SILENT:-0} -eq 0 ]] && echo "🐝 $*"
+: "${BEE_OSTYPE:=${OSTYPE%%[[:digit:]]*}}"
+
+: "${BEE_COLOR_SUCCESS:=\033[0;32m}"
+: "${BEE_COLOR_WARN:=\033[0;33m}"
+: "${BEE_COLOR_FAIL:=\033[0;31m}"
+: "${BEE_COLOR_RESET:=\033[0m}"
+: "${BEE_LINE_RESET:=\r\033[2K}"
+: "${BEE_CHECK_SUCCESS:="✔"}"
+: "${BEE_CHECK_FAIL:="✗"}"
+: "${BEE_RESULT:="➜"}"
+: "${BEE_ICON:="🐝"}"
+: "${BEE_WARN:="🟠"}"
+: "${BEE_ERR:="🔴"}"
+
+declare -ig BEE_QUIET=0
+bee::log_echo() { ((BEE_QUIET)) || echo "$*"; }
+bee::log() { bee::log_echo "${BEE_ICON} $*"; }
+bee::log_info() {
+  bee::log_echo "################################################################################"
+  bee::log "$*"
+  bee::log_echo "################################################################################"
 }
+bee::log_func() { bee::log_info "${FUNCNAME[1]} $*"; }
+bee::log_warn() { echo "${BEE_WARN} $*" >&2; }
+bee::log_error() { echo "${BEE_ERR} $*" >&2; }
+bee::env() { for v in "$@"; do echo "${!v}"; done; }
 
-log_info() {
-  [[ ${BEE_SILENT:-0} -ne 0 ]] && return
-  echo "################################################################################"
-  echo "🐝 $*"
-  echo "################################################################################"
-}
+BEE_SYSTEM_HOME="${BASH_SOURCE[0]}"
+while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
+  BEE_SYSTEM_HOME="$(readlink "${BEE_SYSTEM_HOME}")"
+done
+BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 
-log_warn() {
-  echo "🟠 WARNING: $*" >&2
-}
+[[ ! -f "${BEE_RC}" ]] && cat << 'EOF' > "${BEE_RC}"
+BEE_HUBS=(https://github.com/sschmid/beehub.git)
+EOF
+source "${BEE_RC}"
 
-log_error() {
-  echo "🔴 ERROR: $*" >&2
-}
-
-log_func() {
-  log_info "${FUNCNAME[1]} $*"
-}
-
-log_var() {
-  echo "${!1}"
-}
-
-################################################################################
-# init
-################################################################################
-
-resolve_file() {
-  local current_dir="${PWD}" path="$1" link
-  while [[ -L "${path}" ]]; do
-    link="$(readlink "${path}")"
-    cd "$(dirname "${path}")"
-    cd "$(dirname "${link}")"
-    path="${link}"
-  done
-  cd "${current_dir}"
-  echo "${path}"
-}
-
-BEE_SYSTEM_HOME="$(dirname "$(dirname "$(resolve_file "${BASH_SOURCE[0]}")")")"
-: "${BEE_RESOURCES:=.bee}"
-
-
-# TODO: remove when expired (September 2021)
-bee_migration_0400() {
-  if [[ ! -v BEEFILE && -f ".beerc" ]]; then
-    BEEFILE=".beerc"
-  fi
-}
-bee_migration_0400
-
-# TODO: remove when expired (March 2021)
-bee_migration_0390_sub() {
-  if [[ ! -v BEEFILE && -f .beerc ]]; then
-    source .beerc
-    if [[ -v BEE_VERSION ]]; then
-      local version=${BEE_VERSION//./}
-      version="${version#0}"
-      if [[ ${version} -le 380 ]]; then
-        echo "${version}"
-        return
-      fi
-    fi
-  fi
-}
-
-bee_migration_0390() {
-  if [[ -f bee.sh ]]; then
-    BEE_VERSION="0.36.0"
-  else
-    local version
-    version="$(bee_migration_0390_sub)"
-    if [[ -n "${version}" ]]; then
-      BEE_VERSION="${version}"
-    fi
-  fi
-
-  if [[ -v BEE_VERSION ]]; then
-    IFS=$' \n\t'
-    BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
-  else
-    BEE_HOME="${BEE_SYSTEM_HOME}"
-  fi
-}
-bee_migration_0390
-
-if [[ ! -f "${HOME}/.beerc" ]]; then
-  echo '#!/usr/bin/env bash
-BEE_PLUGIN_REGISTRIES=(
-  https://github.com/sschmid/beehub.git
-)' > "${HOME}/.beerc"
-fi
-source "${HOME}/.beerc"
-
-# TODO: remove when expired (Dec 2020)
-bee_migration_0370() {
-  if [[ -f bee.sh ]]; then
-    source bee.sh
-    BEE_PROJECT="${PROJECT}"
-    BEE_RESOURCES="${RESOURCES:-${BEE_RESOURCES}}"
-  fi
-}
-bee_migration_0370
-
-# TODO: remove when expired (Dec 2020)
-bee_migration_0380() {
-  command -v builtin_commands &> /dev/null || {
-    builtin_commands() {
-      internal_commands
-    }
-  }
-}
-bee_migration_0380
-
-if [[ -v BEEFILE ]]; then
-  source "${BEEFILE}"
-elif [[ -f "Beefile" ]]; then
-  BEEFILE="Beefile"
-  source "${BEEFILE}"
-fi
-
-assert_min_bee_version() {
-  local system_version_str system_version version
-  system_version_str="$(cat "${BEE_SYSTEM_HOME}/version.txt")"
-  system_version=${system_version_str//./}
-  system_version="${system_version#0}"
-  version=${BEE_VERSION//./}
-  version="${version#0}"
-  if [[ ${version} -gt ${system_version} ]]; then
-    log_error "The specified bee version (${BEE_VERSION}) is higher than the installed version (${system_version_str})!" \
-    "Please run 'bee update' to update bee to the latest version and try again."
-    exit 1
-  fi
-}
+if [[ -v BEE_FILE ]]; then source "${BEE_FILE}"
+elif [[ -f "Beefile" ]]; then BEE_FILE="Beefile"; source "${BEE_FILE}"; fi
 
 if [[ -v BEE_VERSION ]]; then
-  assert_min_bee_version
-  BEE_HOME="${HOME}/.bee/caches/bee/${BEE_VERSION}"
+  BEE_HOME="${BEE_CACHES_PATH}/bee/${BEE_VERSION}"
   [[ ! -d "${BEE_HOME}" ]] &&
-    git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" https://github.com/sschmid/bee.git "${BEE_HOME}"
+    git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" "${BEE_ORIGIN}" "${BEE_HOME}"
 else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
-source "${BEE_HOME}/src/bee.sh"
+if [[ -f "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash" ]]; then
+  source "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash"
+else
+  source "${BEE_HOME}/src/os/generic.bash"
+  bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
+fi
+
+source "${BEE_HOME}/src/bee-run.bash"
+[[ "${BASH_SOURCE[0]}" != "$0" ]] || bee::run "$@"

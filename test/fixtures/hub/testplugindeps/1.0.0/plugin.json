@@ -1,0 +1,17 @@
+{
+  "name": "testplugindeps",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee testplugin",
+  "git": "file://HOME/plugins/testplugindeps",
+  "tag": "v1.0.0",
+  "sha256": "0d26237d71070bd15bf030dd8edad23ef9702849c5a05e2c902dad7d2acaa083",
+  "dependencies": [
+    "testplugin:1.0.0",
+    "othertestplugin:1.0.0"
+  ]
+}

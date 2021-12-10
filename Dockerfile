@@ -1,13 +1,22 @@
-FROM bash:5.0.18
-RUN apk add --no-cache git
-
+ARG BASH_VERSION=5.1
+FROM bash:${BASH_VERSION} AS base
 WORKDIR /usr/local/opt/bee
-COPY src/ src/
-COPY etc/ etc/
-COPY CHANGELOG.md LICENSE.txt version.txt ./
+COPY DEPENDENCIES.md .
+RUN apk add --no-cache $(cat DEPENDENCIES.md)
+RUN git config --global user.email "bee" && git config --global user.name "bee"
 
-RUN echo "source /usr/local/opt/bee/etc/bash_completion.d/bee-completion.bash" > /root/.bashrc
+FROM base AS bee
+WORKDIR /usr/local/opt/bee
+COPY src src
+COPY version.txt .
+RUN echo "complete -C bee bee" > /root/.bashrc
+RUN echo 'COMP_WORDBREAKS=${COMP_WORDBREAKS//:}' >> /root/.bashrc
 RUN ln -s /usr/local/opt/bee/src/bee /usr/local/bin/bee
+VOLUME /root/project
+WORKDIR /root/project
+CMD ["bee"]
 
-WORKDIR /project
-CMD ["bash"]
+FROM bee AS test
+WORKDIR /usr/local/opt/bee
+COPY test test
+RUN test/bats/bin/bats --tap test
