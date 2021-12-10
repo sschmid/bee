@@ -226,8 +226,8 @@ bee::install() {
 }
 
 bee::install::recursively() {
-  local -i force="$1";
-  local indent="$2";
+  local -i force="$1"
+  local indent="$2"
   shift 2
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path bullet
@@ -612,9 +612,9 @@ EOF
 bee::plugins::comp() {
   local comps=(--all --outdated --version)
   while (($#)); do case "$1" in
-    --all) comps=("${comps[@]/--all}"); shift ;;
-    --outdated) comps=("${comps[@]/--outdated}"); shift ;;
-    --version) comps=("${comps[@]/--version}"); shift ;;
+    --all) comps=("${comps[@]/--all/}"); shift ;;
+    --outdated) comps=("${comps[@]/--outdated/}"); shift ;;
+    --version) comps=("${comps[@]/--version/}"); shift ;;
     --) shift; break ;; *) break ;;
   esac done
   compgen -W "${comps[*]}" -- "${1:-}"
@@ -930,7 +930,7 @@ bee::comp() {
   local -i head=0 cursor=0
   for word in "${words[@]}"; do
     ((head += ${#word} + 1))
-    ((head <= COMP_POINT)) && ((cursor+=1))
+    ((head <= COMP_POINT)) && ((cursor += 1))
   done
   local cur="${words[cursor]:-}" wordlist
   ((cursor == ${#words[@]})) && COMP_PARTIAL=0
@@ -955,10 +955,10 @@ bee::comp_plugins() {
 bee::comp_command_or_plugin() {
   local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
   while (($#)); do case "$1" in
-    --batch) comps=("${comps[@]/--batch}"); shift ;;
+    --batch) comps=("${comps[@]/--batch/}"); shift ;;
     --help) return ;;
-    --quiet) comps=("${comps[@]/--quiet}"); shift ;;
-    --verbose) comps=("${comps[@]/--verbose}"); shift ;;
+    --quiet) comps=("${comps[@]/--quiet/}"); shift ;;
+    --verbose) comps=("${comps[@]/--verbose/}"); shift ;;
     *) break ;;
   esac done
 
@@ -984,10 +984,9 @@ bee::comp_command_or_plugin() {
         "${comp}" "$@"
       elif ((!$# || $# == 1 && COMP_PARTIAL)); then
         local -i n=$((${#BEE_LOAD_PLUGIN_NAME} + 3))
-        compgen -A function \
-          | grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" \
-          | cut -c $n- \
-          || true
+        compgen -A function |
+          grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" |
+          cut -c $n- || true
       fi
       return
     fi
@@ -1033,8 +1032,8 @@ bee::run() {
   while (($#)); do case "$1" in
     --batch) shift; bee::batch "$@"; return ;;
     --help) bee::help; return ;;
-    --quiet) BEE_QUIET=1; shift; ;;
-    --verbose) BEE_VERBOSE=1; shift; ;;
+    --quiet) BEE_QUIET=1; shift ;;
+    --verbose) BEE_VERBOSE=1; shift ;;
     --) shift; break ;; *) break ;;
   esac done
 
