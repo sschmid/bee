@@ -917,10 +917,8 @@ bee::EXIT() {
 ################################################################################
 # completion
 ################################################################################
-declare -ag BEE_COMMANDS=(
-  --batch --help --quiet --verbose
-  cache env hash hubs info install job lint new plugins pull update version wiki
-)
+declare -ag BEE_OPTIONS=(--batch --help --quiet --verbose)
+declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull update version wiki)
 
 declare -ig COMP_PARTIAL=1
 # Add this to your .bashrc
@@ -936,9 +934,10 @@ bee::comp() {
   done
   local cur="${words[cursor]:-}" wordlist
   ((cursor == ${#words[@]})) && COMP_PARTIAL=0
-  if ((cursor == 1)); then # e.g. bee plu
-    wordlist="${BEE_COMMANDS[*]} $(bee::comp_plugins)"
-  else # e.g. bee install ver
+  if ((cursor == 1)); then # e.g. bee
+    local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
+    wordlist="${comps[*]}"
+  else # e.g. bee install
     wordlist="$(bee::comp_command_or_plugin "${words[1]}" "${words[@]:2}")"
   fi
   compgen -W "${wordlist}" -- "${cur}"
@@ -954,33 +953,48 @@ bee::comp_plugins() {
 }
 
 bee::comp_command_or_plugin() {
-  case "$1" in
-    cache) shift; bee::cache::comp "$@"; return ;;
-    env) shift; compgen -v; return ;;
-    hubs) shift; bee::hubs::comp "$@"; return ;;
-    info) shift; bee::info::comp "$@"; return ;;
-    install) shift; bee::install::comp "$@"; return ;;
-    job) shift; bee::job::comp "$@"; return ;;
-    pull) shift; bee::pull::comp "$@"; return ;;
-    plugins) shift; bee::plugins::comp "$@"; return ;;
-    update) return ;;
-    version) shift; bee::version::comp "$@"; return ;;
-  esac
+  local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
+  while (($#)); do case "$1" in
+    --batch) comps=("${comps[@]/--batch}"); shift ;;
+    --help) return ;;
+    --quiet) comps=("${comps[@]/--quiet}"); shift ;;
+    --verbose) comps=("${comps[@]/--verbose}"); shift ;;
+    *) break ;;
+  esac done
 
-  bee::load_plugin "$1"
-  if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
-    shift
-    local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
-    if [[ $(command -v "${comp}") == "${comp}" ]]; then
-      "${comp}" "$@"
-    elif ((!$# || $# == 1 && COMP_PARTIAL)); then
-      local -i n=$((${#BEE_LOAD_PLUGIN_NAME} + 3))
-      compgen -A function \
-        | grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" \
-        | cut -c $n- \
-        || true
+  if (($#)); then
+    case "$1" in
+      cache) shift; bee::cache::comp "$@"; return ;;
+      env) shift; compgen -v; return ;;
+      hubs) shift; bee::hubs::comp "$@"; return ;;
+      info) shift; bee::info::comp "$@"; return ;;
+      install) shift; bee::install::comp "$@"; return ;;
+      job) shift; bee::job::comp "$@"; return ;;
+      pull) shift; bee::pull::comp "$@"; return ;;
+      plugins) shift; bee::plugins::comp "$@"; return ;;
+      update) return ;;
+      version) shift; bee::version::comp "$@"; return ;;
+    esac
+
+    bee::load_plugin "$1"
+    if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+      shift
+      local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
+      if [[ $(command -v "${comp}") == "${comp}" ]]; then
+        "${comp}" "$@"
+      elif ((!$# || $# == 1 && COMP_PARTIAL)); then
+        local -i n=$((${#BEE_LOAD_PLUGIN_NAME} + 3))
+        compgen -A function \
+          | grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" \
+          | cut -c $n- \
+          || true
+      fi
+      return
     fi
-    return
+
+    compgen -W "${comps[*]}" -- "$1"
+  else
+    echo "${comps[*]}"
   fi
 }
 
@@ -1016,7 +1030,6 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  # shellcheck disable=SC2034
   while (($#)); do case "$1" in
     --batch) shift; bee::batch "$@"; return ;;
     --help) bee::help; return ;;
