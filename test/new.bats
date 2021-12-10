@@ -1,6 +1,5 @@
 setup() {
   load "test-helper.bash"
-  _set_beerc
 }
 
 @test "creates Beefile in folder" {

@@ -1,6 +1,5 @@
 setup() {
   load "test-helper.bash"
-  _set_beerc
   export BEE_WIKI="test wiki"
   export BEE_OSTYPE="generic"
 }
