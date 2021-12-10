@@ -207,3 +207,18 @@ EOF
   assert_output --partial "└── #E${BEE_CHECK_FAIL} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
   assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
+
+@test "completes bee install with options and plugins" {
+  _setup_test_bee_hub_repo
+  bee pull
+  local expected=(--force othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
+  assert_comp "bee install " "${expected[*]}"
+}
+
+@test "completes bee install multiple with plugins" {
+  _setup_test_bee_hub_repo
+  bee pull
+  local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
+  assert_comp "bee install myplugin " "${expected[*]}"
+}
+

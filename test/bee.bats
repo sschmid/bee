@@ -35,7 +35,6 @@ assert_bee_system_home() {
 
 @test "sources bee-run.bash" {
   run bee
-  assert_success
   assert_bee_help
 }
 
@@ -75,7 +74,7 @@ EOF
 
 @test "completes bee with commands" {
   _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull update version)
+  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull update version wiki)
   assert_comp "bee " "${expected[*]}"
 }
 
@@ -83,7 +82,7 @@ EOF
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   local expected=(
     --batch --help --quiet --verbose
-    cache env hash hubs info install job lint new plugins pull update version
+    cache env hash hubs info install job lint new plugins pull update version wiki
     testplugin testplugindeps testpluginmissingdep testplugindepsdep othertestplugin
     customtestplugin
   )

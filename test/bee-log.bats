@@ -169,33 +169,3 @@ EOF
   assert_success
   assert_output "${BEE_ERR} message"
 }
-
-#################################################################################
-## env
-#################################################################################
-
-@test "logs env var" {
-  # shellcheck disable=SC2030
-  export my_var="test1"
-  run bee env my_var
-  assert_success
-  assert_output "test1"
-}
-
-@test "logs multiple env vars" {
-  export my_var1="test1" my_var2="test2"
-  run bee env my_var1 my_var2
-  assert_success
-  cat << EOF | assert_output -
-test1
-test2
-EOF
-}
-
-@test "logs env var even when quiet" {
-  # shellcheck disable=SC2031
-  export my_var="test2"
-  run bee --quiet env my_var
-  assert_success
-  assert_output "test2"
-}

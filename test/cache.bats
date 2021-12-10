@@ -13,7 +13,6 @@ setup() {
 
 @test "shows help when unknown args" {
   run bee cache unknown
-  assert_success
   assert_bee_help
 }
 
@@ -46,4 +45,10 @@ setup() {
   mkdir -p "${BEE_CACHES_PATH}/test2"
   local expected=(test1 test2)
   assert_comp "bee cache --clear " "${expected[*]}"
+}
+
+@test "no completion after sub folders" {
+  mkdir -p "${BEE_CACHES_PATH}/test1"
+  mkdir -p "${BEE_CACHES_PATH}/test2"
+  assert_comp "bee cache --clear test1 "
 }

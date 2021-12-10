@@ -4,6 +4,11 @@ setup() {
   _source_beerc
 }
 
+@test "shows help when args" {
+  run bee plugins test
+  assert_bee_help
+}
+
 @test "lists enabled plugins without version" {
   _setup_beefile "BEE_PLUGINS=(testplugin)"
   run bee plugins

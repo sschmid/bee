@@ -38,6 +38,11 @@ _lint() {
   run bee lint "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 }
 
+@test "shows help when no args" {
+  run bee lint
+  assert_bee_help
+}
+
 @test "lints missing name" {
   cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
 {

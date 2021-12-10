@@ -27,17 +27,17 @@ usage: bee [--help]
            [--quiet] [--verbose]
            [--batch] <command> [<args>]
 
-  cache [--clear <path>]                     open (or --clear) cache
-  hub ls [--all] [<urls>]                    list hubs and their plugins (--all versions)
-  hub plugins [<urls>]                       list plugins
-  hub pull [--force] [<urls>]                update hubs (--force ignore pull cooldown)
-  hub info <plugin>                          print plugin spec
-  hub install [--force] [<plugins>]          install plugins (--force ignore sha256 mismatch)
-  hub hash <path>                            generate plugin hash
-  hub lint <spec>                            validate plugin spec
+  cache [--clear [<path>]]                   open (or --clear) cache
+  env <vars>                                 print env variables
+  hash <path>                                generate plugin hash
+  hubs [--all | --list ] [<urls>]            list hubs and their plugins (--all versions as --list)
+  info <plugin>                              print plugin spec
+  install [--force] [<plugins>]              install plugins (--force ignore sha256 mismatch)
   job [--time] <title> <command>             run command as a job (show elapsed --time)
+  lint <spec>                                validate plugin spec
   new [<path>]                               create new Beefile
-  plugins [--all | --outdated] [--version]   list (all or outdated) plugins (with version)
+  plugins [--all | --outdated] [--version]   list (--all or --outdated) plugins (with --version)
+  pull [--force] [<urls>]                    update hubs (--force ignore pull cooldown)
   update                                     update bee to the latest version
   version [--print] [--cached]               print (--latest) version (--cached locally)
   wiki                                       open wiki
@@ -49,10 +49,8 @@ EOF
 # cache
 ################################################################################
 bee::cache::comp() {
-  local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local comps=(--clear)
-    local IFS=' '
+    local cmd="${1:-}" comps=(--clear)
     compgen -W "${comps[*]}" -- "${cmd}"
   elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
     if [[ -d "${BEE_CACHES_PATH}" ]]; then
@@ -77,28 +75,35 @@ bee::cache() {
 ################################################################################
 BEE_HUB_HASH_RESULT=""
 bee::hash() {
-  [[ ! -v BEE_HUB_HASH_EXCLUDE ]] && BEE_HUB_HASH_EXCLUDE=(".git" ".DS_Store")
-  local path="$1" file_hash all
-  local -a hashes=()
-  echo "$path"
-  pushd "${path}" > /dev/null || exit 1
-    local file
-    while read -r file; do
-      file_hash="$(os_sha256sum "${file}")"
-      echo "${file_hash}"
-      hashes+=("${file_hash// */}")
-    done < <(find . -type f | grep -vFf <(echo "${BEE_HUB_HASH_EXCLUDE[*]}"))
-  popd > /dev/null || exit 1
-  all="$(echo "${hashes[*]}" | sort | os_sha256sum)"
-  echo "${all}"
-  BEE_HUB_HASH_RESULT="${all// */}"
+  if ((!$#)); then
+    bee::help
+  else
+    local exclude=(git .DS_Store)
+    # shellcheck disable=SC2207
+    [[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=($(bee::split_args "${BEE_HUB_HASH_EXCLUDE:-}"))
+    local path="$1" file_hash all
+    local -a hashes=()
+    echo "$path"
+    pushd "${path}" > /dev/null || exit 1
+      local file
+      while read -r file; do
+        file_hash="$(os_sha256sum "${file}")"
+        echo "${file_hash}"
+        hashes+=("${file_hash// */}")
+      done < <(find . -type f | grep -vFf <(echo "${exclude[*]}"))
+    popd > /dev/null || exit 1
+    all="$(echo "${hashes[*]}" | sort | os_sha256sum)"
+    echo "${all}"
+    BEE_HUB_HASH_RESULT="${all// */}"
+  fi
 }
 
+################################################################################
+# hubs
+################################################################################
 bee::hubs::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local cmd="${1:-}"
-    local comps=(--all --list "${BEE_HUBS[*]}")
-    local IFS=' '
+    local cmd="${1:-}" comps=(--all --list "${BEE_HUBS[*]}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
     echo "${BEE_HUBS[*]}"
@@ -180,16 +185,20 @@ bee::info::comp() {
 }
 
 bee::info() {
-  local plugin="$1" plugin_name plugin_version cache_path spec_path
-  local -i found=0
-  for url in "${BEE_HUBS[@]}"; do
-    cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
-    while read -r plugin_name plugin_version spec_path; do
-      found=1
-      jq . "${spec_path}" || cat "${spec_path}"
-    done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
-    ((found)) && break
-  done
+  if ((!$#)); then
+    bee::help
+  else
+    local plugin="$1" plugin_name plugin_version cache_path spec_path
+    local -i found=0
+    for url in "${BEE_HUBS[@]}"; do
+      cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
+      while read -r plugin_name plugin_version spec_path; do
+        found=1
+        jq . "${spec_path}" || cat "${spec_path}"
+      done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
+      ((found)) && break
+    done
+  fi
 }
 
 ################################################################################
@@ -199,9 +208,7 @@ bee::install::comp() {
   local plugins
   plugins="$(bee::hubs --list)"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local cmd="${1:-}"
-    local comps=(--force "${plugins}")
-    local IFS=' '
+    local cmd="${1:-}" comps=(--force "${plugins}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
     echo "${plugins}"
@@ -307,7 +314,6 @@ BEE_JOB_LOGFILE=""
 bee::job::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}" comps=(--time)
-    local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"
   fi
 }
@@ -411,114 +417,118 @@ bee::job::duration() { ((!BEE_JOB_SHOW_TIME)) || echo " ($((SECONDS - BEE_JOB_T)
 # lint
 ################################################################################
 bee::lint() {
-  local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
-  local -a plugin_deps
+  if ((!$#)); then
+    bee::help
+  else
+    local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
+    local -a plugin_deps
 
-  key="name"
-  plugin_name="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  expected="$(basename "$(dirname "$(dirname "${spec_path}")")")"
-  bee::lint::assert_equal "${key}" "${plugin_name}" "${expected}"
+    key="name"
+    plugin_name="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    expected="$(basename "$(dirname "$(dirname "${spec_path}")")")"
+    bee::lint::assert_equal "${key}" "${plugin_name}" "${expected}"
 
-  key="version"
-  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  expected="$(basename "$(dirname "${spec_path}")")"
-  bee::lint::assert_equal "${key}" "${actual}" "${expected}"
+    key="version"
+    actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    expected="$(basename "$(dirname "${spec_path}")")"
+    bee::lint::assert_equal "${key}" "${actual}" "${expected}"
 
-  key="license"
-  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${actual}"
+    key="license"
+    actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${actual}"
 
-  key="homepage"
-  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${actual}"
+    key="homepage"
+    actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${actual}"
 
-  key="authors"
-  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${actual}"
+    key="authors"
+    actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${actual}"
 
-  key="info"
-  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${actual}"
+    key="info"
+    actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${actual}"
 
-  key="git"
-  git_url="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${git_url}"
+    key="git"
+    git_url="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${git_url}"
 
-  key="tag"
-  git_tag="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${git_tag}"
+    key="tag"
+    git_tag="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${git_tag}"
 
-  key="sha256"
-  sha256_hash="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-  bee::lint::assert_exist "${key}" "${sha256_hash}"
+    key="sha256"
+    sha256_hash="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+    bee::lint::assert_exist "${key}" "${sha256_hash}"
 
-  key="dependencies"
-  plugin_deps=("$(jq -rc --arg key "${key}" '.[$key][]? // null' "${spec_path}")")
-  bee::lint::optional "${key}" "${plugin_deps[@]}"
+    key="dependencies"
+    plugin_deps=("$(jq -rc --arg key "${key}" '.[$key][]? // null' "${spec_path}")")
+    bee::lint::optional "${key}" "${plugin_deps[@]}"
 
-  cache_path="$(bee::to_cache_path "${git_url}")"
-  if [[ -n "${cache_path}" ]]; then
-    cache_path="${BEE_LINT_CACHE_PATH}/${cache_path}"
-    if [[ -d "${cache_path}" ]]; then
-      pushd "${cache_path}" > /dev/null || exit 1
-        bee::job "git fetch" git fetch
-      popd > /dev/null || exit 1
-    else
-      bee::job "git clone" git clone "${git_url}" "${cache_path}"
+    cache_path="$(bee::to_cache_path "${git_url}")"
+    if [[ -n "${cache_path}" ]]; then
+      cache_path="${BEE_LINT_CACHE_PATH}/${cache_path}"
+      if [[ -d "${cache_path}" ]]; then
+        pushd "${cache_path}" > /dev/null || exit 1
+          bee::job "git fetch" git fetch
+        popd > /dev/null || exit 1
+      else
+        bee::job "git clone" git clone "${git_url}" "${cache_path}"
+      fi
     fi
-  fi
 
-  if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
-    pushd "${cache_path}" > /dev/null || exit 1
-      bee::job "git checkout tag" git checkout -q "${git_tag}"
+    if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
+      pushd "${cache_path}" > /dev/null || exit 1
+        bee::job "git checkout tag" git checkout -q "${git_tag}"
 
-      key="version file"
-      local version_file="version.txt"
-      if [[ -f "${version_file}" ]]; then
-        actual="$(cat "${version_file}")"
-        expected="$(basename "$(dirname "${spec_path}")")"
-        bee::lint::assert_equal "${key}" "${actual}" "${expected}"
-      else
-        version_file="null"
-        bee::lint::assert_exist "${key}" "${version_file}"
-      fi
+        key="version file"
+        local version_file="version.txt"
+        if [[ -f "${version_file}" ]]; then
+          actual="$(cat "${version_file}")"
+          expected="$(basename "$(dirname "${spec_path}")")"
+          bee::lint::assert_equal "${key}" "${actual}" "${expected}"
+        else
+          version_file="null"
+          bee::lint::assert_exist "${key}" "${version_file}"
+        fi
 
-      key="license file"
-      local license_file="LICENSE.txt"
-      [[ ! -f "${license_file}" ]] && license_file="null"
-      bee::lint::assert_exist "${key}" "${license_file}"
+        key="license file"
+        local license_file="LICENSE.txt"
+        [[ ! -f "${license_file}" ]] && license_file="null"
+        bee::lint::assert_exist "${key}" "${license_file}"
 
-      key="sha256"
-      bee::hash "${PWD}"
-      bee::lint::assert_equal "${key}" "${sha256_hash}" "${BEE_HUB_HASH_RESULT}"
+        key="sha256"
+        bee::hash "${PWD}"
+        bee::lint::assert_equal "${key}" "${sha256_hash}" "${BEE_HUB_HASH_RESULT}"
 
-      key="plugin file"
-      local plugin_file="${plugin_name}.bash"
-      if [[ ! -f "${plugin_file}" ]]; then
-        plugin_file="null"
-        bee::lint::assert_exist "${key}" "${plugin_file}"
-      else
-        bee::lint::assert_exist "${key}" "${plugin_file}"
+        key="plugin file"
+        local plugin_file="${plugin_name}.bash"
+        if [[ ! -f "${plugin_file}" ]]; then
+          plugin_file="null"
+          bee::lint::assert_exist "${key}" "${plugin_file}"
+        else
+          bee::lint::assert_exist "${key}" "${plugin_file}"
 
-        key="dependencies"
-        local deps=("$(
-          source "${plugin_file}" > /dev/null
-          local deps_func="${plugin_name}::deps"
-          if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-            "${deps_func}"
-          else
-            echo "null"
-          fi
-        )")
-        bee::lint::assert_equal "${key}" \
-          "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
-          "$(echo "${deps[@]}" | tr '\n' ' ')"
-      fi
-    popd > /dev/null || exit 1
-  fi
+          key="dependencies"
+          local deps=("$(
+            source "${plugin_file}" > /dev/null
+            local deps_func="${plugin_name}::deps"
+            if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+              "${deps_func}"
+            else
+              echo "null"
+            fi
+          )")
+          bee::lint::assert_equal "${key}" \
+            "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
+            "$(echo "${deps[@]}" | tr '\n' ' ')"
+        fi
+      popd > /dev/null || exit 1
+    fi
 
-  if ((BEE_HUB_LINT_ERROR)); then
-    exit 1
+    if ((BEE_HUB_LINT_ERROR)); then
+      exit 1
+    fi
   fi
 }
 
@@ -599,6 +609,60 @@ EOF
 ################################################################################
 # plugins
 ################################################################################
+bee::plugins::comp() {
+  local comps=(--all --outdated --version)
+  while (($#)); do case "$1" in
+    --all) comps=("${comps[@]/--all}"); shift ;;
+    --outdated) comps=("${comps[@]/--outdated}"); shift ;;
+    --version) comps=("${comps[@]/--version}"); shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+  compgen -W "${comps[*]}" -- "${1:-}"
+}
+
+bee::plugins() {
+  local -i show_all=0
+  local -i show_version=0
+  local -i show_outdated=0
+  while (($#)); do case "$1" in
+    --all) show_all=1; shift ;;
+    --outdated) show_outdated=1; shift ;;
+    --version) show_version=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+
+  if (($#)); then
+    bee::help
+  else
+    local plugin_entry plugin_version
+    local -a plugins
+    if ((show_all)); then
+      mapfile -t plugins < <(bee::comp_plugins)
+      plugins=("${BEE_PLUGINS[@]}" "${plugins[@]}")
+    else
+      plugins=("${BEE_PLUGINS[@]}")
+    fi
+    for plugin in "${plugins[@]}"; do
+      bee::resolve_plugin "${plugin}"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"
+        plugin_version="${BEE_RESOLVE_PLUGIN_VERSION}"
+        ((show_version || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
+        if ((show_outdated)); then
+          bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
+          if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
+            echo "${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
+          fi
+        else
+          echo "${plugin_entry}"
+        fi
+      else
+        echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
+      fi
+    done | sort -u
+  fi
+}
+
 bee::resolve() {
   local plugin="$1" plugins_path="$2" file="$3"
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
@@ -683,69 +747,12 @@ bee::run_plugin() {
   fi
 }
 
-bee::plugins::comp() {
-  local comps=(--all --outdated --version)
-  local IFS=' '
-  while (($#)); do case "$1" in
-    --all) comps=("${comps[@]/--all}"); shift ;;
-    --outdated) comps=("${comps[@]/--outdated}"); shift ;;
-    --version) comps=("${comps[@]/--version}"); shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
-  compgen -W "${comps[*]}" -- "${1:-}"
-}
-
-bee::plugins() {
-  local -i show_all=0
-  local -i show_version=0
-  local -i show_outdated=0
-  while (($#)); do case "$1" in
-    --all) show_all=1; shift ;;
-    --outdated) show_outdated=1; shift ;;
-    --version) show_version=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
-
-  if (($#)); then
-    :
-  else
-    local plugin_entry plugin_version
-    local -a plugins
-    if ((show_all)); then
-      mapfile -t plugins < <(bee::comp_plugins)
-      plugins=("${BEE_PLUGINS[@]}" "${plugins[@]}")
-    else
-      plugins=("${BEE_PLUGINS[@]}")
-    fi
-    for plugin in "${plugins[@]}"; do
-      bee::resolve_plugin "${plugin}"
-      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-        plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"
-        plugin_version="${BEE_RESOLVE_PLUGIN_VERSION}"
-        ((show_version || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
-        if ((show_outdated)); then
-          bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
-          if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
-            echo "${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
-          fi
-        else
-          echo "${plugin_entry}"
-        fi
-      else
-        echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
-      fi
-    done | sort -u
-  fi
-}
-
 ################################################################################
 # pull
 ################################################################################
 bee::pull::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local cmd="${1:-}"
-    local comps=(--force "${BEE_HUBS[*]}")
-    local IFS=' '
+    local cmd="${1:-}" comps=(--force "${BEE_HUBS[*]}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
     echo "${BEE_HUBS[*]}"
@@ -813,7 +820,6 @@ bee::version::comp() {
   local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local comps=(--latest)
-    local IFS=' '
     compgen -W "${comps[*]}" -- "${cmd}"
   elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
     case "${cmd}" in
@@ -861,7 +867,13 @@ bee::version() {
 ################################################################################
 # wiki
 ################################################################################
-bee::wiki() { os_open "${BEE_WIKI}"; }
+bee::wiki() {
+  if (($#)); then
+    bee::help
+  else
+    os_open "${BEE_WIKI}"
+  fi
+}
 
 ################################################################################
 # traps
@@ -907,7 +919,7 @@ bee::EXIT() {
 ################################################################################
 declare -ag BEE_COMMANDS=(
   --batch --help --quiet --verbose
-  cache env hash hubs info install job lint new plugins pull update version
+  cache env hash hubs info install job lint new plugins pull update version wiki
 )
 
 declare -ig COMP_PARTIAL=1
@@ -989,7 +1001,7 @@ bee::batch() {
 }
 
 bee::split_args() {
-  local IFS=" "
+  local IFS=' '
   # shellcheck disable=SC2068
   for arg in $@; do echo "${arg}"; done
 }
@@ -1028,6 +1040,7 @@ bee::run() {
       pull) shift; bee::pull "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
       version) shift; bee::version "$@"; return ;;
+      wiki) shift; bee::wiki "$@"; return ;;
     esac
 
     # run bee plugin, e.g. bee github me
