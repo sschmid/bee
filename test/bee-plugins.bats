@@ -174,6 +174,14 @@ testplugin 2.0.0 help
 EOF
 }
 
+@test "fails when plugin help is missing" {
+  run bee --batch \
+    "bee::load_plugin testplugindeps" \
+    "bee::run_plugin testplugindeps"
+  assert_failure
+  assert_output --partial "testplugindeps::help: command not found"
+}
+
 @test "runs plugin with args" {
   run bee --batch \
     "bee::load_plugin testplugin" \
