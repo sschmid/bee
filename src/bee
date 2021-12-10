@@ -65,6 +65,17 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
+bee_migration_1000() {
+  if [[ -v BEE_VERSION ]]; then
+    local major="${BEE_VERSION%%.*}"
+    if [[ "${major}" -eq 0 ]]; then
+      "${BEE_HOME}/src/bee" "$@"
+      exit
+    fi
+  fi
+}
+bee_migration_1000 "$@"
+
 if [[ -f "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash" ]]; then
   source "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash"
 else
