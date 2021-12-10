@@ -90,9 +90,9 @@ bee::hash() {
         file_hash="$(os_sha256sum "${file}")"
         echo "${file_hash}"
         hashes+=("${file_hash// */}")
-      done < <(find . -type f | grep -vFf <(echo "${exclude[*]}"))
+      done < <(find . -type f | grep -vFf <(echo "${exclude[*]}") | sort)
     popd > /dev/null || exit 1
-    all="$(echo "${hashes[*]}" | sort | os_sha256sum)"
+    all="$(echo "${hashes[*]}" | os_sha256sum)"
     echo "${all}"
     BEE_HUB_HASH_RESULT="${all// */}"
   fi
@@ -222,10 +222,10 @@ bee::install() {
     --) shift; break ;; *) break ;;
   esac done
   echo "Installing"
-  bee::install_recursively ${force} "" "$@"
+  bee::install::recursively ${force} "" "$@"
 }
 
-bee::install_recursively() {
+bee::install::recursively() {
   local -i force="$1";
   local indent="$2";
   shift 2
@@ -277,9 +277,9 @@ bee::install_recursively() {
           # shellcheck disable=SC2086
           if [[ -n "${deps}" ]]; then
             if ((i == n - 1)); then
-              bee::install_recursively ${force} "${indent}    " ${deps}
+              bee::install::recursively ${force} "${indent}    " ${deps}
             else
-              bee::install_recursively ${force} "${indent}│   " ${deps}
+              bee::install::recursively ${force} "${indent}│   " ${deps}
             fi
           fi
         done < <(jq -r '[.git, .tag, .sha256, .dependencies[]?] | @tsv' "${spec_path}")
