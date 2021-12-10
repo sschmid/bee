@@ -1,5 +1,6 @@
 setup() {
   load "test-helper.bash"
+  _unset_beefile
 }
 
 @test "creates Beefile in folder" {

@@ -46,6 +46,7 @@ assert_bee_system_home() {
 }
 
 @test "sets and sources Beefile in working dir" {
+  _unset_beefile
   cd "${BATS_TEST_TMPDIR}"
   echo "echo '# test Beefile sourced'" > "Beefile"
   run bee env BEE_FILE

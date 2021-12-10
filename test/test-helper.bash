@@ -37,6 +37,13 @@ _setup_beefile() {
   export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }
 
+_setup_beefile :
+
+_unset_beefile() {
+  unset BEE_FILE
+  rm "${BATS_TEST_TMPDIR}/Beefile"
+}
+
 _git_commit() {
   git -c commit.gpgsign=false commit "$@"
 }
