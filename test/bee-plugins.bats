@@ -193,6 +193,15 @@ greeting test from testplugin 2.0.0
 EOF
 }
 
+@test "sources optional os file" {
+  export BEE_OSTYPE="generic"
+  run bee --batch \
+    "bee::load_plugin testplugin:1.5.0" \
+    "bee::run_plugin testplugin os test"
+  assert_success
+  assert_output "os: test"
+}
+
 ################################################################################
 # multiple plugin folders
 ################################################################################

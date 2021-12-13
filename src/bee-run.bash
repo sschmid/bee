@@ -720,6 +720,7 @@ bee::load_plugin() {
 
 bee::load_plugin_deps() {
   if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"] ]]; then
+    bee::load_os "$(dirname "${BEE_RESOLVE_PLUGIN_PATH}")"
     source "${BEE_RESOLVE_PLUGIN_PATH}"
     # shellcheck disable=SC2034
     BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"]=1

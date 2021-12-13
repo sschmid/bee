@@ -76,12 +76,17 @@ bee_migration_1000() {
 }
 bee_migration_1000 "$@"
 
-if [[ -f "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash" ]]; then
-  source "${BEE_HOME}/src/os/${BEE_OSTYPE}.bash"
-else
-  source "${BEE_HOME}/src/os/generic.bash"
-  bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
-fi
+bee::load_os() {
+  local path="$1"
+  if [[ -f "${path}/os/${BEE_OSTYPE}.bash" ]]; then
+    source "${path}/os/${BEE_OSTYPE}.bash"
+  elif [[ -f "${path}/os/generic.bash" ]]; then
+    source "${path}/os/generic.bash"
+    bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
+  fi
+}
+
+bee::load_os "${BEE_HOME}/src"
 
 source "${BEE_HOME}/src/bee-run.bash"
 [[ "${BASH_SOURCE[0]}" != "$0" ]] || bee::run "$@"
