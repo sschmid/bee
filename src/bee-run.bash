@@ -221,8 +221,22 @@ bee::install() {
     --force) force=1; shift ;;
     --) shift; break ;; *) break ;;
   esac done
-  echo "Installing"
-  bee::install::recursively ${force} "" "$@"
+  if (($#)); then
+    echo "Installing"
+    bee::install::recursively ${force} "" "$@"
+  elif [[ -v BEE_FILE ]]; then
+    if [[ -f "${BEE_FILE}.lock" ]]; then
+      echo "Installing plugins based on ${BEE_FILE}.lock"
+      mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
+      mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
+      bee::install::recursively ${force} "" "${plugins[@]}"
+    else
+      echo "Installing plugins based on ${BEE_FILE}"
+      bee::install::recursively ${force} "" "${BEE_PLUGINS[@]}"
+    fi
+  else
+    echo "No Beefile"
+  fi
 }
 
 bee::install::recursively() {
@@ -234,7 +248,7 @@ bee::install::recursively() {
   local -i i n=${#plugins[@]} found=0 already_installed=0
   for ((i = 0; i < n; i++)); do
     found=0
-    plugin="${plugins[i]}"
+    plugin="${plugins[i]// /}"
     ((i == n - 1)) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
@@ -243,6 +257,7 @@ bee::install::recursively() {
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
+          echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
           if [[ -d "${plugin_path}" ]]; then
             already_installed=1
           else

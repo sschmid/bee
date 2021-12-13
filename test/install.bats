@@ -208,6 +208,31 @@ EOF
   assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
 
+@test "installs plugins from Beefile" {
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_generic_plugin_repo testplugindeps
+  _setup_generic_plugin_repo testplugindepsdep
+  _setup_beefile 'BEE_PLUGINS=(testplugindepsdep testplugin)'
+  bee pull
+  run bee install
+  assert_success
+  cat << EOF | assert_output -
+Installing
+├── #S${BEE_CHECK_SUCCESS} testplugindepsdep:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+│   ├── #S${BEE_CHECK_SUCCESS} testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+│   │   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+│   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+│   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+└── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+EOF
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+}
+
 @test "completes bee install with options and plugins" {
   _setup_test_bee_hub_repo
   bee pull
