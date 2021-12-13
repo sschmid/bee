@@ -1071,7 +1071,7 @@ bee::split_args() {
 
 bee::run() {
   if [[ -v COMP_LINE ]]; then
-    bee::comp "$@"
+    bee::comp
     exit 0
   fi
 
