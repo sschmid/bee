@@ -8,7 +8,7 @@
 # "bash strict mode"
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 #
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 set -euo pipefail
 IFS=$'\n\t'
 
