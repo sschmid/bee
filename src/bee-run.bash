@@ -693,23 +693,18 @@ bee::resolve() {
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_PATH=""
-declare -Ag BEE_RESOLVE_PLUGIN_PATH_CACHE=()
 bee::resolve_plugin() {
   local plugin="$1" plugin_name plugin_version plugin_path
   local -i found=0
-  if [[ ! -v BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"] ]]; then
-    for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
-      while read -r plugin_name plugin_version plugin_path; do
-        found=1
-        BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
-        BEE_RESOLVE_PLUGIN_PATH_CACHE["${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"]="${BEE_RESOLVE_PLUGIN_PATH}"
-      done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash")
-      ((found)) && break
-    done
-    ((!found)) && BEE_RESOLVE_PLUGIN_NAME="" BEE_RESOLVE_PLUGIN_VERSION="" BEE_RESOLVE_PLUGIN_PATH=""
-    BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]="${BEE_RESOLVE_PLUGIN_PATH}"
-  else
-    BEE_RESOLVE_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_PATH_CACHE["${plugin}"]}"
+  for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
+    while read -r plugin_name plugin_version plugin_path; do
+      found=1
+      BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
+    done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash")
+    ((found)) && break
+  done
+  if ((!found)); then
+    BEE_RESOLVE_PLUGIN_NAME="" BEE_RESOLVE_PLUGIN_VERSION="" BEE_RESOLVE_PLUGIN_PATH=""
   fi
 }
 
@@ -751,6 +746,45 @@ bee::load_plugin_deps() {
       done
     fi
   fi
+}
+
+declare -Ag BEE_PLUGIN_MAP=()
+bee::map_plugins() {
+  local map=()
+  local conflicts=()
+  for plugin in "$@"; do
+    bee::resolve_plugin "${plugin}"
+    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+      if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+        BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
+        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      elif [[ "${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}" == "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
+        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      else
+        conflicts+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      fi
+    fi
+  done
+  for plugin in "$@"; do
+    bee::resolve_plugin "${plugin}"
+    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+      if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+        BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
+        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      elif [[ "${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}" == "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
+        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      fi
+    fi
+  done
+  if ((${#conflicts[@]})); then
+    bee::log_error "Version conflicts:"
+    for conflict in "${conflicts[@]}"; do
+      echo "${conflict}"
+    done
+    exit 1
+  fi
+
+  echo "${map[*]}"
 }
 
 bee::run_plugin() {
