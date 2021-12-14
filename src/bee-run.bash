@@ -171,7 +171,7 @@ bee::to_cache_path() {
     git@*) local path="${1#git@}"; echo "$(dirname "${path/://}")/$(basename "$1" .git)" ;;
     ssh://*) local path="${1#ssh://}"; echo "$(dirname "${path#git@}")/$(basename "$1" .git)" ;;
     file://*) basename "$1" ;;
-    *) bee::log_warn "Unsupported hub url: $1" ;;
+    *) bee::log_warn "Unsupported url: $1" ;;
   esac
 }
 
@@ -270,12 +270,12 @@ bee::install::recursively() {
               if ((force)); then
                 bee::log_warn "${plugin_name}:${plugin_version} sha256 mismatch!" \
                   "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
-                  "Consider deleting ${plugin_path} and run 'bee hub install ${plugin_name}:${plugin_version}'."
+                  "Consider deleting ${plugin_path} and run 'bee install ${plugin_name}:${plugin_version}'."
                 echo -e "${indent}${bullet}${BEE_COLOR_WARN}${BEE_CHECK_SUCCESS} ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
               else
                 bee::log_error "${plugin_name}:${plugin_version} sha256 mismatch!" "Deleting ${plugin_path}" \
-                  "Use 'bee hub info ${plugin_name}:${plugin_version}' to inspect the plugin definition." \
-                  "Use 'bee hub install --force ${plugin_name}:${plugin_version}' to install anyway and proceed at your own risk."
+                  "Use 'bee info ${plugin_name}:${plugin_version}' to inspect the plugin definition." \
+                  "Use 'bee install --force ${plugin_name}:${plugin_version}' to install anyway and proceed at your own risk."
                 rm -rf "${plugin_path}"
                 echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
               fi
