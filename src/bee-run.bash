@@ -611,10 +611,10 @@ BEE_PLUGINS=(
   # ios
   # macos
   # sample
+  # semver
   # slack
   # tree
   # unity
-  # version
 )
 EOF
     bee::log_echo "Created ${beefile}"
