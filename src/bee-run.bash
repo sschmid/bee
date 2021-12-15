@@ -322,21 +322,26 @@ BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝'
 declare -ig BEE_JOB_SPINNER_PID=0
 declare -ig BEE_JOB_RUNNING=0
 declare -ig BEE_JOB_T=0
+declare -ig BEE_JOB_LOG_TO_FILE=0
 declare -ig BEE_JOB_SHOW_TIME=0
 BEE_JOB_TITLE=""
 BEE_JOB_LOGFILE=""
 
 bee::job::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local cmd="${1:-}" comps=(--time)
-    compgen -W "${comps[*]}" -- "${cmd}"
-  fi
+  local comps=(--logfile --time)
+  while (($#)); do case "$1" in
+    --logfile) comps=("${comps[@]/--logfile/}"); shift ;;
+    --time) comps=("${comps[@]/--time/}"); shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+  compgen -W "${comps[*]}" -- "${1:-}"
 }
 
 bee::job() {
   if (($# >= 2)); then
     while (($#)); do
       case "$1" in
+        --logfile) BEE_JOB_LOG_TO_FILE=1; shift ;;
         --time) BEE_JOB_SHOW_TIME=1; shift ;;
         --) shift; break ;; *) break ;;
       esac
@@ -351,7 +356,7 @@ bee::job() {
 
 bee::job::start() {
   BEE_JOB_TITLE="$1"; shift
-  if [[ -v BEE_RESOURCES ]]; then
+  if ((BEE_JOB_LOG_TO_FILE)); then
     mkdir -p "${BEE_RESOURCES}/logs"
     BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y%m%d%H%M%S')-job-${BEE_JOB_TITLE// /-}-${RANDOM}${RANDOM}.log"
   else

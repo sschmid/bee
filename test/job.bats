@@ -50,30 +50,30 @@ EOF
 
 @test "logs success to logfile" {
   _prepare_job_logs
-  run bee job testjob echo test
+  run bee job --logfile testjob echo test
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output "test"
 }
 
 @test "uses job title for logfile" {
   _prepare_job_logs
-  run bee job "test job" echo test
+  run bee job --logfile "test job" echo test
   run ls "${BEE_RESOURCES}/logs"
   assert_output --partial "test-job"
 }
 
 @test "logs error to logfile" {
   _prepare_job_logs
-  run bee job testjob not_a_command
+  run bee job --logfile testjob not_a_command
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output --partial "not_a_command: command not found"
 }
 
 @test "runs job and succeeds verbose" {
   _prepare_job_logs
-  run bee --verbose job testjob echo test
+  run bee --verbose job --logfile testjob echo test
 
-cat << EOF | assert_output -
+  cat << EOF | assert_output -
 testjob
 test
 #Stestjob ${BEE_CHECK_SUCCESS}#
@@ -85,7 +85,7 @@ EOF
 
 @test "runs job and fails verbose" {
   _prepare_job_logs
-  run bee --verbose job testjob not_a_command
+  run bee --verbose job --logfile testjob not_a_command
 
   assert_line --index 0 "testjob"
   assert_line --index 1 --partial "not_a_command: command not found"
@@ -96,7 +96,7 @@ EOF
 
 @test "runs plugin as job" {
   _prepare_job_logs
-  run bee job testjob testplugin greet test
+  run bee job --logfile testjob testplugin greet test
   run cat "${BEE_RESOURCES}/logs/"*
   cat << 'EOF' | assert_output -
 # testplugin 2.0.0 sourced
@@ -104,11 +104,21 @@ greeting test from testplugin 2.0.0
 EOF
 }
 
-@test "completes bee job with --time" {
-  local expected=(--time)
+@test "completes bee job with --logfile --time" {
+  local expected=(--logfile --time)
   assert_comp "bee job " "${expected[*]}"
 }
 
-@test "no comp for bee job --time" {
-  assert_comp "bee job --time "
+@test "completes bee job --logfile with --time" {
+  local expected=(--time)
+  assert_comp "bee job --logfile " "${expected[*]}"
+}
+
+@test "completes bee job --time with --logfile" {
+  local expected=(--logfile)
+  assert_comp "bee job --time " "${expected[*]}"
+}
+
+@test "no comp for bee job --logfile --time" {
+  assert_comp "bee job --logfile --time "
 }
