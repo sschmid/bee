@@ -48,7 +48,7 @@ _update_mock_bee_hub_repo() {
   _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub" "unknown" "file://${BATS_TEST_TMPDIR}/othertesthub")'
   run bee pull
   assert_success
-  assert_output --partial "${BEE_WARN} Unsupported hub url: unknown"
+  assert_output --partial "${BEE_WARN} Unsupported url: unknown"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/plugin.json"
   assert_dir_not_exist "${BEE_HUBS_CACHE_PATH}/unknown"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/othertesthub/othertestplugin/1.0.0/plugin.json"
