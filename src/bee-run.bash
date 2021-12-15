@@ -588,7 +588,6 @@ bee::new() {
     cat << EOF > "${beefile}"
 BEE_PROJECT=$(basename "${PWD}")
 BEE_VERSION=$(bee::version)
-BEE_RESOURCES=.bee
 
 # Which plugins would you like to load?
 # Standard plugins can be found in the official bee plugin register: https://github.com/sschmid/beehub

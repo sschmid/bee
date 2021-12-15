@@ -1,6 +1,4 @@
 BEE_PROJECT=bee
-BEE_RESOURCES=.bee
-
 BEE_PLUGINS=(changelog github version)
 
 # changelog => version

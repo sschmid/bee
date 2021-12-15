@@ -32,6 +32,5 @@ setup() {
   cat << EOF | assert_output --partial -
 BEE_PROJECT=$(basename "${PWD}")
 BEE_VERSION=$(cat "${PROJECT_ROOT}/version.txt")
-BEE_RESOURCES=.bee
 EOF
 }

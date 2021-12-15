@@ -13,6 +13,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 : "${BEE_RC:="${HOME}/.beerc"}"
+: "${BEE_RESOURCES:=.bee}"
 : "${BEE_ORIGIN:=https://github.com/sschmid/bee.git}"
 : "${BEE_CACHES_PATH:="${HOME}/.bee/caches"}"
 

@@ -57,6 +57,19 @@ Beefile
 EOF
 }
 
+@test "has default BEE_RESOURCES" {
+  run bee env BEE_RESOURCES
+  assert_success
+  assert_output ".bee"
+}
+
+@test "can overwrite BEE_RESOURCES in Beefile" {
+  _setup_beefile "BEE_RESOURCES=test"
+  run bee env BEE_RESOURCES
+  assert_success
+  assert_output "test"
+}
+
 @test "installs specified bee version" {
   _setup_beefile "BEE_VERSION=1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src/os"
