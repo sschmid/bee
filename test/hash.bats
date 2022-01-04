@@ -9,7 +9,7 @@ setup() {
 
 @test "ignores .git and .DS_Store by default" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
-  touch "${BATS_TEST_TMPDIR}/test/.DS_Store"
+  touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
   echo "test1" > "${BATS_TEST_TMPDIR}/test/file1"
   echo "test2" > "${BATS_TEST_TMPDIR}/test/file2"
 
@@ -25,7 +25,7 @@ EOF
 
 @test "ignores custom patterns" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
-  touch "${BATS_TEST_TMPDIR}/test/.DS_Store"
+  touch "${BATS_TEST_TMPDIR}/test/.DS_Store" "${BATS_TEST_TMPDIR}/test/.git/ignore"
   echo "test1" > "${BATS_TEST_TMPDIR}/test/file1"
   echo "test2" > "${BATS_TEST_TMPDIR}/test/file2"
   echo "test3" > "${BATS_TEST_TMPDIR}/test/file3"
@@ -46,8 +46,9 @@ EOF
   cat << EOF | assert_output -
 ${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0
 3a427a45a5dd0b6ae06b4dd1937bb357971ffe18ccbfc81f0c49eb55ae27458e  ./LICENSE.txt
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./res/.gitkeep
 21f70a683c2449b62bc9150b1ee66d528f074be8fbc3fb19f74bd1393cdd2a0b  ./testplugin.bash
 c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624  ./version.txt
-d84191b3c6c90971a78e9086fadd3ac0ecddd53e28a04612b1b525a04984f9ed  -
+571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4  -
 EOF
 }

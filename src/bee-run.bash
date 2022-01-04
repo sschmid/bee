@@ -79,7 +79,7 @@ bee::hash() {
   if ((!$#)); then
     bee::help
   else
-    local exclude=(git .DS_Store)
+    local exclude=(^./.git .DS_Store$)
     # shellcheck disable=SC2207
     [[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=($(bee::split_args "${BEE_HUB_HASH_EXCLUDE:-}"))
     local path="$1" file_hash all
@@ -87,11 +87,21 @@ bee::hash() {
     echo "$path"
     pushd "${path}" > /dev/null || exit 1
       local file
+      local -i ignore=0
       while read -r file; do
-        file_hash="$(os_sha256sum "${file}")"
-        echo "${file_hash}"
-        hashes+=("${file_hash// */}")
-      done < <(find . -type f | grep -vFf <(echo "${exclude[*]}") | sort)
+        ignore=0
+        for pattern in "${exclude[@]}"; do
+          if [[ "${file}" =~ ${pattern} ]]; then
+            ignore=1
+            break
+          fi
+        done
+        if ((!ignore)); then
+          file_hash="$(os_sha256sum "${file}")"
+          echo "${file_hash}"
+          hashes+=("${file_hash// */}")
+        fi
+      done < <(find . -type f | sort)
     popd > /dev/null || exit 1
     all="$(echo "${hashes[*]}" | os_sha256sum)"
     echo "${all}"
