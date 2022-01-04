@@ -224,16 +224,16 @@ bee::install() {
   esac done
   if (($#)); then
     echo "Installing"
-    bee::install::recursively ${force} "" "$@"
+    bee::install::recursively ${force} 0 "" "$@"
   elif [[ -v BEE_FILE ]]; then
     if [[ -f "${BEE_FILE}.lock" ]]; then
       echo "Installing plugins based on ${BEE_FILE}.lock"
       mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
       mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
-      bee::install::recursively ${force} "" "${plugins[@]}"
+      bee::install::recursively ${force} 0 "" "${plugins[@]}"
     else
       echo "Installing plugins based on ${BEE_FILE}"
-      bee::install::recursively ${force} "" "${BEE_PLUGINS[@]}"
+      bee::install::recursively ${force} 1 "" "${BEE_PLUGINS[@]}"
     fi
   else
     echo "No Beefile"
@@ -241,9 +241,9 @@ bee::install() {
 }
 
 bee::install::recursively() {
-  local -i force="$1"
-  local indent="$2"
-  shift 2
+  local -i force="$1" lock="$2"
+  local indent="$3"
+  shift 3
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path bullet
   local -i i n=${#plugins[@]} found=0 already_installed=0
@@ -258,7 +258,7 @@ bee::install::recursively() {
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
-          echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
+          ((lock)) && echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
           if [[ -d "${plugin_path}" ]]; then
             already_installed=1
           else
@@ -293,9 +293,9 @@ bee::install::recursively() {
           # shellcheck disable=SC2086
           if [[ -n "${deps}" ]]; then
             if ((i == n - 1)); then
-              bee::install::recursively ${force} "${indent}    " ${deps}
+              bee::install::recursively ${force} ${lock} "${indent}    " ${deps}
             else
-              bee::install::recursively ${force} "${indent}│   " ${deps}
+              bee::install::recursively ${force} ${lock} "${indent}│   " ${deps}
             fi
           fi
         done < <(jq -r '[.git, .tag, .sha256, .dependencies[]?] | @tsv' "${spec_path}")
