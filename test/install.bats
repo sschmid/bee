@@ -219,13 +219,13 @@ EOF
   run bee install
   assert_success
   cat << EOF | assert_output -
-Installing
+Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile
 ├── #S${BEE_CHECK_SUCCESS} testplugindepsdep:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   ├── #S${BEE_CHECK_SUCCESS} testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   │   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-└── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+└── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
