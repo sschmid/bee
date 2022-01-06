@@ -240,7 +240,7 @@ EOF
   assert_comp "bee install " "${expected[*]}"
 }
 
-@test "completes bee install multiple with plugins" {
+@test "completes bee install with multiple plugins" {
   _setup_test_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)

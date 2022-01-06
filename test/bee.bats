@@ -88,19 +88,19 @@ EOF
 
 @test "completes bee with commands" {
   _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull update version wiki)
+  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee " "${expected[*]}"
 }
 
 @test "completes bee options with commands" {
   _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help --verbose cache env hash hubs info install job lint new plugins pull update version wiki)
+  local expected=(--batch --help --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --quiet " "${expected[*]}"
 }
 
 @test "completes bee options with commands and removes already used options" {
   _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help cache env hash hubs info install job lint new plugins pull update version wiki)
+  local expected=(--batch --help cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --quiet --verbose " "${expected[*]}"
 }
 
@@ -113,7 +113,7 @@ EOF
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   local expected=(
     --batch --help --quiet --verbose
-    cache env hash hubs info install job lint new plugins pull update version wiki
+    cache env hash hubs info install job lint new plugins pull res update version wiki
     testplugin testplugindeps testpluginmissingdep testplugindepsdep othertestplugin
     customtestplugin
   )

@@ -38,6 +38,7 @@ usage: bee [--help]
   new [<path>]                               create new Beefile
   plugins [--all | --outdated] [--version]   list (--all or --outdated) plugins (with --version)
   pull [--force] [<urls>]                    update hubs (--force ignore pull cooldown)
+  res <plugins>                              copy plugin resources into bee resources directory"
   update                                     update bee to the latest version
   version [--print] [--cached]               print (--latest) version (--cached locally)
   wiki                                       open wiki
@@ -854,6 +855,29 @@ bee::pull() {
 }
 
 ################################################################################
+# res
+################################################################################
+bee::res() {
+  if ((!$#)); then
+    bee::help
+  else
+    local resources_dir target_dir
+    for plugin in "$@" ; do
+      bee::resolve_plugin "${plugin}"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        resources_dir="$(dirname "${BEE_RESOLVE_PLUGIN_PATH}")/resources"
+        if [[ -d "${resources_dir}" ]]; then
+          target_dir="${BEE_RESOURCES}/${BEE_RESOLVE_PLUGIN_NAME}"
+          echo "Copying resources into ${target_dir}"
+          mkdir -p "${target_dir}"
+          cp -r "${resources_dir}/". "${target_dir}/"
+        fi
+      fi
+    done
+  fi
+}
+
+################################################################################
 # update
 ################################################################################
 bee::update() {
@@ -972,7 +996,7 @@ bee::EXIT() {
 # completion
 ################################################################################
 declare -ag BEE_OPTIONS=(--batch --help --quiet --verbose)
-declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull update version wiki)
+declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull res update version wiki)
 
 declare -ig COMP_PARTIAL=1
 # Add this to your .bashrc
@@ -1026,6 +1050,7 @@ bee::comp_command_or_plugin() {
       job) shift; bee::job::comp "$@"; return ;;
       pull) shift; bee::pull::comp "$@"; return ;;
       plugins) shift; bee::plugins::comp "$@"; return ;;
+      res) shift; bee::hubs --list; return ;;
       update) return ;;
       version) shift; bee::version::comp "$@"; return ;;
     esac
@@ -1104,6 +1129,7 @@ bee::run() {
       new) shift; bee::new "$@"; return ;;
       plugins) shift; bee::plugins "$@"; return ;;
       pull) shift; bee::pull "$@"; return ;;
+      res) shift; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
       version) shift; bee::version "$@"; return ;;
       wiki) shift; bee::wiki "$@"; return ;;
