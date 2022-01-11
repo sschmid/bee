@@ -215,3 +215,16 @@ EOF
 # testplugin 1.0.0 sourced
 EOF
 }
+
+@test "completes plugins with comp function" {
+  assert_comp "bee testplugin " "testplugincomp"
+}
+
+@test "completes plugins without comp function" {
+  local expected=(greet help)
+  assert_comp "bee othertestplugin " "${expected[*]}"
+}
+
+@test "only completes first arg for plugins without comp function" {
+  assert_comp "bee othertestplugin help "
+}

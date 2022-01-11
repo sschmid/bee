@@ -1032,6 +1032,10 @@ bee::comp() {
 }
 
 bee::comp_plugins() {
+  compgen -A function |
+    grep --color=never '^[a-zA-Z]*::[a-zA-Z]' |
+    grep --color=never -v '^bee::' || true
+
   # shellcheck disable=SC2015
   for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
     if [[ -d "${plugins_path}" ]]; then

@@ -119,3 +119,10 @@ EOF
   )
   assert_comp "bee " "${expected[*]}"
 }
+
+@test "completes available functions" {
+  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _setup_beefile "test::func() { :; }"
+  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res test::func update version wiki)
+  assert_comp "bee " "${expected[*]}"
+}
