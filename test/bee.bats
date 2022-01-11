@@ -115,7 +115,7 @@ EOF
     --batch --help --quiet --verbose
     cache env hash hubs info install job lint new plugins pull res update version wiki
     testplugin testplugindeps testpluginmissingdep testplugindepsdep othertestplugin
-    customtestplugin
+    customtestplugin localplugin
   )
   assert_comp "bee " "${expected[*]}"
 }

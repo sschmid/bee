@@ -16,6 +16,18 @@ ${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
 EOF
 }
 
+assert_local_plugin() {
+  local plugin="$1" expected_name="$2"
+  run bee --batch "bee::resolve_plugin ${plugin}" \
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+  assert_success
+  cat << EOF | assert_output -
+${expected_name}
+local
+${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}/${expected_name}.bash
+EOF
+}
+
 assert_no_plugin() {
   local plugin="$1"
   run bee --batch "bee::resolve_plugin ${plugin}" \
@@ -59,6 +71,11 @@ EOF
 
 @test "doesn't resolve unknown plugin with exact version" {
   assert_no_plugin unknown:1.0.0
+}
+
+@test "resolves local plugins without version" {
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  assert_local_plugin localplugin localplugin
 }
 
 # this is a manual test / sanity check
@@ -212,6 +229,16 @@ EOF
   assert_success
   cat << 'EOF' | assert_output -
 # customtestplugin 1.0.0 sourced
+# testplugin 1.0.0 sourced
+EOF
+}
+
+@test "loads local plugin and dependencies from custom folder" {
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee bee::load_plugin "localplugin"
+  assert_success
+  cat << 'EOF' | assert_output -
+# localplugin sourced
 # testplugin 1.0.0 sourced
 EOF
 }

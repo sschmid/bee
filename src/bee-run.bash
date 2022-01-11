@@ -695,11 +695,21 @@ bee::plugins() {
 
 bee::resolve() {
   local plugin="$1" plugins_path="$2" file="$3"
+  local -i allow_local=${4:-0}
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
-  if [[ "${plugin_name}" == "${plugin_version}" && -d "${plugins_path}/${plugin_name}" ]]; then
-    plugin_version="$(basename "$(find "${plugins_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -rV | head -n 1)")"
+  path="${plugins_path}/${plugin_name}"
+  if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
+    if [[ $allow_local -eq 1 && -f "${path}/${file}" ]]; then
+      plugin_version="local"
+      path="${path}/${file}"
+    else
+      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | sort -rV | head -n 1)")"
+      path="${path}/${plugin_version}/${file}"
+    fi
+  else
+    path="${path}/${plugin_version}/${file}"
   fi
-  path="${plugins_path}/${plugin_name}/${plugin_version}/${file}"
+
   if [[ -f "${path}" ]]; then
     echo -e "${plugin_name}\t${plugin_version}\t${path}"
   fi
@@ -715,7 +725,7 @@ bee::resolve_plugin() {
     while read -r plugin_name plugin_version plugin_path; do
       found=1
       BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
-    done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash")
+    done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash" 1)
     ((found)) && break
   done
   if ((!found)); then
