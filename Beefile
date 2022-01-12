@@ -1,34 +1,6 @@
 BEE_PROJECT=bee
-BEE_PLUGINS=(changelog github semver)
+BEE_PLUGINS_PATHS=("${BEE_RESOURCES}/plugins")
+BEE_PLUGINS=(bee)
 
-# changelog => semver
-CHANGELOG_URL="https://github.com/sschmid/${BEE_PROJECT}"
-
-bee::release() {
-  changelog::merge
-  git add .
-  local version
-  version="$(semver::read)"
-  git commit -m "Release ${version}"
-  git push
-  git tag "${version}"
-  git push --tags
-  log "bzzz... giving GitHub some time to process..."
-  sleep 10
-  github::create_release
-}
-
-bee::release_major() {
-  semver::major
-  bee::release
-}
-
-bee::release_minor() {
-  semver::minor
-  bee::release
-}
-
-bee::release_patch() {
-  semver::patch
-  bee::release
-}
+GITHUB_REPO="sschmid/${BEE_PROJECT}"
+CHANGELOG_URL="https://github.com/${GITHUB_REPO}"
