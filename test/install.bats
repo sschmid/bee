@@ -6,6 +6,7 @@ setup() {
 }
 
 @test "doesn't install unknown plugin" {
+  bee pull
   run bee install unknown
   assert_failure
   cat << EOF | assert_output -
@@ -14,6 +15,17 @@ Installing
 ${BEE_ERR} Couldn't install plugin: unknown
 EOF
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
+}
+
+@test "pulls before installing" {
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  # shellcheck disable=SC2016
+  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
+  run bee install testplugin
+  assert_success
+  BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
 }
 
 @test "finds plugin in correct hub" {
@@ -246,4 +258,3 @@ EOF
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee install myplugin " "${expected[*]}"
 }
-

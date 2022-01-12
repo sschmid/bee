@@ -227,6 +227,7 @@ bee::install::comp() {
 }
 
 bee::install() {
+  bee::pull
   local -i force=0
   while (($#)); do case "$1" in
     --force) force=1; shift ;;
