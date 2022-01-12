@@ -17,8 +17,16 @@ else
   echo "Linking ${LOCAL_REPO}/src/bee to /usr/local/bin/bee"
   mkdir -p /usr/local/bin
   ln -s "${LOCAL_REPO}/src/bee" /usr/local/bin/bee
-  mkdir -p /usr/local/etc/bash_completion.d
-  ln -s "${LOCAL_REPO}/etc/bash_completion.d/bee-completion.bash" /usr/local/etc/bash_completion.d/bee-completion.bash
-  echo "Bash completion has been installed to: /usr/local/etc/bash_completion.d/bee-completion.bash"
-  echo "🐝 bee has been installed successfully"
+  cat << 'EOF'
+Please enable bee bash completion to enjoy the best bee experience:
+
+  echo "complete -C bee bee" >> ~/.bashrc
+
+For zsh also add this:
+
+  echo "autoload bashcompinit" >> ~/.zshrc
+  echo "bashcompinit" >> ~/.zshrc
+
+🐝 bee has been installed successfully
+EOF
 fi
