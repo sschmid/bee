@@ -83,7 +83,7 @@ bee::load_os() {
     source "${path}/os/${BEE_OSTYPE}.bash"
   elif [[ -f "${path}/os/generic.bash" ]]; then
     source "${path}/os/generic.bash"
-    bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
+#    bee::log_warn "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
   fi
 }
 
