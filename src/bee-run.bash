@@ -835,6 +835,17 @@ bee::pull::comp() {
   fi
 }
 
+bee::prompt() {
+  [[ -f "${PWD}/Beefile" ]] || exit 1
+  local current_version latest_version
+  current_version=$(bee::version)
+  latest_version=$(bee::version --latest --cached)
+  if [[ "${current_version}" == "${latest_version}" ]]
+  then echo "${BEE_ICON} ${current_version}"
+  else echo "${BEE_ICON} ${current_version}*"
+  fi
+}
+
 bee::pull() {
   local -i force=0 pull=0
   while (($#)); do case "$1" in
@@ -1153,6 +1164,7 @@ bee::run() {
       lint) shift; bee::lint "$@"; return ;;
       new) shift; bee::new "$@"; return ;;
       plugins) shift; bee::plugins "$@"; return ;;
+      prompt) shift; bee::prompt; return ;;
       pull) shift; bee::pull "$@"; return ;;
       res) shift; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;

@@ -45,7 +45,7 @@ setup() {
   # shellcheck disable=SC2016
   _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
   run bee version --latest --cached
-  assert_output "4.5.6"
+  assert_output "99.99.99"
 }
 
 @test "completes bee version with --latest" {
