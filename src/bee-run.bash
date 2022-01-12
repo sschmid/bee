@@ -38,7 +38,7 @@ usage: bee [--help]
   new [<path>]                               create new Beefile
   plugins [--all | --outdated] [--version]   list (--all or --outdated) plugins (with --version)
   pull [--force] [<urls>]                    update hubs (--force ignore pull cooldown)
-  res <plugins>                              copy plugin resources into bee resources directory"
+  res <plugins>                              copy plugin resources into bee resources directory
   update                                     update bee to the latest version
   version [--latest] [--cached]              print (--latest) version (--cached locally)
   wiki                                       open wiki

@@ -1,9 +1,8 @@
 Contributing to bee
 ===================
 
-The project is hosted on [GitHub](https://github.com/sschmid/bee) where
-you can [report issues](https://github.com/sschmid/bee/issues), fork the project
-and [submit pull requests](https://github.com/sschmid/bee/pulls).
+The project is hosted on [GitHub](https://github.com/sschmid/bee) where you can [report issues](https://github.com/sschmid/bee/issues),
+fork the project and [submit pull requests](https://github.com/sschmid/bee/pulls).
 
 Setup bee on your machine
 =========================
@@ -23,13 +22,11 @@ $ git branch main origin/main
 $ git flow init -d
 ```
 
-
 Make changes
 ============
 
-[Create a new issue](https://github.com/sschmid/bee/issues/new) to let people know what you're working on
-and to encourage a discussion. Follow the git-flow conventions and create a new feature branch
-starting with `#` and the issue number:
+[Create a new issue](https://github.com/sschmid/bee/issues/new) to let people know what you're working on and to encourage a discussion.
+Follow the git-flow conventions and create a new feature branch starting with `#` and the issue number:
 
 ```
 $ git flow feature start <#123-your-feature>

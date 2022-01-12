@@ -14,7 +14,7 @@ bee is an open source platform aimed to simplify and standardize automation and 
 bee lets you automate every aspect of your development and release workflow.
 bee runs everywhere - "it's just bash"
 
-*__Automate the entire process from building your Unity project to uploading it to the app store__*
+*__Automate the entire process from building your project to uploading it to the app stores__*
 
 Combine bee with continuous integration tools such as [Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
 build and distribute your applications.
@@ -23,13 +23,15 @@ build and distribute your applications.
 
 ## Extending with Plugins
 
-bee is as a plugin launcher with package management functionality. Plugins are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
+bee is as a plugin launcher with package management functionality.
+Plugins are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
 
-You can register your own plugin at beehub by creating a pull request. You can also create your own custom register for your personal or private plugins.
+You can register your own plugin at beehub by creating a pull request.
+You can also create your own custom register or local plugins for your personal or private use.
 
 Plugins allow you to customize and personalize bee to fit any requirement.
-Are you missing a task or feature? Create your own plugins and contribute to beehub! Share
-your plugins with the bee community so everyone can start saving time today.
+Are you missing a task or feature? Create your own plugins and contribute to beehub!
+Share your plugins with the bee community so everyone can start saving time today.
 
 Plugins and commands can easily be discovered with bee's built-in auto-completion! (see [wiki](https://github.com/sschmid/bee/wiki/bee-bash-completion))
 
@@ -38,24 +40,27 @@ Plugins and commands can easily be discovered with bee's built-in auto-completio
 
 ## Example
 
+Compose custom functions using existing bee plugins
 ```bash
-release() {
-  version::bump_minor
+app::release() {
+  semver::major
   changelog::merge
   unity::execute_method BuildIOS
   ios::archive_project
   ios::export
   ios::upload
   github::create_release
-  slack::message "New release $(version::read)"
+  slack::message ${channel} "New release $(semver::read)"
 }
 ```
 
+Discover and run your function using the bee bash completion
 ```
-$ bee release
+bee app release
 ```
 
-- `version::bump_minor` - bump the minor version
+Explanation
+- `semver::major` - bump the major version
 - `changelog::merge` - merge the latest changes into the changelog
 - `unity::execute_method BuildIOS` - build the Unity project
 - `ios::archive_project` - archive xcode project
@@ -68,21 +73,21 @@ $ bee release
 ## Install
 
 ```
-$ bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
 ```
 
 
 ## Update
 
 ```
-$ bee update
+bee update
 ```
 
 
 ## Customize
 
 ```
-$ vim ~/.beerc
+vim ~/.beerc
 ```
 
 
