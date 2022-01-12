@@ -156,6 +156,25 @@ EOF
   assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
+@test "installs local plugins with dependencies recursively" {
+  # shellcheck disable=SC2030,SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  export TESTPLUGIN_QUIET=1
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  bee pull
+  run bee install localplugin
+  assert_success
+  cat << EOF | assert_output -
+Installing
+└── localplugin:local (${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/localplugin.bash)
+    ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+    └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+EOF
+  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+}
+
 @test "fails late when plugins are missing" {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo

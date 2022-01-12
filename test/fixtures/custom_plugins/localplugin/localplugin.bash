@@ -4,7 +4,9 @@ if [[ -v CUSTOM_TESTPLUGIN_SOURCED ]]; then
 fi
 
 CUSTOM_TESTPLUGIN_SOURCED=1
-echo "# localplugin sourced"
+if [[ ! -v TESTPLUGIN_QUIET ]]; then
+  echo "# localplugin sourced"
+fi
 
 localplugin() {
   echo "hello from localplugin"
@@ -12,4 +14,5 @@ localplugin() {
 
 localplugin::deps() {
   echo "testplugin:1.0.0"
+  echo "othertestplugin:1.0.0"
 }

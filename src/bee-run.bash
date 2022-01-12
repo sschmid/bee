@@ -303,10 +303,9 @@ bee::install::recursively() {
           fi
           # shellcheck disable=SC2086
           if [[ -n "${deps}" ]]; then
-            if ((i == n - 1)); then
-              bee::install::recursively ${force} ${lock} "${indent}    " ${deps}
-            else
-              bee::install::recursively ${force} ${lock} "${indent}│   " ${deps}
+            if ((i == n - 1))
+            then bee::install::recursively ${force} ${lock} "${indent}    " ${deps}
+            else bee::install::recursively ${force} ${lock} "${indent}│   " ${deps}
             fi
           fi
         done < <(jq -r '[.git, .tag, .sha256, .dependencies[]?] | @tsv' "${spec_path}")
@@ -314,8 +313,21 @@ bee::install::recursively() {
       ((found)) && break
     done
     if ((!found)); then
-      missing+=("${plugin}")
-      echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
+      bee::load_plugin "${plugin}"
+      if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+        echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
+        local deps_func="${BEE_LOAD_PLUGIN_NAME}::deps"
+        if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+          # shellcheck disable=SC2046
+          if ((i == n - 1))
+          then bee::install::recursively ${force} ${lock} "${indent}    " $("${deps_func}")
+          else bee::install::recursively ${force} ${lock} "${indent}│   " $("${deps_func}")
+          fi
+        fi
+      else
+        missing+=("${plugin}")
+        echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
+      fi
     fi
   done
   if ((${#missing[@]})); then
@@ -735,6 +747,7 @@ bee::resolve_plugin() {
 }
 
 BEE_LOAD_PLUGIN_NAME=""
+BEE_LOAD_PLUGIN_PATH=""
 declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 bee::load_plugin() {
@@ -742,6 +755,7 @@ bee::load_plugin() {
   bee::resolve_plugin "$1"
   if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
     BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
+    BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_PATH}"
     bee::load_plugin_deps
     if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
@@ -751,6 +765,7 @@ bee::load_plugin() {
     fi
   else
     BEE_LOAD_PLUGIN_NAME=""
+    BEE_LOAD_PLUGIN_PATH=""
   fi
 }
 
