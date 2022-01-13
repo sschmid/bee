@@ -318,7 +318,7 @@ bee::install::recursively() {
         echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
         local deps_func="${BEE_LOAD_PLUGIN_NAME}::deps"
         if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-          # shellcheck disable=SC2046
+          # shellcheck disable=SC2046,SC2086
           if ((i == n - 1))
           then bee::install::recursively ${force} ${lock} "${indent}    " $("${deps_func}")
           else bee::install::recursively ${force} ${lock} "${indent}│   " $("${deps_func}")
