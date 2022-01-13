@@ -243,6 +243,7 @@ EOF
   cat << 'EOF' | assert_output -
 # localplugin sourced
 # testplugin 1.0.0 sourced
+# othertestplugin 1.0.0 sourced
 EOF
 }
 
