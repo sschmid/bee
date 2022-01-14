@@ -27,21 +27,22 @@ usage: bee [--help]
            [--quiet] [--verbose]
            [--batch] <command> [<args>]
 
-  cache [--clear [<path>]]                   open (or --clear) cache
-  env <vars>                                 print env variables
-  hash <path>                                generate plugin hash
-  hubs [--all | --list ] [<urls>]            list hubs and their plugins (--all versions as --list)
-  info <plugin>                              print plugin spec
-  install [--force] [<plugins>]              install plugins (--force ignore sha256 mismatch)
-  job [--time] <title> <command>             run command as a job (show elapsed --time)
-  lint <spec>                                validate plugin spec
-  new [<path>]                               create new Beefile
-  plugins [--all | --outdated] [--version]   list (--all or --outdated) plugins (with --version)
-  pull [--force] [<urls>]                    update hubs (--force ignore pull cooldown)
-  res <plugins>                              copy plugin resources into bee resources directory
-  update                                     update bee to the latest version
-  version [--latest] [--cached]              print (--latest) version (--cached locally)
-  wiki                                       open wiki
+  cache [--clear [<path>]]                     open (or --clear) cache
+  env <vars>                                   print env variables
+  hash <path>                                  generate plugin hash
+  hubs [--all | --list ] [<urls>]              list hubs and their plugins (--all versions as --list)
+  info <plugin>                                print plugin spec
+  install [--force] [<plugins>]                install plugins (--force ignore sha256 mismatch)
+  job [--time] [--logfile] <title> <command>   run command as a job (show elapsed --time)
+                                               (write output to --logfile in bee resources directory)
+  lint <spec>                                  validate plugin spec
+  new [<path>]                                 create new Beefile
+  plugins [--all | --outdated] [--version]     list (--all or --outdated) plugins (with --version)
+  pull [--force] [<urls>]                      update hubs (--force ignore pull cooldown)
+  res <plugins>                                copy plugin resources into bee resources directory
+  update                                       update bee to the latest version
+  version [--latest] [--cached]                print (--latest) version (--cached locally)
+  wiki                                         open wiki
 
 EOF
 }
