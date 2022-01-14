@@ -441,14 +441,14 @@ bee::job::spin() {
 }
 
 bee::job::INT() {
-  ((!BEE_JOB_RUNNING)) && return
+  ((BEE_JOB_RUNNING)) || return 0
   bee::job::stop_spinner
   echo "Aborted by $(whoami)$(bee::job::duration)" >> "${BEE_JOB_LOGFILE}"
 }
 
 bee::job::EXIT() {
   local -i status=$1
-  ((!BEE_JOB_RUNNING)) && return
+  ((BEE_JOB_RUNNING)) || return 0
   if ((status)); then
     bee::job::stop_spinner
     echo -e "${BEE_LINE_RESET}${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}$(bee::job::duration)${BEE_COLOR_RESET}"
@@ -1081,6 +1081,14 @@ bee::comp_plugins() {
   done
 }
 
+bee::comp_plugin() {
+  local plugin="$1"
+  local -i n=$((${#plugin} + 3))
+  compgen -A function |
+    grep --color=never "^${plugin}::*" |
+    cut -c $n- || true
+}
+
 bee::comp_command_or_plugin() {
   local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
   while (($#)); do case "$1" in
@@ -1113,10 +1121,7 @@ bee::comp_command_or_plugin() {
       if [[ $(command -v "${comp}") == "${comp}" ]]; then
         "${comp}" "$@"
       elif ((!$# || $# == 1 && COMP_PARTIAL)); then
-        local -i n=$((${#BEE_LOAD_PLUGIN_NAME} + 3))
-        compgen -A function |
-          grep --color=never "^${BEE_LOAD_PLUGIN_NAME}::*" |
-          cut -c $n- || true
+        bee::comp_plugin "${BEE_LOAD_PLUGIN_NAME}"
       fi
       return
     fi
