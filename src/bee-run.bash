@@ -102,7 +102,7 @@ bee::hash() {
           echo "${file_hash}"
           hashes+=("${file_hash// */}")
         fi
-      done < <(find . -type f | sort)
+      done < <(find . -type f | LC_ALL=C sort)
     popd > /dev/null || exit 1
     all="$(echo "${hashes[*]}" | os_sha256sum)"
     echo "${all}"
@@ -159,7 +159,7 @@ bee::hubs() {
             echo "${bullet}${plugin_name}"
 
             if ((show_all)); then
-              mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | sort -V)
+              mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -V)
               m=${#versions[@]}
               for ((j = 0; j < m; j++)); do
                 plugin_version="$(basename "${versions[j]}")"
@@ -703,7 +703,7 @@ bee::plugins() {
       else
         echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
       fi
-    done | sort -u
+    done | LC_ALL=C sort -u
   fi
 }
 
@@ -717,7 +717,7 @@ bee::resolve() {
       plugin_version="local"
       path="${path}/${file}"
     else
-      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | sort -rV | head -n 1)")"
+      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
       path="${path}/${plugin_version}/${file}"
     fi
   else

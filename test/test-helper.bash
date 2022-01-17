@@ -69,9 +69,9 @@ _comp() {
   export TESTPLUGIN_QUIET=1
   run bee bee::comp
   actual=("${output}")
-  actual=($(for i in ${actual[@]}; do echo "$i"; done | sort))
+  actual=($(for i in ${actual[@]}; do echo "$i"; done | LC_ALL=C sort))
   if [[ -v 2 ]]; then
     expected=($2)
-    expected=($(for i in ${expected[@]}; do echo "$i"; done | sort))
+    expected=($(for i in ${expected[@]}; do echo "$i"; done | LC_ALL=C sort))
   fi
 }
