@@ -77,7 +77,7 @@ EOF
     echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
     cp -r "${PROJECT_ROOT}/src/os" src
-    git init -b main; git add . ; _git_commit -m "Initial commit"; git tag 1.0.0
+    git init; git add . ; _git_commit -m "Initial commit"; git tag 1.0.0
     echo "echo '# test bee-run.bash 1.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash;
     git add . ; _git_commit -m "Bump version"; git tag "1.1.0"

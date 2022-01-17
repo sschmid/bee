@@ -11,7 +11,7 @@ _setup_mock_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/${hub}/${plugin}/1.0.0"
   pushd "${BATS_TEST_TMPDIR}/${hub}" > /dev/null || exit 1
     touch "${plugin}/1.0.0/plugin.json"
-    git init -b main; git add . ; _git_commit -m "Initial commit"
+    git init; git add . ; _git_commit -m "Initial commit"
   popd > /dev/null || exit 1
 }
 
