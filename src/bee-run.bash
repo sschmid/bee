@@ -104,7 +104,7 @@ bee::hash() {
         fi
       done < <(find . -type f | LC_ALL=C sort)
     popd > /dev/null || exit 1
-    all="$(echo "${hashes[*]}" | os_sha256sum)"
+    all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
     echo "${all}"
     BEE_HUB_HASH_RESULT="${all// */}"
   fi

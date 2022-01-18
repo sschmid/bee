@@ -53,7 +53,7 @@ _lint() {
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -70,7 +70,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -87,7 +87,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -104,7 +104,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -121,7 +121,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -138,7 +138,7 @@ EOF
   "authors": ["sschmid"],
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -155,7 +155,7 @@ EOF
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -172,7 +172,7 @@ EOF
   "authors": ["sschmid"],
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -207,7 +207,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -225,7 +225,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -243,7 +243,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -283,7 +283,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v${version}",
-  "sha256": "03e057364297de0fda079ca9f91bb751ef22beecebf048c542c7b406fe391cd9"
+  "sha256": "1c5e5a79a93b5272c5a3b342426de8b0bc6a5474bd5fa75372eba4feb69e826e"
 }
 EOF
 
@@ -304,7 +304,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v${version}",
-  "sha256": "25f1125216f5c7bb6f2e96111f0de598bd67c5e19da50a1fc19538a7fdc9bbc4"
+  "sha256": "e7e869e984fb70a260f9bfa97f427de93bc75daf25e9b393879625d624b61ef0"
 }
 EOF
 
@@ -323,7 +323,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/unknown",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -341,7 +341,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "vx.x.x",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
@@ -363,7 +363,7 @@ EOF
 }
 EOF
 
-  assert_lint_error --regexp 'sha256.*xxx.*571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4'
+  assert_lint_error --regexp 'sha256.*xxx.*25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327'
 }
 
 @test "lints missing plugin bash file" {
@@ -379,7 +379,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v${version}",
-  "sha256": "eb5d35d19f4fe5828ec05e6ea31f2ae50e782683ff25c2efa72e80432d0ea6a7"
+  "sha256": "3af4ae44b0069f8cac7ccbc41b0adacdfb74f5767eb7882d20379d57e9e94e24"
 }
 EOF
 
@@ -400,7 +400,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v1.4.0",
-  "sha256": "b3bdc39713079809f38bf239f8a6c4e5a8c712b0c6ee4a7c11632d2228c78758",
+  "sha256": "71b5b50ae3ea86bdecc49f45c5ab9306f8568328819482d8ef882021cce4fab0",
   "dependencies": ["testdep:1.0.0", "othertestdep:2.0.0"]
 }
 EOF
@@ -420,7 +420,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "571d9351cab430b6fad540421de7ebcecd77946a55d1673e71034e0fa7dd51f4"
+  "sha256": "25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327"
 }
 EOF
 
