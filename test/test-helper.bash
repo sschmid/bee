@@ -66,7 +66,7 @@ assert_comp() {
 _comp() {
   export COMP_LINE="$1"
   export COMP_POINT="${#COMP_LINE}"
-  export TESTPLUGIN_QUIET=1
+  export TEST_PLUGIN_QUIET=1
   run bee bee::comp
   actual=("${output}")
   actual=($(for i in ${actual[@]}; do echo "$i"; done | LC_ALL=C sort))

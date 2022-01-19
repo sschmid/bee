@@ -159,7 +159,7 @@ EOF
 @test "installs local plugins with dependencies recursively" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  export TESTPLUGIN_QUIET=1
+  export TEST_PLUGIN_QUIET=1
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin

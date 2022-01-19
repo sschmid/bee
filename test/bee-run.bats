@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper.bash'
   _set_beerc
-  export TESTPLUGIN_QUIET=1
+  export TEST_PLUGIN_QUIET=1
 }
 
 @test "is not executable" {

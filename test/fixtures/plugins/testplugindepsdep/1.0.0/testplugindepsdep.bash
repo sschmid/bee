@@ -1,4 +1,4 @@
-if [[ ! -v TESTPLUGIN_QUIET ]]; then
+if [[ ! -v TEST_PLUGIN_QUIET ]]; then
   echo "# testplugindepsdep 1.0.0 sourced"
 fi
 

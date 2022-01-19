@@ -1,10 +1,10 @@
-if [[ -v OTHERTESTPLUGIN_SOURCED ]]; then
+if [[ -v OTHERTEST_PLUGIN_SOURCED ]]; then
   echo "# ERROR: already sourced"
   exit 1
 fi
 
-OTHERTESTPLUGIN_SOURCED=1
-if [[ ! -v TESTPLUGIN_QUIET ]]; then
+OTHERTEST_PLUGIN_SOURCED=1
+if [[ ! -v TEST_PLUGIN_QUIET ]]; then
   echo "# othertestplugin 1.0.0 sourced"
 fi
 

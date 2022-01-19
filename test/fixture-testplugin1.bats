@@ -10,15 +10,15 @@ setup() {
 }
 
 @test "prints message when sourced" {
-  unset TESTPLUGIN_1_SOURCED
+  unset TEST_PLUGIN_1_SOURCED
   run source "${TEST_FIXTURE_PATH}"
   assert_success
   assert_output "# testplugin 1.0.0 sourced"
 }
 
-@test "doesn't print message when TESTPLUGIN_QUIET " {
-  unset TESTPLUGIN_1_SOURCED
-  export TESTPLUGIN_QUIET=1
+@test "doesn't print message when TEST_PLUGIN_QUIET " {
+  unset TEST_PLUGIN_1_SOURCED
+  export TEST_PLUGIN_QUIET=1
   run source "${TEST_FIXTURE_PATH}"
   assert_success
   refute_output

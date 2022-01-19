@@ -47,8 +47,8 @@ EOF
 ${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0
 3a427a45a5dd0b6ae06b4dd1937bb357971ffe18ccbfc81f0c49eb55ae27458e  ./LICENSE.txt
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./res/.gitkeep
-21f70a683c2449b62bc9150b1ee66d528f074be8fbc3fb19f74bd1393cdd2a0b  ./testplugin.bash
+9a96c9a87803ad80b39407dffeec4ef0359a3c339b92f6c42b01d203db1d703a  ./testplugin.bash
 c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624  ./version.txt
-25f806f487714bdce1717b2042673653f17e951c6d710561e09a9e1051005327  -
+5ebab3a1c8be86a86145ecb7edcfa567e4c0a24066953e321debd8ea23ffd472  -
 EOF
 }
