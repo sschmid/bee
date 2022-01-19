@@ -45,7 +45,7 @@ _unset_beefile() {
 }
 
 _git_commit() {
-  git -c commit.gpgsign=false commit "$@"
+  git -c user.name=bee -c user.email=bee -c commit.gpgsign=false commit "$@"
 }
 
 assert_bee_help() {
