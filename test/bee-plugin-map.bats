@@ -43,7 +43,10 @@ EOF
 @test "resolves version for plugin name based on specified version" {
   run bee bee::map_plugins testplugin:1.0.0 testplugin
   assert_success
-  assert_output "testplugin:1.0.0"
+  cat << EOF | assert_output -
+testplugin:1.0.0
+testplugin:1.0.0
+EOF
 }
 
 @test "detects version conflict" {
@@ -62,4 +65,12 @@ EOF
 testplugindepsdep:1.0.0
 testplugindeps:1.0.0
 EOF
+}
+
+@test "runs plugin version specified in Beefile" {
+  export TEST_PLUGIN_QUIET=1
+  _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
+  run bee --quiet testplugin
+  assert_success
+  assert_output "testplugin 1.0.0 help"
 }

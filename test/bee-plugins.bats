@@ -7,11 +7,12 @@ setup() {
 assert_plugin() {
   local plugin="$1" expected_name="$2" expected_version="$3"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
   assert_success
   cat << EOF | assert_output -
 ${expected_name}
 ${expected_version}
+${BEE_PLUGINS_PATHS}/${expected_name}
 ${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
 EOF
 }
@@ -19,11 +20,12 @@ EOF
 assert_local_plugin() {
   local plugin="$1" expected_name="$2"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
   assert_success
   cat << EOF | assert_output -
 ${expected_name}
 local
+${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}
 ${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}/${expected_name}.bash
 EOF
 }
@@ -31,7 +33,7 @@ EOF
 assert_no_plugin() {
   local plugin="$1"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
   assert_success
   refute_output
 }
@@ -41,10 +43,11 @@ assert_last_plugin() {
   run bee --batch \
     "bee::resolve_plugin ${first_plugin}" \
     "bee::resolve_plugin ${last_plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
   cat << EOF | assert_output -
 ${expected_name}
 ${expected_version}
+${BEE_PLUGINS_PATHS}/${expected_name}
 ${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
 EOF
 }

@@ -200,12 +200,13 @@ bee::info() {
   if ((!$#)); then
     bee::help
   else
-    local plugin="$1" plugin_name plugin_version cache_path spec_path
+    local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
     local -i found=0
     for url in "${BEE_HUBS[@]}"; do
       cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
-      while read -r plugin_name plugin_version spec_path; do
+      while read -r plugin_name plugin_version spec_path is_local; do
         found=1
+        spec_path="${spec_path}/${plugin_version}/plugin.json"
         jq . "${spec_path}" || cat "${spec_path}"
       done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
       ((found)) && break
@@ -257,7 +258,7 @@ bee::install::recursively() {
   local indent="$3"
   shift 3
   local -a plugins=("$@") missing=()
-  local plugin plugin_name plugin_version cache_path spec_path bullet
+  local plugin plugin_name plugin_version cache_path spec_path is_local bullet
   local -i i n=${#plugins[@]} found=0 already_installed=0
   for ((i = 0; i < n; i++)); do
     found=0
@@ -265,8 +266,9 @@ bee::install::recursively() {
     ((i == n - 1)) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
-      while read -r plugin_name plugin_version spec_path; do
+      while read -r plugin_name plugin_version spec_path is_local; do
         found=1
+        spec_path="${spec_path}/${plugin_version}/plugin.json"
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
@@ -687,14 +689,14 @@ bee::plugins() {
       plugins=("${BEE_PLUGINS[@]}")
     fi
     for plugin in "${plugins[@]}"; do
-      bee::resolve_plugin "${plugin}"
-      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+      bee::mapped_plugin "${plugin}"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
         plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"
         plugin_version="${BEE_RESOLVE_PLUGIN_VERSION}"
         ((show_version || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
         if ((show_outdated)); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
-          if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
+          if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
             echo "${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
           fi
         else
@@ -709,13 +711,14 @@ bee::plugins() {
 
 bee::resolve() {
   local plugin="$1" plugins_path="$2" file="$3"
-  local -i allow_local=${4:-0}
+  local -i allow_local=${4:-0} is_local=0
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
   path="${plugins_path}/${plugin_name}"
   if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
     if [[ $allow_local -eq 1 && -f "${path}/${file}" ]]; then
       plugin_version="local"
       path="${path}/${file}"
+      is_local=1
     else
       plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
       path="${path}/${plugin_version}/${file}"
@@ -725,25 +728,38 @@ bee::resolve() {
   fi
 
   if [[ -f "${path}" ]]; then
-    echo -e "${plugin_name}\t${plugin_version}\t${path}"
+    echo -e "${plugin_name}\t${plugin_version}\t${plugins_path}/${plugin_name}\t${is_local}"
   fi
 }
 
 BEE_RESOLVE_PLUGIN_NAME=""
 BEE_RESOLVE_PLUGIN_VERSION=""
-BEE_RESOLVE_PLUGIN_PATH=""
+BEE_RESOLVE_PLUGIN_IS_LOCAL=""
+BEE_RESOLVE_PLUGIN_BASE_PATH=""
+BEE_RESOLVE_PLUGIN_FULL_PATH=""
 bee::resolve_plugin() {
-  local plugin="$1" plugin_name plugin_version plugin_path
+  local plugin="$1" plugin_name plugin_version plugin_path is_local
   local -i found=0
   for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
-    while read -r plugin_name plugin_version plugin_path; do
+    while read -r plugin_name plugin_version plugin_path is_local; do
       found=1
-      BEE_RESOLVE_PLUGIN_NAME="${plugin_name}" BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}" BEE_RESOLVE_PLUGIN_PATH="${plugin_path}"
+      BEE_RESOLVE_PLUGIN_NAME="${plugin_name}"
+      BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}"
+      BEE_RESOLVE_PLUGIN_IS_LOCAL=${is_local}
+      BEE_RESOLVE_PLUGIN_BASE_PATH="${plugin_path}"
+      if ((BEE_RESOLVE_PLUGIN_IS_LOCAL))
+      then BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+      else BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+      fi
     done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash" 1)
     ((found)) && break
   done
   if ((!found)); then
-    BEE_RESOLVE_PLUGIN_NAME="" BEE_RESOLVE_PLUGIN_VERSION="" BEE_RESOLVE_PLUGIN_PATH=""
+    BEE_RESOLVE_PLUGIN_NAME=""
+    BEE_RESOLVE_PLUGIN_VERSION=""
+    BEE_RESOLVE_PLUGIN_IS_LOCAL=0
+    BEE_RESOLVE_PLUGIN_BASE_PATH=""
+    BEE_RESOLVE_PLUGIN_FULL_PATH=""
   fi
 }
 
@@ -753,10 +769,10 @@ declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 bee::load_plugin() {
   BEE_LOAD_PLUGIN_MISSING=()
-  bee::resolve_plugin "$1"
-  if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+  bee::mapped_plugin "$1"
+  if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
     BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
-    BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_PATH}"
+    BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_FULL_PATH}"
     bee::load_plugin_deps
     if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
@@ -771,16 +787,16 @@ bee::load_plugin() {
 }
 
 bee::load_plugin_deps() {
-  if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"] ]]; then
-    bee::load_os "$(dirname "${BEE_RESOLVE_PLUGIN_PATH}")"
-    source "${BEE_RESOLVE_PLUGIN_PATH}"
+  if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"] ]]; then
+    bee::load_os "$(dirname "${BEE_RESOLVE_PLUGIN_FULL_PATH}")"
+    source "${BEE_RESOLVE_PLUGIN_FULL_PATH}"
     # shellcheck disable=SC2034
-    BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_PATH}"]=1
+    BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"]=1
     local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
     if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
       for dep in $("${deps_func}"); do
-        bee::resolve_plugin "${dep}"
-        if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
+        bee::mapped_plugin "${dep}"
+        if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
           bee::load_plugin_deps
         else
           BEE_LOAD_PLUGIN_MISSING+=("${dep}")
@@ -792,11 +808,10 @@ bee::load_plugin_deps() {
 
 declare -Ag BEE_PLUGIN_MAP=()
 bee::map_plugins() {
-  local map=()
-  local conflicts=()
+  local -a map=() conflicts=()
   for plugin in "$@"; do
     bee::resolve_plugin "${plugin}"
-    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
         map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
@@ -809,12 +824,12 @@ bee::map_plugins() {
   done
   for plugin in "$@"; do
     bee::resolve_plugin "${plugin}"
-    if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
         map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
-      elif [[ "${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}" == "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
-        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      else
+        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}")
       fi
     fi
   done
@@ -827,6 +842,14 @@ bee::map_plugins() {
   fi
 
   echo "${map[*]}"
+}
+
+bee::mapped_plugin() {
+  local plugin="$1"
+  if [[ -v BEE_PLUGIN_MAP["${plugin}"] ]]
+  then bee::resolve_plugin "${plugin}:${BEE_PLUGIN_MAP["${plugin}"]}"
+  else bee::resolve_plugin "${plugin}"
+  fi
 }
 
 bee::run_plugin() {
@@ -911,9 +934,9 @@ bee::res() {
   else
     local resources_dir target_dir
     for plugin in "$@" ; do
-      bee::resolve_plugin "${plugin}"
-      if [[ -n "${BEE_RESOLVE_PLUGIN_PATH}" ]]; then
-        resources_dir="$(dirname "${BEE_RESOLVE_PLUGIN_PATH}")/resources"
+      bee::mapped_plugin "${plugin}"
+      if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
+        resources_dir="$(dirname "${BEE_RESOLVE_PLUGIN_FULL_PATH}")/resources"
         if [[ -d "${resources_dir}" ]]; then
           target_dir="${BEE_RESOURCES}/${BEE_RESOLVE_PLUGIN_NAME}"
           echo "Copying resources into ${target_dir}"
@@ -1049,7 +1072,6 @@ declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins 
 declare -ig COMP_PARTIAL=1
 # Add this to your .bashrc
 # complete -C bee bee
-# COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 bee::comp() {
   # shellcheck disable=SC2207
   local words=($(bee::split_args "${COMP_LINE}"))
@@ -1172,6 +1194,8 @@ bee::run() {
     --verbose) BEE_VERBOSE=1; shift ;;
     --) shift; break ;; *) break ;;
   esac done
+
+  [[ -v BEE_PLUGINS ]] && bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
 
   if (($#)); then
     case "$1" in
