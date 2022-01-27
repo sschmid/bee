@@ -48,7 +48,7 @@ EOF
 }
 
 @test "doesn't map local plugin " {
-  # shellcheck disable=SC2031
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee bee::map_plugins localplugin
   assert_success
@@ -95,6 +95,7 @@ EOF
 }
 
 @test "runs plugin version specified in Beefile" {
+  # shellcheck disable=SC2030,SC2031
   export TEST_PLUGIN_QUIET=1
   _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
   run bee --quiet testplugin
@@ -103,6 +104,7 @@ EOF
 }
 
 @test "runs plugin version specified in dependencies" {
+  # shellcheck disable=SC2030,SC2031
   export TEST_PLUGIN_QUIET=1
   _setup_beefile 'BEE_PLUGINS=(testplugindeps)'
   run bee --quiet testplugin

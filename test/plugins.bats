@@ -29,7 +29,7 @@ EOF
 
 @test "lists enabled plugins from all plugin paths" {
   _setup_beefile "BEE_PLUGINS=(testplugin customtestplugin)"
-  # shellcheck disable=SC2030
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   assert_success
@@ -41,7 +41,7 @@ EOF
 
 @test "lists local plugins" {
   _setup_beefile "BEE_PLUGINS=(localplugin)"
-  # shellcheck disable=SC2030
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   assert_success
@@ -81,7 +81,7 @@ EOF
 
 @test "lists local plugins with version" {
   _setup_beefile "BEE_PLUGINS=(localplugin)"
-  # shellcheck disable=SC2030
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins --version
   assert_success
@@ -99,7 +99,7 @@ EOF
 
 @test "lists all plugins from all plugin paths" {
   _setup_beefile "BEE_PLUGINS=(unknown)"
-  # shellcheck disable=SC2031
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins --all
   assert_line "#E${BEE_CHECK_FAIL} unknown#"

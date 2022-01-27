@@ -77,7 +77,7 @@ EOF
 }
 
 @test "resolves local plugins without version" {
-  # shellcheck disable=SC2030
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   assert_local_plugin localplugin localplugin
 }
@@ -239,7 +239,7 @@ EOF
 }
 
 @test "loads local plugin and dependencies from custom folder" {
-  # shellcheck disable=SC2031
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee bee::load_plugin localplugin
   assert_success
