@@ -808,8 +808,14 @@ bee::load_plugin_deps() {
 
 declare -Ag BEE_PLUGIN_MAP=()
 bee::map_plugins() {
-  local -a map=() conflicts=()
+  local -a map=() with_version=() without_version=() conflicts=()
   for plugin in "$@"; do
+    if [[ "${plugin%:*}" == "${plugin##*:}" ]]
+    then without_version+=("${plugin}")
+    else with_version+=("${plugin}")
+    fi
+  done
+  for plugin in "${with_version[@]}"; do
     bee::resolve_plugin "${plugin}"
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
@@ -822,7 +828,7 @@ bee::map_plugins() {
       fi
     fi
   done
-  for plugin in "$@"; do
+  for plugin in "${without_version[@]}"; do
     bee::resolve_plugin "${plugin}"
     ((!BEE_RESOLVE_PLUGIN_IS_LOCAL)) || continue
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
