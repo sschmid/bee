@@ -2,6 +2,7 @@ setup() {
   load 'test-helper.bash'
   _set_beerc
   _source_beerc
+  export TEST_PLUGIN_QUIET=1
 }
 
 @test "maps latest version" {
@@ -22,20 +23,18 @@ setup() {
   assert_output "testplugin:2.0.0"
 }
 
-@test "doesn't ignore duplicates with explicit version" {
+@test "ignores duplicates with explicit version" {
   run bee bee::map_plugins testplugin:1.0.0 testplugin:1.0.0
   assert_success
   cat << EOF | assert_output -
 testplugin:1.0.0
-testplugin:1.0.0
 EOF
 }
 
-@test "doesn't ignore duplicates without version" {
+@test "ignores duplicates without version" {
   run bee bee::map_plugins testplugin testplugin
   assert_success
   cat << EOF | assert_output -
-testplugin:2.0.0
 testplugin:2.0.0
 EOF
 }
@@ -44,7 +43,6 @@ EOF
   run bee bee::map_plugins testplugin:1.0.0 testplugin
   assert_success
   cat << EOF | assert_output -
-testplugin:1.0.0
 testplugin:1.0.0
 EOF
 }
@@ -75,9 +73,38 @@ othertestplugin:1.0.0
 EOF
 }
 
+@test "resolves plugins dependencies recursively" {
+  run bee bee::map_plugins testplugindepsdep testplugin
+  assert_success
+  cat << EOF | assert_output -
+testplugindepsdep:1.0.0
+testplugindeps:1.0.0
+testplugin:1.0.0
+othertestplugin:1.0.0
+EOF
+}
+
+@test "resolves plugins version specified in dependencies" {
+  run bee bee::map_plugins testplugin testplugindeps
+  assert_success
+  cat << EOF | assert_output -
+testplugindeps:1.0.0
+testplugin:1.0.0
+othertestplugin:1.0.0
+EOF
+}
+
 @test "runs plugin version specified in Beefile" {
   export TEST_PLUGIN_QUIET=1
   _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
+  run bee --quiet testplugin
+  assert_success
+  assert_output "testplugin 1.0.0 help"
+}
+
+@test "runs plugin version specified in dependencies" {
+  export TEST_PLUGIN_QUIET=1
+  _setup_beefile 'BEE_PLUGINS=(testplugindeps)'
   run bee --quiet testplugin
   assert_success
   assert_output "testplugin 1.0.0 help"

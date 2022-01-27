@@ -10,15 +10,21 @@ setup() {
 }
 
 @test "lists enabled plugins without version" {
-  _setup_beefile "BEE_PLUGINS=(testplugin)"
+  _setup_beefile "BEE_PLUGINS=(testplugin testplugindeps)"
   run bee plugins
   assert_success
-  assert_output "testplugin"
+  cat << 'EOF' | assert_output -
+testplugin
+testplugindeps
+EOF
 
-  _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0)"
+  _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 testplugindeps:1.0.0)"
   run bee plugins
   assert_success
-  assert_output "testplugin"
+  cat << 'EOF' | assert_output -
+testplugin
+testplugindeps
+EOF
 }
 
 @test "lists enabled plugins from all plugin paths" {
@@ -39,9 +45,7 @@ EOF
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   assert_success
-  cat << 'EOF' | assert_output -
-localplugin
-EOF
+  assert_output "localplugin"
 }
 
 @test "lists nothing when no Beefile" {
@@ -58,15 +62,21 @@ EOF
 }
 
 @test "lists enabled plugins with version" {
-  _setup_beefile "BEE_PLUGINS=(testplugin)"
+  _setup_beefile "BEE_PLUGINS=(testplugin testplugindeps)"
   run bee plugins --version
   assert_success
-  assert_output "testplugin:2.0.0"
+  cat << 'EOF' | assert_output -
+testplugin:1.0.0
+testplugindeps:1.0.0
+EOF
 
-  _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0)"
+  _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 testplugindeps:1.0.0)"
   run bee plugins --version
   assert_success
-  assert_output "testplugin:1.0.0"
+  cat << 'EOF' | assert_output -
+testplugin:1.0.0
+testplugindeps:1.0.0
+EOF
 }
 
 @test "lists local plugins with version" {

@@ -807,8 +807,36 @@ bee::load_plugin_deps() {
 }
 
 declare -Ag BEE_PLUGIN_MAP=()
+declare -Ag BEE_PLUGIN_MAP_LOCK=()
+declare -Ag BEE_PLUGIN_MAP_LATEST=()
+declare -ag BEE_PLUGIN_MAP_CONFLICTS=()
 bee::map_plugins() {
-  local -a map=() with_version=() without_version=() conflicts=()
+  bee::map_plugins_recursively "$@"
+  if ((${#BEE_PLUGIN_MAP_CONFLICTS[@]})); then
+    bee::log_error "Version conflicts:"
+    for conflict in "${BEE_PLUGIN_MAP_CONFLICTS[@]}"; do
+      echo "${conflict}"
+    done
+    exit 1
+  fi
+  for plugin_name in "${!BEE_PLUGIN_MAP_LATEST[@]}"; do
+    if [[ -v BEE_PLUGIN_MAP_LOCK["${plugin_name}"] ]]
+    then BEE_PLUGIN_MAP["${plugin_name}"]="${BEE_PLUGIN_MAP_LOCK["${plugin_name}"]}"
+    else BEE_PLUGIN_MAP["${plugin_name}"]="${BEE_PLUGIN_MAP_LATEST["${plugin_name}"]}"
+    fi
+  done
+  for plugin_name in "${!BEE_PLUGIN_MAP_LOCK[@]}"; do
+    if [[ ! -v BEE_PLUGIN_MAP["${plugin_name}"] ]]; then
+      BEE_PLUGIN_MAP["${plugin_name}"]="${BEE_PLUGIN_MAP_LOCK["${plugin_name}"]}"
+    fi
+  done
+  for plugin_name in "${!BEE_PLUGIN_MAP[@]}"; do
+    echo "${plugin_name}:${BEE_PLUGIN_MAP["${plugin_name}"]}"
+  done
+}
+
+bee::map_plugins_recursively() {
+  local -a with_version=() without_version=()
   for plugin in "$@"; do
     if [[ "${plugin%:*}" == "${plugin##*:}" ]]
     then without_version+=("${plugin}")
@@ -818,37 +846,37 @@ bee::map_plugins() {
   for plugin in "${with_version[@]}"; do
     bee::resolve_plugin "${plugin}"
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-      if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
-        BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
-        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
-      elif [[ "${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}" == "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
-        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
-      else
-        conflicts+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      if [[ ! -v BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+        BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
+      elif [[ "${BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]}" != "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
+        BEE_PLUGIN_MAP_CONFLICTS+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
       fi
+      bee::map_plugin_dependencies
     fi
   done
   for plugin in "${without_version[@]}"; do
     bee::resolve_plugin "${plugin}"
     ((!BEE_RESOLVE_PLUGIN_IS_LOCAL)) || continue
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-      if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
-        BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
-        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
-      else
-        map+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]}")
+      if [[ ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+        BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       fi
+      bee::map_plugin_dependencies
     fi
   done
-  if ((${#conflicts[@]})); then
-    bee::log_error "Version conflicts:"
-    for conflict in "${conflicts[@]}"; do
-      echo "${conflict}"
-    done
-    exit 1
-  fi
+}
 
-  echo "${map[*]}"
+bee::map_plugin_dependencies() {
+  if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"] ]]; then
+    source "${BEE_RESOLVE_PLUGIN_FULL_PATH}"
+    # shellcheck disable=SC2034
+    BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"]=1
+  fi
+  local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
+  if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+    # shellcheck disable=SC2046
+    bee::map_plugins_recursively $("${deps_func}")
+  fi
 }
 
 bee::mapped_plugin() {
