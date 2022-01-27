@@ -813,11 +813,7 @@ declare -ag BEE_PLUGIN_MAP_CONFLICTS=()
 bee::map_plugins() {
   bee::map_plugins_recursively "$@"
   if ((${#BEE_PLUGIN_MAP_CONFLICTS[@]})); then
-    bee::log_error "Version conflicts:"
-    for conflict in "${BEE_PLUGIN_MAP_CONFLICTS[@]}"; do
-      echo "${conflict}"
-    done
-    exit 1
+    bee::log_warn "Version conflicts:" "${BEE_PLUGIN_MAP_CONFLICTS[*]}"
   fi
   for plugin_name in "${!BEE_PLUGIN_MAP_LATEST[@]}"; do
     if [[ -v BEE_PLUGIN_MAP_LOCK["${plugin_name}"] ]]
@@ -848,8 +844,13 @@ bee::map_plugins_recursively() {
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
-      elif [[ "${BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]}" != "${BEE_RESOLVE_PLUGIN_VERSION}" ]]; then
-        BEE_PLUGIN_MAP_CONFLICTS+=("${BEE_RESOLVE_PLUGIN_NAME}:${BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
+      else
+        local locked_version="${BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]}"
+        local resolved_version="${BEE_RESOLVE_PLUGIN_VERSION}"
+        if [[ "${locked_version}" != "${resolved_version}" ]]; then
+          BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]="$(echo -e "${locked_version}\n${resolved_version}" | sort -rV | head -n 1)"
+          BEE_PLUGIN_MAP_CONFLICTS+=("${BEE_RESOLVE_PLUGIN_NAME}:${locked_version} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${resolved_version}")
+        fi
       fi
       bee::map_plugin_dependencies
     fi

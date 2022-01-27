@@ -57,10 +57,11 @@ EOF
 
 @test "detects version conflict" {
   run bee bee::map_plugins testplugin:1.0.0 testplugin:2.0.0
-  assert_failure
+  assert_success
   cat << EOF | assert_output -
-${BEE_ERR} Version conflicts:
+${BEE_WARN} Version conflicts:
 testplugin:1.0.0 <-> testplugin:2.0.0
+testplugin:2.0.0
 EOF
 }
 
