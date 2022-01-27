@@ -857,9 +857,8 @@ bee::map_plugins_recursively() {
   done
   for plugin in "${without_version[@]}"; do
     bee::resolve_plugin "${plugin}"
-    ((!BEE_RESOLVE_PLUGIN_IS_LOCAL)) || continue
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-      if [[ ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+      if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       fi
       bee::map_plugin_dependencies

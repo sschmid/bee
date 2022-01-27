@@ -47,12 +47,15 @@ testplugin:1.0.0
 EOF
 }
 
-@test "doesn't map local plugin " {
+@test "doesn't map local plugin, but dependencies " {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee bee::map_plugins localplugin
   assert_success
-  refute_output
+  cat << EOF | assert_output -
+testplugin:1.0.0
+othertestplugin:1.0.0
+EOF
 }
 
 @test "detects version conflict" {
