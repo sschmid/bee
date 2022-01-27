@@ -31,7 +31,18 @@ setup() {
 customtestplugin
 testplugin
 EOF
- }
+}
+
+@test "lists local plugins" {
+  _setup_beefile "BEE_PLUGINS=(localplugin)"
+  # shellcheck disable=SC2030
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee plugins
+  assert_success
+  cat << 'EOF' | assert_output -
+localplugin
+EOF
+}
 
 @test "lists nothing when no Beefile" {
   run bee plugins
@@ -58,6 +69,17 @@ EOF
   assert_output "testplugin:1.0.0"
 }
 
+@test "lists local plugins with version" {
+  _setup_beefile "BEE_PLUGINS=(localplugin)"
+  # shellcheck disable=SC2030
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee plugins --version
+  assert_success
+  cat << 'EOF' | assert_output -
+localplugin:local
+EOF
+}
+
 @test "lists unknown plugins with version as missing" {
   _setup_beefile "BEE_PLUGINS=(unknown:9.0.0)"
   run bee plugins --version
@@ -77,7 +99,7 @@ EOF
   assert_line "testplugindepsdep"
   assert_line "testpluginmissingdep"
   assert_line "customtestplugin"
- }
+}
 
 @test "lists outdated" {
   _setup_beefile "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"

@@ -230,7 +230,7 @@ EOF
 @test "loads plugin and dependencies from custom folder" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  run bee bee::load_plugin "customtestplugin"
+  run bee bee::load_plugin customtestplugin
   assert_success
   cat << 'EOF' | assert_output -
 # customtestplugin 1.0.0 sourced
@@ -241,7 +241,7 @@ EOF
 @test "loads local plugin and dependencies from custom folder" {
   # shellcheck disable=SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  run bee bee::load_plugin "localplugin"
+  run bee bee::load_plugin localplugin
   assert_success
   cat << 'EOF' | assert_output -
 # localplugin sourced

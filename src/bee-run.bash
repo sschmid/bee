@@ -824,6 +824,7 @@ bee::map_plugins() {
   done
   for plugin in "$@"; do
     bee::resolve_plugin "${plugin}"
+    ((!BEE_RESOLVE_PLUGIN_IS_LOCAL)) || continue
     if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"

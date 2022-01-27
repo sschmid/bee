@@ -4,13 +4,13 @@ setup() {
   _source_beerc
 }
 
-@test "resolves latest version" {
+@test "maps latest version" {
   run bee bee::map_plugins testplugin
   assert_success
   assert_output "testplugin:2.0.0"
 }
 
-@test "sets specified version" {
+@test "maps specified version" {
   run bee bee::map_plugins testplugin:1.0.0
   assert_success
   assert_output "testplugin:1.0.0"
@@ -40,13 +40,21 @@ testplugin:2.0.0
 EOF
 }
 
-@test "resolves version for plugin name based on specified version" {
+@test "maps version for plugin name based on specified version" {
   run bee bee::map_plugins testplugin:1.0.0 testplugin
   assert_success
   cat << EOF | assert_output -
 testplugin:1.0.0
 testplugin:1.0.0
 EOF
+}
+
+@test "doesn't map local plugin " {
+  # shellcheck disable=SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee bee::map_plugins localplugin
+  assert_success
+  refute_output
 }
 
 @test "detects version conflict" {
@@ -58,12 +66,12 @@ testplugin:1.0.0 <-> testplugin:2.0.0
 EOF
 }
 
-@test "resolves multiple plugins" {
-  run bee bee::map_plugins testplugindepsdep testplugindeps
+@test "maps multiple plugins" {
+  run bee bee::map_plugins testplugin othertestplugin
   assert_success
   cat << EOF | assert_output -
-testplugindepsdep:1.0.0
-testplugindeps:1.0.0
+testplugin:2.0.0
+othertestplugin:1.0.0
 EOF
 }
 
