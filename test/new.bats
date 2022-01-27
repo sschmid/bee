@@ -12,17 +12,21 @@ setup() {
 }
 
 @test "creates custom Beefile" {
-  run bee new "${BATS_TEST_TMPDIR}/Beefile"
+  cd "${BATS_TEST_TMPDIR}"
+  mkdir test
+  run bee new "test/Beefile"
   assert_success
-  assert_output "Created ${BATS_TEST_TMPDIR}/Beefile"
-  assert_file_exist "${BATS_TEST_TMPDIR}/Beefile"
+  assert_output "Created test/Beefile"
+  assert_file_exist "${BATS_TEST_TMPDIR}/test/Beefile"
 }
 
 @test "doesn't create Beefile if already exists" {
-  run bee new "${BATS_TEST_TMPDIR}/Beefile"
-  run bee new "${BATS_TEST_TMPDIR}/Beefile"
+  cd "${BATS_TEST_TMPDIR}"
+  mkdir test
+  run bee new "test/Beefile"
+  run bee new "test/Beefile"
   assert_failure
-  assert_output "${BEE_ERR} ${BATS_TEST_TMPDIR}/Beefile already exists"
+  assert_output "${BEE_ERR} test/Beefile already exists"
 }
 
 @test "sets default vars" {
