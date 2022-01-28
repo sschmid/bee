@@ -857,11 +857,13 @@ bee::map_plugins_recursively() {
   done
   for plugin in "${without_version[@]}"; do
     bee::resolve_plugin "${plugin}"
-    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-      if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
-        BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
+    if [[ ! -v BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+      if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+        if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+          BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
+        fi
+        bee::map_plugin_dependencies
       fi
-      bee::map_plugin_dependencies
     fi
   done
 }
@@ -871,11 +873,11 @@ bee::map_plugin_dependencies() {
     source "${BEE_RESOLVE_PLUGIN_FULL_PATH}"
     # shellcheck disable=SC2034
     BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"]=1
-  fi
-  local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
-  if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-    # shellcheck disable=SC2046
-    bee::map_plugins_recursively $("${deps_func}")
+    local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
+    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+      # shellcheck disable=SC2046
+      bee::map_plugins_recursively $("${deps_func}")
+    fi
   fi
 }
 

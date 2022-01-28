@@ -99,8 +99,6 @@ EOF
 }
 
 @test "runs plugin version specified in Beefile" {
-  # shellcheck disable=SC2030,SC2031
-  export TEST_PLUGIN_QUIET=1
   _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
   run bee --quiet testplugin
   assert_success
@@ -108,9 +106,21 @@ EOF
 }
 
 @test "runs plugin version specified in dependencies" {
-  # shellcheck disable=SC2030,SC2031
-  export TEST_PLUGIN_QUIET=1
   _setup_beefile 'BEE_PLUGINS=(testplugindeps)'
+  run bee --quiet testplugin
+  assert_success
+  assert_output "testplugin 1.0.0 help"
+}
+
+@test "runs mapped plugin version" {
+  _setup_beefile 'BEE_PLUGINS=(testplugin testplugin:1.0.0)'
+  run bee --quiet testplugin
+  assert_success
+  assert_output "testplugin 1.0.0 help"
+}
+
+@test "runs mapped plugin version (caching test)" {
+  _setup_beefile 'BEE_PLUGINS=(testplugindepslatest testplugindeps)'
   run bee --quiet testplugin
   assert_success
   assert_output "testplugin 1.0.0 help"
