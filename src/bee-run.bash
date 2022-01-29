@@ -52,12 +52,9 @@ EOF
 ################################################################################
 bee::cache::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local cmd="${1:-}" comps=(--clear)
-    compgen -W "${comps[*]}" -- "${cmd}"
+    echo --clear
   elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
-    if [[ -d "${BEE_CACHES_PATH}" ]]; then
-      ls "${BEE_CACHES_PATH}"
-    fi
+    [[ ! -d "${BEE_CACHES_PATH}" ]] || ls "${BEE_CACHES_PATH}"
   fi
 }
 
@@ -136,9 +133,7 @@ bee::hubs() {
       cache_path="$(bee::to_cache_path "${url}")"
       if [[ -n "$cache_path" ]]; then
         cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
-        if [[ -d "${cache_path}" ]]; then
-          ls "${cache_path}"
-        fi
+        [[ ! -d "${cache_path}" ]] || ls "${cache_path}"
       fi
     done
   else
@@ -540,7 +535,7 @@ bee::lint() {
 
         key="license file"
         local license_file="LICENSE.txt"
-        [[ ! -f "${license_file}" ]] && license_file="null"
+        [[ -f "${license_file}" ]] || license_file="null"
         bee::lint::assert_exist "${key}" "${license_file}"
 
         key="sha256"
@@ -564,9 +559,7 @@ bee::lint() {
       popd > /dev/null || exit 1
     fi
 
-    if ((BEE_HUB_LINT_ERROR)); then
-      exit 1
-    fi
+    ((!BEE_HUB_LINT_ERROR)) || exit 1
   fi
 }
 
@@ -718,9 +711,7 @@ bee::resolve() {
     path="${path}/${plugin_version}/${file}"
   fi
 
-  if [[ -f "${path}" ]]; then
-    echo -e "${plugin_name}\t${plugin_version}\t${plugins_path}/${plugin_name}\t${is_local}"
-  fi
+  [[ ! -f "${path}" ]] || echo -e "${plugin_name}\t${plugin_version}\t${plugins_path}/${plugin_name}\t${is_local}"
 }
 
 BEE_RESOLVE_PLUGIN_NAME=""
@@ -849,27 +840,20 @@ bee::map_plugins_recursively() {
           BEE_PLUGIN_MAP_CONFLICTS+=("${BEE_RESOLVE_PLUGIN_NAME}:${locked_version} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${resolved_version}")
         fi
       fi
-      bee::map_plugin_dependencies
+      # shellcheck disable=SC2046
+      [[ ! -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]] || bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
     fi
   done
   for plugin in "${without_version[@]}"; do
     bee::resolve_plugin "${plugin}"
-    if [[ ! -v BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
-      if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
-        if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
-          BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
-        fi
-        bee::map_plugin_dependencies
+    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+      if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
+        BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       fi
+      # shellcheck disable=SC2046
+      [[ ! -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]] || bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
     fi
   done
-}
-
-bee::map_plugin_dependencies() {
-  if [[ -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]]; then
-    # shellcheck disable=SC2046
-    bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
-  fi
 }
 
 bee::mapped_plugin() {
@@ -931,7 +915,7 @@ bee::pull() {
     now=$(date +%s)
     ts="$(cat "${cache_file}")"
     delta=$((now - ts))
-    ((delta > BEE_HUB_PULL_COOLDOWN)) && pull=1
+    ((delta < BEE_HUB_PULL_COOLDOWN)) || pull=1
   fi
 
   if ((pull)); then
@@ -996,8 +980,7 @@ bee::update() {
 bee::version::comp() {
   local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
-    local comps=(--latest)
-    compgen -W "${comps[*]}" -- "${cmd}"
+    echo --latest
   elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
     case "${cmd}" in
       --latest) echo "--cached" ;;
