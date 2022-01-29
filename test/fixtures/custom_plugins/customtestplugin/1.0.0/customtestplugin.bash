@@ -9,7 +9,3 @@ echo "# customtestplugin 1.0.0 sourced"
 customtestplugin() {
   echo "hello from customtestplugin 1.0.0"
 }
-
-customtestplugin::deps() {
-  echo "testplugin:1.0.0"
-}

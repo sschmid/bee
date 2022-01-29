@@ -11,11 +11,6 @@ testplugindeps() {
   fi
 }
 
-testplugindeps::deps() {
-  echo "testplugin:1.0.0"
-  echo "othertestplugin:1.0.0"
-}
-
 testplugindeps::greet() {
   echo "greeting from testplugindeps 1.0.0"
   testplugin::greet "$@"

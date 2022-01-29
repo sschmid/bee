@@ -319,12 +319,11 @@ bee::install::recursively() {
       bee::load_plugin "${plugin}"
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
         echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
-        local deps_func="${BEE_LOAD_PLUGIN_NAME}::deps"
-        if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
+        if [[ -f "${BEE_LOAD_PLUGIN_JSON_PATH}" ]]; then
           # shellcheck disable=SC2046,SC2086
           if ((i == n - 1))
-          then bee::install::recursively ${force} ${lock} "${indent}    " $("${deps_func}")
-          else bee::install::recursively ${force} ${lock} "${indent}│   " $("${deps_func}")
+          then bee::install::recursively ${force} ${lock} "${indent}    " $(jq -r '.dependencies[]?' "${BEE_LOAD_PLUGIN_JSON_PATH}")
+          else bee::install::recursively ${force} ${lock} "${indent}│   " $(jq -r '.dependencies[]?' "${BEE_LOAD_PLUGIN_JSON_PATH}")
           fi
         fi
       else
@@ -550,26 +549,18 @@ bee::lint() {
 
         key="plugin file"
         local plugin_file="${plugin_name}.bash"
-        if [[ ! -f "${plugin_file}" ]]; then
-          plugin_file="null"
-          bee::lint::assert_exist "${key}" "${plugin_file}"
-        else
-          bee::lint::assert_exist "${key}" "${plugin_file}"
+        [[ -f "${plugin_file}" ]] || plugin_file="null"
+        bee::lint::assert_exist "${key}" "${plugin_file}"
 
-          key="dependencies"
-          local deps=("$(
-            source "${plugin_file}" > /dev/null
-            local deps_func="${plugin_name}::deps"
-            if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-              "${deps_func}"
-            else
-              echo "null"
-            fi
-          )")
-          bee::lint::assert_equal "${key}" \
-            "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
-            "$(echo "${deps[@]}" | tr '\n' ' ')"
+        key="dependencies"
+        local deps
+        if [[ -f plugin.json ]]
+        then deps="$(jq -r '.dependencies[]? // null' plugin.json)"
+        else deps="null"
         fi
+        bee::lint::assert_equal "${key}" \
+          "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
+          "$(echo "${deps}" | tr '\n' ' ')"
       popd > /dev/null || exit 1
     fi
 
@@ -737,6 +728,7 @@ BEE_RESOLVE_PLUGIN_VERSION=""
 BEE_RESOLVE_PLUGIN_IS_LOCAL=""
 BEE_RESOLVE_PLUGIN_BASE_PATH=""
 BEE_RESOLVE_PLUGIN_FULL_PATH=""
+BEE_RESOLVE_PLUGIN_JSON_PATH=""
 bee::resolve_plugin() {
   local plugin="$1" plugin_name plugin_version plugin_path is_local
   local -i found=0
@@ -747,9 +739,12 @@ bee::resolve_plugin() {
       BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}"
       BEE_RESOLVE_PLUGIN_IS_LOCAL=${is_local}
       BEE_RESOLVE_PLUGIN_BASE_PATH="${plugin_path}"
-      if ((BEE_RESOLVE_PLUGIN_IS_LOCAL))
-      then BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
-      else BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+      if ((BEE_RESOLVE_PLUGIN_IS_LOCAL)); then
+        BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+        BEE_RESOLVE_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/plugin.json"
+      else
+        BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_VERSION}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
+        BEE_RESOLVE_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_VERSION}/plugin.json"
       fi
     done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash" 1)
     ((found)) && break
@@ -760,11 +755,13 @@ bee::resolve_plugin() {
     BEE_RESOLVE_PLUGIN_IS_LOCAL=0
     BEE_RESOLVE_PLUGIN_BASE_PATH=""
     BEE_RESOLVE_PLUGIN_FULL_PATH=""
+    BEE_RESOLVE_PLUGIN_JSON_PATH=""
   fi
 }
 
 BEE_LOAD_PLUGIN_NAME=""
 BEE_LOAD_PLUGIN_PATH=""
+BEE_LOAD_PLUGIN_JSON_PATH=""
 declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 bee::load_plugin() {
@@ -773,6 +770,7 @@ bee::load_plugin() {
   if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
     BEE_LOAD_PLUGIN_NAME="${BEE_RESOLVE_PLUGIN_NAME}"
     BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_FULL_PATH}"
+    BEE_LOAD_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_JSON_PATH}"
     bee::load_plugin_deps
     if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
@@ -783,6 +781,7 @@ bee::load_plugin() {
   else
     BEE_LOAD_PLUGIN_NAME=""
     BEE_LOAD_PLUGIN_PATH=""
+    BEE_LOAD_PLUGIN_JSON_PATH=""
   fi
 }
 
@@ -790,11 +789,9 @@ bee::load_plugin_deps() {
   if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"] ]]; then
     bee::load_os "$(dirname "${BEE_RESOLVE_PLUGIN_FULL_PATH}")"
     source "${BEE_RESOLVE_PLUGIN_FULL_PATH}"
-    # shellcheck disable=SC2034
     BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"]=1
-    local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
-    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-      for dep in $("${deps_func}"); do
+    if [[ -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]]; then
+      for dep in $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}"); do
         bee::mapped_plugin "${dep}"
         if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
           bee::load_plugin_deps
@@ -869,14 +866,9 @@ bee::map_plugins_recursively() {
 }
 
 bee::map_plugin_dependencies() {
-  local deps=("$(
-    source "${BEE_RESOLVE_PLUGIN_FULL_PATH}" > /dev/null
-    local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
-    [[ $(command -v "${deps_func}") == "${deps_func}" ]]&& "${deps_func}"
-  )")
-  if ((${#deps[@]})); then
-    # shellcheck disable=SC2068
-    bee::map_plugins_recursively ${deps[@]}
+  if [[ -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]]; then
+    # shellcheck disable=SC2046
+    bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
   fi
 }
 

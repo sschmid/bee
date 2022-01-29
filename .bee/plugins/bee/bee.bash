@@ -1,8 +1,3 @@
-bee::deps() {
-  echo "changelog"
-  echo "github"
-}
-
 bee::release() {
   changelog::merge
   git add .

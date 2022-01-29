@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "testdep:1.2.3",
+    "othertestdep:1.2.3"
+  ]
+}

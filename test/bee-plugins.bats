@@ -7,33 +7,35 @@ setup() {
 assert_plugin() {
   local plugin="$1" expected_name="$2" expected_version="$3"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH BEE_RESOLVE_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
 ${expected_name}
 ${expected_version}
 ${BEE_PLUGINS_PATHS}/${expected_name}
 ${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
+${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/plugin.json
 EOF
 }
 
 assert_local_plugin() {
   local plugin="$1" expected_name="$2"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH BEE_RESOLVE_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
 ${expected_name}
 local
 ${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}
 ${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}/${expected_name}.bash
+${BATS_TEST_DIRNAME}/fixtures/custom_plugins/${expected_name}/plugin.json
 EOF
 }
 
 assert_no_plugin() {
   local plugin="$1"
   run bee --batch "bee::resolve_plugin ${plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH BEE_RESOLVE_PLUGIN_JSON_PATH"
   assert_success
   refute_output
 }
@@ -43,12 +45,13 @@ assert_last_plugin() {
   run bee --batch \
     "bee::resolve_plugin ${first_plugin}" \
     "bee::resolve_plugin ${last_plugin}" \
-    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH"
+    "env BEE_RESOLVE_PLUGIN_NAME BEE_RESOLVE_PLUGIN_VERSION BEE_RESOLVE_PLUGIN_BASE_PATH BEE_RESOLVE_PLUGIN_FULL_PATH BEE_RESOLVE_PLUGIN_JSON_PATH"
   cat << EOF | assert_output -
 ${expected_name}
 ${expected_version}
 ${BEE_PLUGINS_PATHS}/${expected_name}
 ${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/${expected_name}.bash
+${BEE_PLUGINS_PATHS}/${expected_name}/${expected_version}/plugin.json
 EOF
 }
 
@@ -104,11 +107,13 @@ EOF
 @test "loads plugin" {
   run bee --batch \
     "bee::load_plugin testplugin:1.0.0" \
-    "env BEE_LOAD_PLUGIN_NAME"
+    "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
 # testplugin 1.0.0 sourced
 testplugin
+${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/1.0.0/testplugin.bash
+${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/1.0.0/plugin.json
 EOF
 }
 
@@ -128,19 +133,21 @@ EOF
   run bee --batch \
     "bee::load_plugin testplugin:1.0.0" \
     "bee::load_plugin othertestplugin:1.0.0" \
-    "env BEE_LOAD_PLUGIN_NAME"
+    "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
 # testplugin 1.0.0 sourced
 # othertestplugin 1.0.0 sourced
 othertestplugin
+${BATS_TEST_DIRNAME}/fixtures/plugins/othertestplugin/1.0.0/othertestplugin.bash
+${BATS_TEST_DIRNAME}/fixtures/plugins/othertestplugin/1.0.0/plugin.json
 EOF
 }
 
 @test "doesn't load unknown plugin" {
   run bee --batch \
     "bee::load_plugin unknown" \
-    "env BEE_LOAD_PLUGIN_NAME"
+    "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   refute_output
 }
@@ -149,7 +156,7 @@ EOF
   run bee --batch \
     "bee::load_plugin testplugin:1.0.0" \
     "bee::load_plugin unknown" \
-    "env BEE_LOAD_PLUGIN_NAME"
+    "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   assert_output "# testplugin 1.0.0 sourced"
 }
@@ -157,7 +164,7 @@ EOF
 @test "loads plugin dependencies" {
   run bee --batch \
     "bee::load_plugin testplugindepsdep" \
-    "env BEE_LOAD_PLUGIN_NAME"
+    "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
 # testplugindepsdep 1.0.0 sourced
@@ -165,6 +172,8 @@ EOF
 # testplugin 1.0.0 sourced
 # othertestplugin 1.0.0 sourced
 testplugindepsdep
+${BATS_TEST_DIRNAME}/fixtures/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash
+${BATS_TEST_DIRNAME}/fixtures/plugins/testplugindepsdep/1.0.0/plugin.json
 EOF
 }
 

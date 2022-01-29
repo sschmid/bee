@@ -34,15 +34,6 @@ setup() {
   assert_output "hello from testplugindepsdep 1.0.0 - test"
 }
 
-@test "prints deps" {
-  run testplugindepsdep::deps
-  assert_success
-  cat << 'EOF' | assert_output -
-testplugindeps:1.0.0
-testplugin:1.0.0
-EOF
-}
-
 @test "fails to call deps" {
   run testplugindepsdep::greet
   assert_failure

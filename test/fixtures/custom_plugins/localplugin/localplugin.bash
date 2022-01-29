@@ -11,8 +11,3 @@ fi
 localplugin() {
   echo "hello from localplugin"
 }
-
-localplugin::deps() {
-  echo "testplugin:1.0.0"
-  echo "othertestplugin:1.0.0"
-}

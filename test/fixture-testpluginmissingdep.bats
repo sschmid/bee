@@ -33,13 +33,3 @@ setup() {
   assert_success
   assert_output "hello from testpluginmissingdep 1.0.0 - test"
 }
-
-@test "prints deps" {
-  run testpluginmissingdep::deps
-  assert_success
-  cat << 'EOF' | assert_output -
-testplugindepsdep:1.0.0
-missing:1.0.0
-othermissing:1.0.0
-EOF
-}

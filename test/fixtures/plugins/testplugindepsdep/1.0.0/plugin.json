@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "testplugindeps:1.0.0",
+    "testplugin:1.0.0"
+  ]
+}
