@@ -119,9 +119,9 @@ EOF
   assert_output "testplugin 1.0.0 help"
 }
 
-@test "runs mapped plugin version (caching test)" {
+@test "doesn't keep unmapped sourced plugins" {
   _setup_beefile 'BEE_PLUGINS=(testplugindepslatest testplugindeps)'
-  run bee --quiet testplugin
-  assert_success
-  assert_output "testplugin 1.0.0 help"
+  run bee --quiet testplugin comp
+  assert_failure
+  assert_output --partial "testplugin::comp: command not found"
 }

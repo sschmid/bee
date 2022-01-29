@@ -869,15 +869,14 @@ bee::map_plugins_recursively() {
 }
 
 bee::map_plugin_dependencies() {
-  if [[ ! -v BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"] ]]; then
-    source "${BEE_RESOLVE_PLUGIN_FULL_PATH}"
-    # shellcheck disable=SC2034
-    BEE_LOAD_PLUGIN_LOADED["${BEE_RESOLVE_PLUGIN_FULL_PATH}"]=1
+  local deps=("$(
+    source "${BEE_RESOLVE_PLUGIN_FULL_PATH}" > /dev/null
     local deps_func="${BEE_RESOLVE_PLUGIN_NAME}::deps"
-    if [[ $(command -v "${deps_func}") == "${deps_func}" ]]; then
-      # shellcheck disable=SC2046
-      bee::map_plugins_recursively $("${deps_func}")
-    fi
+    [[ $(command -v "${deps_func}") == "${deps_func}" ]]&& "${deps_func}"
+  )")
+  if ((${#deps[@]})); then
+    # shellcheck disable=SC2068
+    bee::map_plugins_recursively ${deps[@]}
   fi
 }
 
