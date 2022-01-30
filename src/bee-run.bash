@@ -840,8 +840,7 @@ bee::map_plugins_recursively() {
           BEE_PLUGIN_MAP_CONFLICTS+=("${BEE_RESOLVE_PLUGIN_NAME}:${locked_version} <-> ${BEE_RESOLVE_PLUGIN_NAME}:${resolved_version}")
         fi
       fi
-      # shellcheck disable=SC2046
-      [[ ! -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]] || bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
+      bee::map_plugin_dependencies
     fi
   done
   for plugin in "${without_version[@]}"; do
@@ -850,10 +849,20 @@ bee::map_plugins_recursively() {
       if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       fi
-      # shellcheck disable=SC2046
-      [[ ! -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]] || bee::map_plugins_recursively $(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")
+      bee::map_plugin_dependencies
     fi
   done
+}
+
+bee::map_plugin_dependencies() {
+  if [[ -f "${BEE_RESOLVE_PLUGIN_JSON_PATH}" ]]; then
+    local deps
+    deps="$(jq -r '.dependencies[]?' "${BEE_RESOLVE_PLUGIN_JSON_PATH}")"
+    if [[ -n "${deps}" ]]; then
+      # shellcheck disable=SC2086
+      bee::map_plugins_recursively ${deps}
+    fi
+  fi
 }
 
 bee::mapped_plugin() {
