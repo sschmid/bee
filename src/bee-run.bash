@@ -1215,9 +1215,10 @@ bee::run() {
     --) shift; break ;; *) break ;;
   esac done
 
-  [[ -v BEE_PLUGINS ]] && bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
-
   if (($#)); then
+
+    [[ -v BEE_PLUGINS ]] && bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
+
     case "$1" in
       cache) shift; bee::cache "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
