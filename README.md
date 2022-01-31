@@ -1,12 +1,21 @@
+# 🐝 bee - plugin-based bash automation
+
 <p align="center">
     <img src="https://raw.githubusercontent.com/sschmid/bee/main/readme/bee-header.png" alt="bee bash automation">
 </p>
 
-# 🐝 bee - plugin-based bash automation
+<p align="center">
+  <a href="https://github.com/sschmid/bee/actions/workflows/tests.yml">
+      <img alt="Tests" src="https://github.com/sschmid/bee/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="https://gitter.im/sschmid/bee">
+      <img alt="Join the chat at https://gitter.im/sschmid/bee" src="https://img.shields.io/badge/gitter-chat-ED1965.svg?logo=gitter"></a>
+  <a href="https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2Fsschmid%2Fbee&screen_name=s_schmid&tw_p=followbutton">
+      <img src="https://img.shields.io/twitter/follow/s_schmid" alt="Twitter Follow Me"></a>
+</p>
 
-[![Join the chat at https://gitter.im/sschmid/bee](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/sschmid/bee)
-[![Twitter @s_schmid](https://img.shields.io/badge/twitter-follow%20%40s__schmid-blue.svg)](https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2Fsschmid%2Fbee&screen_name=s_schmid&tw_p=followbutton)
-[![Latest release](https://img.shields.io/github/release/sschmid/bee.svg)](https://github.com/sschmid/bee/releases)
+<h1 align="center">
+  <i>Automate Everything</i>
+</h1>
 
 ## Automate your development and release process
 
@@ -14,29 +23,30 @@ bee is an open source platform aimed to simplify and standardize automation and 
 bee lets you automate every aspect of your development and release workflow.
 bee runs everywhere - "it's just bash"
 
-*__Automate the entire process from building your project to uploading it to the app stores__*
+*__Automate the entire process from building your app to uploading it to the app stores__*
 
 Combine bee with continuous integration tools such as [Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
 build and distribute your applications.
 
 [**🐝 Continuous Integration**](https://github.com/sschmid/bee/wiki/Continuous-Integration)
 
-## Extending with Plugins
+## Plugins
 
 bee is as a plugin launcher with package management functionality.
 Plugins are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
 
 You can register your own plugin at beehub by creating a pull request.
-You can also create your own custom register or local plugins for your personal or private use.
+You can also create your own custom registers or local plugins for your personal or private use.
 
 Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to beehub!
 Share your plugins with the bee community so everyone can start saving time today.
 
-Plugins and commands can easily be discovered with bee's built-in auto-completion! (see [wiki](https://github.com/sschmid/bee/wiki/bee-bash-completion))
+Plugins and commands can easily be discovered with bee's built-in auto-completion! (see [bee-completion](#bee-completion))
 
 [**🐝 Explore plugins**](https://github.com/sschmid/beehub)
 
+--------------------------------------------------------------------------------
 
 ## Install
 
@@ -46,6 +56,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install
 
 
 ## bee completion
+
+bee automatically completes plugins and makes working with plugins fun and easy.
 
 Add auto-completion support for bee
 
@@ -70,14 +82,35 @@ bee update
 
 ## Customize
 
-```
-vim ~/.beerc
-```
+bee is very flexible and can be customized heavily.
+See [bee](https://github.com/sschmid/bee/blob/main/src/bee#L15-L32) and
+[bee-run.bash](https://github.com/sschmid/bee/blob/main/src/bee-run.bash#L2-L5)
+and overwrite default values in `~/.beerc`
 
+--------------------------------------------------------------------------------
 
 ## Example
 
-Compose custom functions using existing bee plugins
+Run individual plugin functions like this:
+```bash
+bee semver major
+bee changelog merge
+bee github create_release
+```
+
+or batch them for more efficiency
+```bash
+bee --batch \
+    'semver major' \
+    'changelog merge' \
+    'unity execute_method BuildIOS' \
+    'ios archive_project' \
+    'ios export' \
+    'ios upload' \
+    'github create_release'
+```
+
+or compose custom functions using existing bee plugins
 ```bash
 app::release() {
   semver::major
@@ -87,7 +120,7 @@ app::release() {
   ios::export
   ios::upload
   github::create_release
-  slack::message ${channel} "New release $(semver::read)"
+  slack::message $channel "New release $(semver::read)"
 }
 ```
 
@@ -97,14 +130,14 @@ bee app release
 ```
 
 Explanation
-- `semver::major` - bump the major version
-- `changelog::merge` - merge the latest changes into the changelog
-- `unity::execute_method BuildIOS` - build the Unity project
-- `ios::archive_project` - archive xcode project
-- `ios::export` - export archive
-- `ios::upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
-- `github::create_release` - create a github release and optionally attach artifacts
-- `slack::message` - send a message via slack to notify the team about a new release
+- `semver major` - bump the major version
+- `changelog merge` - merge the latest changes into the changelog
+- `unity execute_method BuildIOS` - build the Unity project
+- `ios archive_project` - archive xcode project
+- `ios export` - export archive
+- `ios upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
+- `github create_release` - create a github release and optionally attach artifacts
+- `slack message` - send a message via slack to notify the team about a new release
 
 
 ## Learn more
