@@ -223,7 +223,9 @@ bee::install::comp() {
   fi
 }
 
+declare -Ag BEE_INSTALL_HASHES=()
 bee::install() {
+  BEE_INSTALL_HASHES=()
   bee::pull
   local -i force=0
   while (($#)); do case "$1" in
@@ -275,7 +277,12 @@ bee::install::recursively() {
             git -c advice.detachedHead=false clone -q --depth 1 --branch "${tag}" "${git}" "${plugin_path}" || true
           fi
           if [[ -d "${plugin_path}" ]]; then
-            bee::hash "${plugin_path}" > /dev/null
+            if [[ -v BEE_INSTALL_HASHES["${plugin_path}"] ]]; then
+              BEE_HUB_HASH_RESULT="${BEE_INSTALL_HASHES["${plugin_path}"]}"
+            else
+              bee::hash "${plugin_path}" > /dev/null
+              BEE_INSTALL_HASHES["${plugin_path}"]="${BEE_HUB_HASH_RESULT}"
+            fi
             if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
               if ((force)); then
                 bee::log_warn "${plugin_name}:${plugin_version} sha256 mismatch!" \
