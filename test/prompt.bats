@@ -16,7 +16,7 @@ setup() {
   _setup_beefile
   run bee prompt
   assert_success
-  assert_output "${BEE_ICON} 1.0.0"
+  assert_output "${BEE_ICON} $(cat "${PROJECT_ROOT}/version.txt")"
 }
 
 @test "mark with asterisk when newer version is available" {
@@ -24,5 +24,5 @@ setup() {
   _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
   run bee prompt
   assert_success
-  assert_output "${BEE_ICON} 1.0.0*"
+  assert_output "${BEE_ICON} $(cat "${PROJECT_ROOT}/version.txt")*"
 }
