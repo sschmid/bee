@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - run: test/run --docker
       - run: src/bee install
       - run: src/bee semver ${{ github.event.inputs.semver }}
