@@ -1,12 +1,14 @@
 name: Tests
+
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   release:
     types: [published]
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - run: test/run --docker
+      - uses: actions/checkout@v2
+      - run: test/run --docker

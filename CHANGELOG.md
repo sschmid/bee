@@ -48,9 +48,12 @@ By the time of this release, these plugins are available:
 - https://github.com/sschmid/bee-unity
 - https://github.com/sschmid/bee-version
 
-bee now functions as a plugin launcher with package management functionality. The plugins above are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
+bee now functions as a plugin launcher with package management functionality.
+The plugins above are registered at beehub which is the
+official bee plugin register: https://github.com/sschmid/beehub
 
-You can register your own plugin at beehub by creating a pull request. You can also create your own custom register for your personal or private plugins.
+You can register your own plugin at beehub by creating a pull request. You can
+also create your own custom register for your personal or private plugins.
 
 Please refer to the [README.md](https://github.com/sschmid/bee/blob/main/README.md) for more information.
 

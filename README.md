@@ -38,6 +38,43 @@ Plugins and commands can easily be discovered with bee's built-in auto-completio
 [**🐝 Explore plugins**](https://github.com/sschmid/beehub)
 
 
+## Install
+
+```
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
+```
+
+
+## bee completion
+
+Add auto-completion support for bee
+
+```
+echo "complete -C bee bee" >> ~/.bashrc
+```
+
+If you use [zsh](https://ohmyz.sh/) add those lines to your `~/.zshrc`
+
+```
+autoload bashcompinit
+bashcompinit
+complete -C bee bee
+```
+
+## Update
+
+```
+bee update
+```
+
+
+## Customize
+
+```
+vim ~/.beerc
+```
+
+
 ## Example
 
 Compose custom functions using existing bee plugins
@@ -68,27 +105,6 @@ Explanation
 - `ios::upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
 - `github::create_release` - create a github release and optionally attach artifacts
 - `slack::message` - send a message via slack to notify the team about a new release
-
-
-## Install
-
-```
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
-```
-
-
-## Update
-
-```
-bee update
-```
-
-
-## Customize
-
-```
-vim ~/.beerc
-```
 
 
 ## Learn more

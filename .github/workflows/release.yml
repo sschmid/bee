@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: "bee semver"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: test/run --docker
+      - run: src/bee install
+      - run: src/bee semver ${{ github.event.inputs.semver }}
+      - run: src/bee release publish

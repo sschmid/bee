@@ -1,4 +1,4 @@
-bee::release() {
+release::publish() {
   changelog::merge
   git add .
   local version
