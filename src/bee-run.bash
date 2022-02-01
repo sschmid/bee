@@ -801,6 +801,10 @@ bee::load_plugin_deps() {
   fi
 }
 
+bee:map_bee_plugins() {
+  [[ ! -v BEE_PLUGINS ]] || bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
+}
+
 declare -Ag BEE_PLUGIN_MAP=()
 declare -Ag BEE_PLUGIN_MAP_LOCK=()
 declare -Ag BEE_PLUGIN_MAP_LATEST=()
@@ -1164,6 +1168,7 @@ bee::comp_command_or_plugin() {
       version) shift; bee::version::comp "$@"; return ;;
     esac
 
+    bee:map_bee_plugins
     bee::load_plugin "$1"
     if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
       shift
@@ -1224,8 +1229,6 @@ bee::run() {
 
   if (($#)); then
 
-    [[ -v BEE_PLUGINS ]] && bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
-
     case "$1" in
       cache) shift; bee::cache "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
@@ -1236,16 +1239,17 @@ bee::run() {
       job) shift; bee::job "$@"; return ;;
       lint) shift; bee::lint "$@"; return ;;
       new) shift; bee::new "$@"; return ;;
-      plugins) shift; bee::plugins "$@"; return ;;
+      plugins) shift; bee:map_bee_plugins; bee::plugins "$@"; return ;;
       prompt) shift; bee::prompt; return ;;
       pull) shift; bee::pull "$@"; return ;;
-      res) shift; bee::res "$@"; return ;;
+      res) shift; bee:map_bee_plugins; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
       version) shift; bee::version "$@"; return ;;
       wiki) shift; bee::wiki "$@"; return ;;
     esac
 
     # run bee plugin, e.g. bee github me
+    bee:map_bee_plugins
     bee::load_plugin "$1"
     if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
       BEE_MODE=${BEE_MODE_PLUGIN}

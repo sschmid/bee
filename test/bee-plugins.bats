@@ -271,3 +271,9 @@ EOF
 @test "only completes first arg for plugins without comp function" {
   assert_comp "bee othertestplugin help "
 }
+
+@test "completes mapped plugin version" {
+  _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
+  local expected=(greet help)
+  assert_comp "bee testplugin " "${expected[*]}"
+}

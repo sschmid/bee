@@ -35,6 +35,14 @@ EOF
   assert_file_exist "${BATS_TEST_TMPDIR}/.bee/testplugin/file2"
 }
 
+@test "copies plugin resources of mapped plugin version" {
+  _setup_beefile 'BEE_PLUGINS=(testplugin:1.6.0)'
+  run bee res testplugin
+  assert_success
+  assert_output "Copying resources into .bee/testplugin"
+  assert_file_exist "${BATS_TEST_TMPDIR}/.bee/testplugin/file1"
+}
+
 @test "completes bee res with plugins" {
   _setup_test_bee_hub_repo
   bee pull
@@ -48,4 +56,3 @@ EOF
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee res myplugin " "${expected[*]}"
 }
-
