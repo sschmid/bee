@@ -25,18 +25,19 @@ bee runs everywhere - "it's just bash"
 
 *__Automate the entire process from building your app to uploading it to the app stores__*
 
-Combine bee with continuous integration tools such as [Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/) to automatically
-build and distribute your applications.
+Combine bee with continuous integration tools such as [GitHub Actions](https://github.com/features/actions),
+[Jenkins](https://jenkins.io), [Travis CI](https://travis-ci.org) or [TeamCity](https://www.jetbrains.com/teamcity/)
+to automatically build and distribute your applications.
 
 [**🐝 Continuous Integration**](https://github.com/sschmid/bee/wiki/Continuous-Integration)
 
 ## Plugins
 
-bee is as a plugin launcher with package management functionality.
-Plugins are registered at beehub which is the official bee plugin register: https://github.com/sschmid/beehub
+bee is a bash package manager that runs plugins. Plugins are registered at beehub
+which is the official bee plugin register: https://github.com/sschmid/beehub
 
 You can register your own plugin at beehub by creating a pull request.
-You can also create your own custom registers or local plugins for your personal or private use.
+You can also create your own custom hubs or local plugins for your personal or private use.
 
 Plugins allow you to customize and personalize bee to fit any requirement.
 Are you missing a task or feature? Create your own plugins and contribute to beehub!
@@ -54,10 +55,9 @@ Plugins and commands can easily be discovered with bee's built-in auto-completio
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/sschmid/bee/main/install)"
 ```
 
-
 ## bee completion
 
-bee automatically completes plugins and makes working with plugins fun and easy.
+bee automatically completes plugins and makes working with them fun and easy.
 
 Add auto-completion support for bee
 
@@ -79,7 +79,6 @@ complete -C bee bee
 bee update
 ```
 
-
 ## Customize
 
 bee is very flexible and can be customized heavily.
@@ -92,6 +91,7 @@ and overwrite default values in `~/.beerc`
 ## Example
 
 Run individual plugin functions like this:
+
 ```bash
 bee semver major
 bee changelog merge
@@ -99,6 +99,7 @@ bee github create_release
 ```
 
 or batch them for more efficiency
+
 ```bash
 bee --batch \
     'semver major' \
@@ -111,6 +112,7 @@ bee --batch \
 ```
 
 or compose custom functions using existing bee plugins
+
 ```bash
 app::release() {
   semver::major
@@ -125,6 +127,7 @@ app::release() {
 ```
 
 Discover and run your function using the bee bash completion
+
 ```
 bee app release
 ```
@@ -138,7 +141,6 @@ Explanation
 - `ios upload` - upload to [TestFlight](https://developer.apple.com/testflight/)
 - `github create_release` - create a github release and optionally attach artifacts
 - `slack message` - send a message via slack to notify the team about a new release
-
 
 ## Learn more
 
