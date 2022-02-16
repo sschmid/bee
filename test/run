@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+: "${TEST_BASH_VERSION:=5.1}"
+
 [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
 if [[ $# -gt 0 && "$1" == "--docker" ]]; then
   test/shellcheck
-  DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION=5.1 --progress=plain --target test -t sschmid/bee/test .
+  DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION="${TEST_BASH_VERSION}" --progress=plain --target test -t sschmid/bee/test .
   docker run --rm sschmid/bee/test
 else
   if (($#)); then
