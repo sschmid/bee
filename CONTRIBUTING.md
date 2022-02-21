@@ -10,16 +10,16 @@ Setup bee on your machine
 Fork the repository on [GitHub](https://github.com/sschmid/bee) and clone your forked repository to your machine
 
 ```
-$ git clone https://github.com/<username>/bee.git
+git clone https://github.com/<username>/bee.git
 ````
 
 If you want to contribute please consider to set up [git-flow](https://github.com/nvie/gitflow).
 The default branch of this repository is `main`
 
 ```
-$ cd bee
-$ git branch main origin/main
-$ git flow init -d
+cd bee
+git branch main origin/main
+git flow init -d
 ```
 
 Make changes
@@ -29,7 +29,7 @@ Make changes
 Follow the git-flow conventions and create a new feature branch starting with `#` and the issue number:
 
 ```
-$ git flow feature start <#123-your-feature>
+git flow feature start <#123-your-feature>
 ```
 
 Coding Style
