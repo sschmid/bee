@@ -1,6 +1,6 @@
 BEE_PROJECT=bee
 BEE_PLUGINS_PATHS=("${BEE_RESOURCES}/plugins")
-BEE_PLUGINS=(bee)
+BEE_PLUGINS=(release)
 
 [[ -f ~/.bee/bee.bash ]] && source ~/.bee/bee.bash
 
