@@ -88,6 +88,14 @@ and overwrite default values in `~/.beerc`
 
 --------------------------------------------------------------------------------
 
+# Questions?
+
+Frequently asked questions:
+
+# [➡ FAQ](https://github.com/sschmid/bee/wiki/FAQ)
+
+--------------------------------------------------------------------------------
+
 ## Example
 
 Run individual plugin functions like this:
