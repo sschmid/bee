@@ -22,10 +22,11 @@ Please enable bee bash completion to enjoy the best bee experience:
 
   echo "complete -C bee bee" >> ~/.bashrc
 
-For zsh also add this:
+For zsh add this:
 
   echo "autoload bashcompinit" >> ~/.zshrc
   echo "bashcompinit" >> ~/.zshrc
+  echo "complete -C bee bee" >> ~/.zshrc
 
 🐝 bee has been installed successfully
 EOF
