@@ -38,6 +38,43 @@ Coding Style
 Please follow the Shell Style Guide
 https://google.github.io/styleguide/shell.xml
 
+Run tests
+=========
+
+bee is written using [bats-core](https://github.com/bats-core/bats-core) for TDD and [shellcheck](https://github.com/koalaman/shellcheck) for peace of mind. In order to run the test you need to update all submodules.
+
+```
+git submodule update --init --recursive
+```
+
+You can run all tests on your machine or in a docker container
+
+```
+test/run
+```
+
+```
+test/run --docker
+```
+
+Run specific tests using bats directly
+
+```
+test/bats/bin/bats test/bee.bats
+```
+
+Build a docker container
+========================
+
+You can build a bee docker container
+
+```
+DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION=5.1 --target bee -t sschmid/bee .
+```
+
+```
+docker run --rm -it -v "$(pwd)":/root/project sschmid/bee bash
+```
 
 Contribute
 ==========
