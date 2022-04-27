@@ -4,5 +4,5 @@ BEE_PLUGINS=(release)
 
 [[ -f ~/.bee/bee.bash ]] && source ~/.bee/bee.bash
 
-CHANGELOG_URL="https://github.com/${GITHUB_REPO}"
 GITHUB_REPO="sschmid/${BEE_PROJECT}"
+CHANGELOG_URL="https://github.com/${GITHUB_REPO}"
