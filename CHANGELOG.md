@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-04-27
+### Added
+- Only map plugins when needed
+- Add updating bee from a specific branch
+- Add `TEST_BASH_VERSION` to support GitHub actions matrix
+- Add FAQ link to readme
+- Add instructions on how to test and build bee
+
+### Changed
+- Append to `.bashrc` in Dockerfile
+- Change default branch to develop
+
+### Removed
+- Remove `VOLUME` in Dockerfile
+
 ## [1.0.0] - 2022-01-31
 ### Note
 bee 1.0.0 is a complete rewrite from scratch
@@ -462,7 +477,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/sschmid/bee/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/sschmid/bee/compare/0.41.0...1.0.0
 [0.41.0]: https://github.com/sschmid/bee/compare/0.40.0...0.41.0
 [0.40.0]: https://github.com/sschmid/bee/compare/0.39.1...0.40.0
