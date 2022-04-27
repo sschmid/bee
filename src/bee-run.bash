@@ -984,14 +984,11 @@ bee::res() {
 # update
 ################################################################################
 bee::update() {
-  if (($#)); then
-    bee::help
-  else
-    pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
-      git pull origin main
-      bee::log "bee is up-to-date and ready to bzzzz"
-    popd > /dev/null || exit 1
-  fi
+  local branch="${1:-main}"
+  pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
+    git pull origin "${branch}"
+    bee::log "bee is up-to-date and ready to bzzzz"
+  popd > /dev/null || exit 1
 }
 
 ################################################################################

@@ -2,7 +2,8 @@ setup() {
   load "test-helper.bash"
 }
 
-@test "shows help when args" {
-  run bee update test
-  assert_bee_help
+@test "fails when branch name does not exist" {
+  skip "This command uses BEE_SYSTEM_HOME"
+  run bee update unknown
+  assert_failure
 }
