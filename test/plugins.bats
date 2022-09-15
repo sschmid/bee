@@ -54,11 +54,14 @@ EOF
   refute_output
 }
 
-@test "lists unknown plugins as missing" {
-  _setup_beefile "BEE_PLUGINS=(unknown)"
+@test "lists all unknown plugins as missing" {
+  _setup_beefile "BEE_PLUGINS=(unknown2 unknown1)"
   run bee plugins
-  assert_success
-  assert_output "#E${BEE_CHECK_FAIL} unknown#"
+  assert_failure
+  cat << EOF | assert_output -
+#E${BEE_CHECK_FAIL} unknown1#
+#E${BEE_CHECK_FAIL} unknown2#
+EOF
 }
 
 @test "lists enabled plugins with version" {
@@ -90,11 +93,14 @@ localplugin:local
 EOF
 }
 
-@test "lists unknown plugins with version as missing" {
-  _setup_beefile "BEE_PLUGINS=(unknown:9.0.0)"
+@test "lists all unknown plugins with version as missing" {
+  _setup_beefile "BEE_PLUGINS=(unknown1:9.0.0 unknown2:9.0.0)"
   run bee plugins --version
-  assert_success
-  assert_output "#E${BEE_CHECK_FAIL} unknown:9.0.0#"
+  assert_failure
+  cat << EOF | assert_output -
+#E${BEE_CHECK_FAIL} unknown1:9.0.0#
+#E${BEE_CHECK_FAIL} unknown2:9.0.0#
+EOF
 }
 
 @test "lists all plugins from all plugin paths" {

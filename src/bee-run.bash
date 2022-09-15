@@ -659,8 +659,8 @@ bee::plugins::comp() {
 
 bee::plugins() {
   local -i show_all=0
-  local -i show_version=0
   local -i show_outdated=0
+  local -i show_version=0
   while (($#)); do case "$1" in
     --all) show_all=1; shift ;;
     --outdated) show_outdated=1; shift ;;
@@ -672,7 +672,7 @@ bee::plugins() {
     bee::help
   else
     local plugin_entry plugin_version
-    local -a plugins
+    local -a plugins found=() missing=()
     if ((show_all)); then
       mapfile -t plugins < <(bee::comp_plugins)
       plugins=("${BEE_PLUGINS[@]}" "${plugins[@]}")
@@ -688,15 +688,21 @@ bee::plugins() {
         if ((show_outdated)); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
           if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
-            echo "${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}"
+            found+=("${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
           fi
         else
-          echo "${plugin_entry}"
+          found+=("${plugin_entry}")
         fi
       else
-        echo -e "${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}"
+        missing+=("${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin}${BEE_COLOR_RESET}")
       fi
-    done | LC_ALL=C sort -u
+    done
+
+    ((${#found[@]})) && echo "${found[*]}" | LC_ALL=C sort -u
+    if ((${#missing[@]})); then
+      echo -e "${missing[*]}" | LC_ALL=C sort -u
+      exit 1
+    fi
   fi
 }
 
@@ -1225,7 +1231,6 @@ bee::run() {
   esac done
 
   if (($#)); then
-
     case "$1" in
       cache) shift; bee::cache "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
