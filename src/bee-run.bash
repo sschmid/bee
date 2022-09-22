@@ -1,4 +1,4 @@
-# shellcheck disable=SC1090,SC2153
+# shellcheck disable=SC1090,SC2153,SC2178
 : "${BEE_LATEST_VERSION_PATH:=https://raw.githubusercontent.com/sschmid/bee/main/version.txt}"
 : "${BEE_WIKI:=https://github.com/sschmid/bee/wiki}"
 : "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}" # 4h * 60 * 60
@@ -27,22 +27,24 @@ usage: bee [--help]
            [--quiet] [--verbose]
            [--batch] <command> [<args>]
 
-  cache [--clear [<path>]]                     open (or --clear) cache
-  env <vars>                                   print env variables
-  hash <path>                                  generate plugin hash
-  hubs [--all | --list ] [<urls>]              list hubs and their plugins (--all versions as --list)
-  info <plugin>                                print plugin spec
-  install [--force] [<plugins>]                install plugins (--force ignore sha256 mismatch)
-  job [--time] [--logfile] <title> <command>   run command as a job (show elapsed --time)
-                                               (write output to --logfile in bee resources directory)
-  lint <spec>                                  validate plugin spec
-  new [<path>]                                 create new Beefile
-  plugins [--all | --outdated] [--version]     list (--all or --outdated) plugins (with --version)
-  pull [--force] [<urls>]                      update hubs (--force ignore pull cooldown)
-  res <plugins>                                copy plugin resources into bee resources directory
-  update                                       update bee to the latest version
-  version [--latest] [--cached]                print (--latest) version (--cached locally)
-  wiki                                         open wiki
+  cache [--clear [<path>]]                open (or --clear) cache
+  env <vars>                              print env variables
+  hash <path>                             generate plugin hash
+  hubs [--all | --list ] [<urls>]         list hubs and their plugins (--all versions as --list)
+  info <plugin>                           print plugin spec
+  install [--force] [<plugins>]           install plugins (--force ignore sha256 mismatch)
+  job [--time] [--logfile]
+      <title> <command>                   run command as a job (show elapsed --time)
+                                          (write output to --logfile in bee resources directory)
+  lint <spec>                             validate plugin spec
+  new [<path>]                            create new Beefile
+  plugins [--all | --lock | --outdated]
+          [--version]                     list (--all or --outdated) plugins (with --version)
+  pull [--force] [<urls>]                 update hubs (--force ignore pull cooldown)
+  res <plugins>                           copy plugin resources into bee resources directory
+  update                                  update bee to the latest version
+  version [--latest] [--cached]           print (--latest) version (--cached locally)
+  wiki                                    open wiki
 
 EOF
 }
@@ -647,9 +649,10 @@ EOF
 # plugins
 ################################################################################
 bee::plugins::comp() {
-  local comps=(--all --outdated --version)
+  local comps=(--all --lock --outdated --version)
   while (($#)); do case "$1" in
     --all) comps=("${comps[@]/--all/}"); shift ;;
+    --lock) comps=("${comps[@]/--lock/}"); shift ;;
     --outdated) comps=("${comps[@]/--outdated/}"); shift ;;
     --version) comps=("${comps[@]/--version/}"); shift ;;
     --) shift; break ;; *) break ;;
@@ -659,10 +662,12 @@ bee::plugins::comp() {
 
 bee::plugins() {
   local -i show_all=0
+  local -i show_lock=0
   local -i show_outdated=0
   local -i show_version=0
   while (($#)); do case "$1" in
     --all) show_all=1; shift ;;
+    --lock) show_lock=1; shift ;;
     --outdated) show_outdated=1; shift ;;
     --version) show_version=1; shift ;;
     --) shift; break ;; *) break ;;
@@ -679,13 +684,21 @@ bee::plugins() {
     else
       plugins=("${BEE_PLUGINS[@]}")
     fi
+    if ((show_lock)); then
+      mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
+      mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
+    fi
     for plugin in "${plugins[@]}"; do
       bee::mapped_plugin "${plugin}"
       if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
         plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"
         plugin_version="${BEE_RESOLVE_PLUGIN_VERSION}"
-        ((show_version || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
-        if ((show_outdated)); then
+        ((show_version || show_lock || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
+        if ((show_lock)); then
+          if [[ -z "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
+            missing+=("${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_entry}${BEE_COLOR_RESET}")
+          fi
+        elif ((show_outdated)); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
           if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
             found+=("${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")

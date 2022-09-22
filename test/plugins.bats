@@ -124,14 +124,40 @@ EOF
   assert_output "testplugin:1.0.0 ${BEE_RESULT} testplugin:2.0.0"
 }
 
+@test "compares lock file against installed plugins and fails when missing plugins" {
+  cat << 'EOF' > "${BEE_FILE}.lock"
+├── unknown2:9.0.0
+├── testplugin:1.0.0
+└── unknown1:9.0.0
+EOF
+
+  run bee plugins --lock
+  assert_failure
+  cat << EOF | assert_output -
+#E${BEE_CHECK_FAIL} unknown1:9.0.0#
+#E${BEE_CHECK_FAIL} unknown2:9.0.0#
+EOF
+}
+
+@test "compares lock file against installed plugins" {
+  cat << 'EOF' > "${BEE_FILE}.lock"
+├── testplugin:2.0.0
+└── testplugin:1.0.0
+EOF
+
+  run bee plugins --lock
+  assert_success
+  refute_output
+}
+
 # TODO list plugins with all dependencies (and version)
 
 @test "completes bee plugins with options" {
-  local expected=(--all --outdated --version)
+  local expected=(--all --lock --outdated --version)
   assert_comp "bee plugins " "${expected[*]}"
 }
 
 @test "completes bee plugins with multiple options and removes already used ones" {
-  local expected=(--outdated --version)
+  local expected=(--lock --outdated --version)
   assert_comp "bee plugins --all " "${expected[*]}"
 }
