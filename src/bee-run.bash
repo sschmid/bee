@@ -926,7 +926,7 @@ bee::pull::comp() {
 }
 
 bee::prompt() {
-  [[ -f "${PWD}/Beefile" ]] || exit 1
+  [[ -v BEE_FILE ]] || exit 1
   local current_version latest_version
   current_version=$(bee::version)
   latest_version=$(bee::version --latest --cached)
