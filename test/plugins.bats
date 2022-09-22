@@ -150,6 +150,12 @@ EOF
   refute_output
 }
 
+@test "compares against lock file only if it exists" {
+  run bee plugins --lock
+  assert_failure
+  refute_output
+}
+
 # TODO list plugins with all dependencies (and version)
 
 @test "completes bee plugins with options" {

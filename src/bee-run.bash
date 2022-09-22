@@ -685,6 +685,7 @@ bee::plugins() {
       plugins=("${BEE_PLUGINS[@]}")
     fi
     if ((show_lock)); then
+      [[ -v BEE_FILE && -f "${BEE_FILE}.lock" ]] || exit 1
       mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
       mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
     fi
