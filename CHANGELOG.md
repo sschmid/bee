@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2022-09-23
+### Added
+- Add `bee plugins --lock`
+
+### Changed
+- Exit `bee plugins` with error when missing plugins
+
+### Fixed
+- Check for `BEE_FILE` instead of hard coded Beefile path
+
 ## [1.1.0] - 2022-04-27
 ### Added
 - Only map plugins when needed
@@ -477,7 +487,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/sschmid/bee/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/sschmid/bee/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/sschmid/bee/compare/0.41.0...1.0.0
 [0.41.0]: https://github.com/sschmid/bee/compare/0.40.0...0.41.0
