@@ -2,6 +2,7 @@ setup() {
   load "test-helper.bash"
   load "test-helper-hub.bash"
   _set_beerc
+  export TEST_BEE_PLUGINS_NEED_INSTALL=1
   _source_beerc
 }
 
@@ -157,8 +158,6 @@ EOF
 }
 
 @test "installs local plugins with dependencies recursively" {
-  # shellcheck disable=SC2030,SC2031
-  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   export TEST_PLUGIN_QUIET=1
   _setup_test_bee_hub_repo
   _setup_testplugin_repo

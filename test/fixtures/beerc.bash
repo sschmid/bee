@@ -9,7 +9,12 @@ BEE_HUBS=(
 )
 BEE_CACHES_PATH="${BATS_TEST_TMPDIR}/caches"
 
-if [[ -v TEST_BEE_PLUGINS_PATHS_CUSTOM ]]; then
+if [[ -v TEST_BEE_PLUGINS_NEED_INSTALL ]]; then
+  BEE_PLUGINS_PATHS=(
+    "${BEE_CACHES_PATH}/plugins"
+    "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"
+  )
+elif [[ -v TEST_BEE_PLUGINS_PATHS_CUSTOM ]]; then
   BEE_PLUGINS_PATHS=(
     "${BATS_TEST_DIRNAME}/fixtures/plugins"
     "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"

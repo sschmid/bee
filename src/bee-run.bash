@@ -320,7 +320,7 @@ bee::install::recursively() {
       ((found)) && break
     done
     if ((!found)); then
-      bee::load_plugin "${plugin}"
+      bee::load_plugin "${plugin}" 1
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
         echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
         if [[ -f "${BEE_LOAD_PLUGIN_JSON_PATH}" ]]; then
@@ -783,6 +783,7 @@ BEE_LOAD_PLUGIN_JSON_PATH=""
 declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
 bee::load_plugin() {
+  local -i ignore_missing=${2:-0}
   BEE_LOAD_PLUGIN_MISSING=()
   bee::mapped_plugin "$1"
   if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
@@ -790,7 +791,7 @@ bee::load_plugin() {
     BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_FULL_PATH}"
     BEE_LOAD_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_JSON_PATH}"
     bee::load_plugin_deps
-    if [[ ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
+    if [[ $ignore_missing -eq 0 && ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
         bee::log_error "Missing plugin: '${missing}'"
       done
