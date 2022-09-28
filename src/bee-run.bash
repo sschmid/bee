@@ -322,6 +322,7 @@ bee::install::recursively() {
     if ((!found)); then
       bee::load_plugin "${plugin}" 1
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
+        ((lock)) && echo "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local" >> "${BEE_FILE}.lock"
         echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
         if [[ -f "${BEE_LOAD_PLUGIN_JSON_PATH}" ]]; then
           # shellcheck disable=SC2046,SC2086

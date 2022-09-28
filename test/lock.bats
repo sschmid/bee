@@ -65,6 +65,20 @@ EOF
 EOF
 }
 
+@test "writes local plugins to lock file" {
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  _setup_beefile 'BEE_PLUGINS=(customtestplugin)'
+  bee pull
+  run bee install
+  run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
+  cat << EOF | assert_output -
+└── customtestplugin:local
+    └── testplugin:1.0.0
+EOF
+}
+
 @test "doesn't create lock file when installing manually " {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
