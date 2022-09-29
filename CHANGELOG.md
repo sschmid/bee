@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2022-09-29
+### Added
+- Add local plugins to Beefile.lock
+- Add support for local plugins in `bee info`
+
+### Fixed
+- Fix resolve local plugins with local tag
+
 ## [1.2.1] - 2022-09-28
 ### Fixed
 - Fix installing local plugin dependencies
@@ -491,7 +499,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/1.2.1...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/1.2.2...HEAD
+[1.2.2]: https://github.com/sschmid/bee/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/sschmid/bee/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/sschmid/bee/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/sschmid/bee/compare/1.0.0...1.1.0
