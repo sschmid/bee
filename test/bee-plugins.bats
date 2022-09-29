@@ -79,10 +79,16 @@ EOF
   assert_no_plugin unknown:1.0.0
 }
 
-@test "resolves local plugins without version" {
+@test "resolves local plugin without local tag" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   assert_local_plugin localplugin localplugin
+}
+
+@test "resolves local plugin with local tag" {
+  # shellcheck disable=SC2030,SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  assert_local_plugin localplugin:local localplugin
 }
 
 # this is a manual test / sanity check

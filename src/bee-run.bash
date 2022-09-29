@@ -723,23 +723,17 @@ bee::plugins() {
 
 bee::resolve() {
   local plugin="$1" plugins_path="$2" file="$3"
-  local -i allow_local=${4:-0} is_local=0
+  local -i allow_local=${4:-0}
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
   path="${plugins_path}/${plugin_name}"
-  if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
-    if [[ $allow_local -eq 1 && -f "${path}/${file}" ]]; then
-      plugin_version="local"
-      path="${path}/${file}"
-      is_local=1
-    else
-      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
-      path="${path}/${plugin_version}/${file}"
-    fi
+  if [[ $allow_local -eq 1 && -f "${path}/${file}" ]]; then
+    echo -e "${plugin_name}\tlocal\t${path}\t1"
   else
-    path="${path}/${plugin_version}/${file}"
+    if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
+      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
+    fi
+    [[ ! -f "${path}/${plugin_version}/${file}" ]] || echo -e "${plugin_name}\t${plugin_version}\t${path}\t0"
   fi
-
-  [[ ! -f "${path}" ]] || echo -e "${plugin_name}\t${plugin_version}\t${plugins_path}/${plugin_name}\t${is_local}"
 }
 
 BEE_RESOLVE_PLUGIN_NAME=""

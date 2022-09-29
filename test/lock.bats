@@ -68,14 +68,34 @@ EOF
 @test "writes local plugins to lock file" {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_beefile 'BEE_PLUGINS=(localplugin)'
+  # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  _setup_beefile 'BEE_PLUGINS=(customtestplugin)'
   bee pull
   run bee install
   run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
   cat << EOF | assert_output -
-└── customtestplugin:local
-    └── testplugin:1.0.0
+└── localplugin:local
+    ├── testplugin:1.0.0
+    └── othertestplugin:1.0.0
+EOF
+}
+
+@test "writes explicit local plugins to lock file" {
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_beefile 'BEE_PLUGINS=(localplugin:local)'
+  # shellcheck disable=SC2030,SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  bee pull
+  run bee install
+  run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
+  cat << EOF | assert_output -
+└── localplugin:local
+    ├── testplugin:1.0.0
+    └── othertestplugin:1.0.0
 EOF
 }
 
@@ -118,6 +138,31 @@ Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
 ├── testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 │   ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 │   └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+└── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+EOF
+}
+
+@test "skips local plugins from lock file" {
+  _setup_test_bee_hub_repo
+  _setup_testplugin_repo
+  _setup_generic_plugin_repo othertestplugin
+  _setup_beefile
+  # shellcheck disable=SC2030,SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  export TEST_PLUGIN_QUIET=1
+  cat << 'EOF' > "${BATS_TEST_TMPDIR}/Beefile.lock"
+└── localplugin:local
+    ├── testplugin:1.0.0
+    └── othertestplugin:1.0.0
+EOF
+  bee pull
+  run bee install
+  cat << EOF | assert_output -
+Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
+├── localplugin:local (${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/localplugin.bash)
+│   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+│   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 EOF
