@@ -1,6 +1,6 @@
 setup() {
   load 'test-helper.bash'
-  _set_beerc
+  _set_beerc_with 'bee::secrets() { echo "bee-secrets $@"; }'
   export TEST_PLUGIN_QUIET=1
 }
 
@@ -34,7 +34,11 @@ setup() {
 @test "runs bee plugin with args" {
   run bee --quiet testplugin greet test
   assert_success
-  assert_output "greeting test from testplugin 2.0.0"
+  cat << EOF | assert_output -
+bee-secrets testplugin greet test
+greeting test from testplugin 2.0.0
+EOF
+
 }
 
 @test "runs bee plugin with exact version" {
@@ -46,5 +50,8 @@ setup() {
 @test "runs bee plugin with exact version with args" {
   run bee --quiet testplugin:1.0.0 greet test
   assert_success
-  assert_output "greeting test from testplugin 1.0.0"
+  cat << EOF | assert_output -
+bee-secrets testplugin greet test
+greeting test from testplugin 1.0.0
+EOF
 }

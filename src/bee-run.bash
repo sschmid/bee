@@ -916,6 +916,7 @@ bee::mapped_plugin() {
 bee::run_plugin() {
   local plugin="$1"; shift
   if (($#)); then
+    [[ $(command -v "bee::secrets") == "bee::secrets" ]] && bee::secrets "${plugin}" "$@"
     local cmd="$1"; shift
     "${plugin}::${cmd}" "$@"
   else
