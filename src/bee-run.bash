@@ -860,6 +860,7 @@ bee::map_plugins() {
 }
 
 bee::map_plugins_recursively() {
+  local plugin_name plugin_version
   local -a with_version=() without_version=()
   for plugin in "$@"; do
     if [[ "${plugin%:*}" == "${plugin##*:}" ]]
@@ -868,8 +869,12 @@ bee::map_plugins_recursively() {
     fi
   done
   for plugin in "${with_version[@]}"; do
+    plugin_name="${plugin%:*}"
+    plugin_version="${plugin##*:}"
+    [[ ! -v BEE_PLUGIN_MAP_LOCK["${plugin_name}"] || "${BEE_PLUGIN_MAP_LOCK["${plugin_name}"]}" != "${plugin_version}" ]] || continue
+    [[ ! -v BEE_PLUGIN_MAP_LATEST["${plugin_name}"] || "${BEE_PLUGIN_MAP_LATEST["${plugin_name}"]}" != "${plugin_version}" ]] || continue
     bee::resolve_plugin "${plugin}"
-    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" != "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
       if [[ ! -v BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP_LOCK["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       else
@@ -884,8 +889,9 @@ bee::map_plugins_recursively() {
     fi
   done
   for plugin in "${without_version[@]}"; do
+    [[ ! -v BEE_PLUGIN_MAP_LATEST["${plugin}"] ]] || continue
     bee::resolve_plugin "${plugin}"
-    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${plugin}" == "${BEE_RESOLVE_PLUGIN_NAME}" ]]; then
+    if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
       if [[ ${BEE_RESOLVE_PLUGIN_IS_LOCAL} -eq 0 && ! -v BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"] ]]; then
         BEE_PLUGIN_MAP_LATEST["${BEE_RESOLVE_PLUGIN_NAME}"]="${BEE_RESOLVE_PLUGIN_VERSION}"
       fi

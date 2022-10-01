@@ -2,6 +2,7 @@ setup() {
   load 'test-helper.bash'
   _set_beerc
   _source_beerc
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   export TEST_PLUGIN_QUIET=1
 }
 
@@ -21,6 +22,15 @@ setup() {
   run bee bee::map_plugins unknown testplugin
   assert_success
   assert_output "testplugin:2.0.0"
+}
+
+@test "maps multiple plugins" {
+  run bee bee::map_plugins testplugin othertestplugin
+  assert_success
+  cat << EOF | assert_output -
+testplugin:2.0.0
+othertestplugin:1.0.0
+EOF
 }
 
 @test "ignores duplicates with explicit version" {
@@ -65,15 +75,6 @@ EOF
 ${BEE_WARN} Version conflicts:
 testplugin:1.0.0 <-> testplugin:2.0.0
 testplugin:2.0.0
-EOF
-}
-
-@test "maps multiple plugins" {
-  run bee bee::map_plugins testplugin othertestplugin
-  assert_success
-  cat << EOF | assert_output -
-testplugin:2.0.0
-othertestplugin:1.0.0
 EOF
 }
 
