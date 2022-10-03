@@ -1179,7 +1179,8 @@ bee::comp_plugin() {
 bee::comp_command_or_plugin() {
   local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
   while (($#)); do case "$1" in
-    --batch) comps=("${comps[@]/--batch/}"); shift ;;
+    --batch) comps=("${comps[@]/--batch/--allow-fail}"); shift ;;
+    --allow-fail) comps=("${comps[@]/--allow-fail/}"); shift ;;
     --help) return ;;
     --quiet) comps=("${comps[@]/--quiet/}"); shift ;;
     --verbose) comps=("${comps[@]/--verbose/}"); shift ;;

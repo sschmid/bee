@@ -81,3 +81,15 @@ EOF
   run bee --
   assert_bee_help
 }
+
+@test "completes --batch with --allow-fail" {
+  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  local expected=(--allow-fail --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
+  assert_comp "bee --batch " "${expected[*]}"
+}
+
+@test "completes --batch --allow-fail with commands" {
+  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  local expected=(--help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
+  assert_comp "bee --batch --allow-fail " "${expected[*]}"
+}
