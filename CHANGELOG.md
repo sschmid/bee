@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2022-10-03
+### Added
+- Add `bee --batch --allow-fail`
+- Skip mapping already mapped plugins
+
+###
+- Functions use `return` instead of `exit`
+
 ## [1.3.0] - 2022-09-30
 ### Added
 - Run `bee::secrets` before running plugins
@@ -503,7 +511,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/sschmid/bee/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/sschmid/bee/compare/1.2.2...1.3.0
 [1.2.2]: https://github.com/sschmid/bee/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/sschmid/bee/compare/1.2.0...1.2.1
