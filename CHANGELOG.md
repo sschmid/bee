@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `bee --batch --allow-fail`
 - Skip mapping already mapped plugins
 
-###
+### Changed
 - Functions use `return` instead of `exit`
 
 ## [1.3.0] - 2022-09-30
