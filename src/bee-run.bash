@@ -354,7 +354,7 @@ bee::install::recursively() {
     for m in "${missing[@]}"; do
       bee::log_error "Couldn't install plugin: ${m}"
     done
-    exit 1
+    return 1
   fi
 }
 
@@ -582,7 +582,7 @@ bee::lint() {
       popd > /dev/null || exit 1
     fi
 
-    ((!BEE_HUB_LINT_ERROR)) || exit 1
+    ((!BEE_HUB_LINT_ERROR)) || return 1
   fi
 }
 
@@ -622,7 +622,7 @@ bee::new() {
   local beefile="${1:-Beefile}"
   if [[ -f "${beefile}" ]]; then
     bee::log_error "${beefile} already exists"
-    exit 1
+    return 1
   else
     cat << EOF > "${beefile}"
 BEE_PROJECT=$(basename "${PWD}")
@@ -699,7 +699,7 @@ bee::plugins() {
       plugins=("${BEE_PLUGINS[@]}")
     fi
     if ((show_lock)); then
-      [[ -v BEE_FILE && -f "${BEE_FILE}.lock" ]] || exit 1
+      [[ -v BEE_FILE && -f "${BEE_FILE}.lock" ]] || return 1
       mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
       mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
     fi
@@ -729,7 +729,7 @@ bee::plugins() {
     ((${#found[@]})) && echo "${found[*]}" | LC_ALL=C sort -u
     if ((${#missing[@]})); then
       echo -e "${missing[*]}" | LC_ALL=C sort -u
-      exit 1
+      return 1
     fi
   fi
 }
@@ -803,7 +803,7 @@ bee::load_plugin() {
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
         bee::log_error "Missing plugin: '${missing}'"
       done
-      exit 1
+      return 1
     fi
   else
     BEE_LOAD_PLUGIN_NAME=""
@@ -943,7 +943,7 @@ bee::pull::comp() {
 }
 
 bee::prompt() {
-  [[ -v BEE_FILE ]] || exit 1
+  [[ -v BEE_FILE ]] || return 1
   local current_version latest_version
   current_version=$(bee::version)
   latest_version=$(bee::version --latest --cached)
