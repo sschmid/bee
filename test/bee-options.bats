@@ -44,6 +44,18 @@ test2
 EOF
 }
 
+@test "batches failing commands without args" {
+  run bee --batch --allow-fail "unknown" "echo test"
+  assert_success
+  assert_output --partial "test"
+}
+
+@test "batches failing commands with args" {
+  run bee --batch --allow-fail "return 1" "echo test"
+  assert_success
+  assert_output --partial "test"
+}
+
 @test "runs multiple plugin commands" {
   run bee --quiet --batch "testplugin:1.0.0 greet test1" "testplugin:2.0.0 greet test2"
   assert_success

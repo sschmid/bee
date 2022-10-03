@@ -1224,14 +1224,26 @@ bee::comp_command_or_plugin() {
 # run
 ################################################################################
 bee::batch() {
+  local -i allow_fail=0
+  while (($#)); do case "$1" in
+    --allow-fail) allow_fail=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac done
+
   for batch in "$@"; do
     local cmd="${batch%% *}"
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
       # shellcheck disable=SC2046
-      bee::run "${cmd}" $(bee::split_args "${args}")
+      if ((allow_fail))
+      then bee::run "${cmd}" $(bee::split_args "${args}") || true
+      else bee::run "${cmd}" $(bee::split_args "${args}")
+      fi
     else
-      bee::run "${cmd}"
+      if ((allow_fail))
+      then bee::run "${cmd}" || true
+      else bee::run "${cmd}"
+      fi
     fi
   done
 }
