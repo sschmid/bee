@@ -7,3 +7,12 @@ setup() {
   run bee update unknown
   assert_failure
 }
+
+@test "completes bee update with branches" {
+  local expected=(main develop)
+  assert_comp "bee update " "${expected[*]}"
+}
+
+@test "no completion after branch" {
+  assert_comp "bee update main "
+}

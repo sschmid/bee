@@ -1019,6 +1019,16 @@ bee::res() {
 ################################################################################
 # update
 ################################################################################
+bee::update::comp() {
+  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+    pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
+      git branch -r --format '%(refname:short)' \
+        | cut -d/ -f2- \
+        | tail -n +2
+    popd > /dev/null || exit 1
+  fi
+}
+
 bee::update() {
   local branch="${1:-main}"
   pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
@@ -1199,7 +1209,7 @@ bee::comp_command_or_plugin() {
       pull) shift; bee::pull::comp "$@"; return ;;
       plugins) shift; bee::plugins::comp "$@"; return ;;
       res) shift; bee::hubs --list; return ;;
-      update) return ;;
+      update) shift; bee::update::comp "$@"; return ;;
       version) shift; bee::version::comp "$@"; return ;;
     esac
 
