@@ -14,7 +14,7 @@ git clone https://github.com/<username>/bee.git
 ````
 
 If you want to contribute please consider to set up [git-flow](https://github.com/nvie/gitflow).
-The default branch of this repository is `develop`
+The default branch of this repository is `main`
 
 ```
 cd bee
@@ -81,7 +81,7 @@ Contribute
 
 If you have many commits please consider using [git rebase](https://git-scm.com/docs/git-rebase) to cleanup the commits.
 This can simplify reviewing the pull request. Once you're happy with your changes
-create a [pull request](https://github.com/sschmid/bee/pulls) from your feature branch. The default branch is `develop`.
+create a [pull request](https://github.com/sschmid/bee/pulls) from your feature branch. The default branch is `main`.
 
 ---
 
