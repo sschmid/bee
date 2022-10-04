@@ -1022,7 +1022,8 @@ bee::res() {
 bee::update() {
   local branch="${1:-main}"
   pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
-    git pull origin "${branch}"
+    git switch "${branch}"
+    git pull
     bee::log "bee is up-to-date and ready to bzzzz"
   popd > /dev/null || exit 1
 }
