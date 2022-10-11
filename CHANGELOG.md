@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2022-10-11
+### Added
+- Add `bee update` completion
+- Add bee zsh theme
+
+### Changed
+- Switch branch and pull when `bee update <branch>`
+
 ## [1.3.1] - 2022-10-03
 ### Added
 - Add `bee --batch --allow-fail`
@@ -511,7 +519,8 @@ BEE_PLUGINS=("${BEE_HOME}/plugins" "${HOME}/.bee/plugins")
 - plugins and templates
 - install script
 
-[Unreleased]: https://github.com/sschmid/bee/compare/1.3.1...HEAD
+[Unreleased]: https://github.com/sschmid/bee/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/sschmid/bee/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/sschmid/bee/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/sschmid/bee/compare/1.2.2...1.3.0
 [1.2.2]: https://github.com/sschmid/bee/compare/1.2.1...1.2.2
