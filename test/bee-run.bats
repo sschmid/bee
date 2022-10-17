@@ -4,10 +4,6 @@ setup() {
   export TEST_PLUGIN_QUIET=1
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${PROJECT_ROOT}/src/bee-run.bash"
-}
-
 @test "prints bee help when no args" {
   run bee
   assert_bee_help

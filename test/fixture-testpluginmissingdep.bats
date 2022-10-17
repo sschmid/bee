@@ -5,10 +5,6 @@ setup() {
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
 
-@test "is not executable" {
-  assert_file_not_executable "${TEST_FIXTURE_PATH}"
-}
-
 @test "prints message when sourced" {
   run source "${TEST_FIXTURE_PATH}"
   assert_success
