@@ -9,7 +9,7 @@ setup() {
 }
 
 @test "completes bee update with branches" {
-  skip "Run locally"
+  skip "Needs branches"
   local expected=(main develop)
   assert_comp "bee update " "${expected[*]}"
 }
