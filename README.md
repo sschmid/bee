@@ -3,8 +3,8 @@
 # 🐝 bee - plugin-based bash automation
 
 [![CI](https://github.com/sschmid/bee/actions/workflows/ci.yml/badge.svg)](https://github.com/sschmid/bee/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/sschmid/bee/badge.svg)](https://gitter.im/sschmid/bee)
-[![Chat](https://img.shields.io/badge/gitter-chat-ED1965.svg?logo=gitter)](https://github.com/sschmid/bee/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/sschmid/bee/badge.svg)](https://coveralls.io/github/sschmid/bee)
+[![Chat](https://img.shields.io/badge/gitter-chat-ED1965.svg?logo=gitter)](https://gitter.im/sschmid/bee)
 [![Twitter](https://img.shields.io/twitter/follow/s_schmid)](https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2Fsschmid%2Fbee&screen_name=s_schmid&tw_p=followbutton)
 
 ## Automate Everything
