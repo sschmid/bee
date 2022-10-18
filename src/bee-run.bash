@@ -123,11 +123,13 @@ bee::hubs::comp() {
 
 bee::hubs() {
   local -i show_all=0 list=0
-  while (($#)); do case "$1" in
-    --all) show_all=1; shift ;;
-    --list) list=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --all) show_all=1; shift ;;
+      --list) list=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   if ((list)); then
     local cache_path
@@ -243,10 +245,12 @@ bee::install() {
   BEE_INSTALL_HASHES=()
   bee::pull
   local -i force=0
-  while (($#)); do case "$1" in
-    --force) force=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --force) force=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
   if (($#)); then
     echo "Installing"
     bee::install::recursively ${force} 0 "" "$@"
@@ -373,11 +377,13 @@ BEE_JOB_LOGFILE=""
 
 bee::job::comp() {
   local comps=(--logfile --time)
-  while (($#)); do case "$1" in
-    --logfile) comps=("${comps[@]/--logfile/}"); shift ;;
-    --time) comps=("${comps[@]/--time/}"); shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --logfile) comps=("${comps[@]/--logfile/}"); shift ;;
+      --time) comps=("${comps[@]/--time/}"); shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
   compgen -W "${comps[*]}" -- "${1:-}"
 }
 
@@ -664,13 +670,15 @@ EOF
 ################################################################################
 bee::plugins::comp() {
   local comps=(--all --lock --outdated --version)
-  while (($#)); do case "$1" in
-    --all) comps=("${comps[@]/--all/}"); shift ;;
-    --lock) comps=("${comps[@]/--lock/}"); shift ;;
-    --outdated) comps=("${comps[@]/--outdated/}"); shift ;;
-    --version) comps=("${comps[@]/--version/}"); shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --all) comps=("${comps[@]/--all/}"); shift ;;
+      --lock) comps=("${comps[@]/--lock/}"); shift ;;
+      --outdated) comps=("${comps[@]/--outdated/}"); shift ;;
+      --version) comps=("${comps[@]/--version/}"); shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
   compgen -W "${comps[*]}" -- "${1:-}"
 }
 
@@ -679,13 +687,15 @@ bee::plugins() {
   local -i show_lock=0
   local -i show_outdated=0
   local -i show_version=0
-  while (($#)); do case "$1" in
-    --all) show_all=1; shift ;;
-    --lock) show_lock=1; shift ;;
-    --outdated) show_outdated=1; shift ;;
-    --version) show_version=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --all) show_all=1; shift ;;
+      --lock) show_lock=1; shift ;;
+      --outdated) show_outdated=1; shift ;;
+      --version) show_version=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   if (($#)); then
     bee::help
@@ -955,10 +965,12 @@ bee::prompt() {
 
 bee::pull() {
   local -i force=0 pull=0
-  while (($#)); do case "$1" in
-    --force) force=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --force) force=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   mkdir -p "${BEE_HUBS_CACHE_PATH}"
   local cache_file="${BEE_HUBS_CACHE_PATH}/.bee_pull_cooldown"
@@ -1054,11 +1066,13 @@ bee::version::comp() {
 
 bee::version() {
   local -i latest=0 cached=0
-  while (($#)); do case "$1" in
-    --latest) latest=1; shift ;;
-    --cached) cached=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --latest) latest=1; shift ;;
+      --cached) cached=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   if (($#)); then
     bee::help
@@ -1157,10 +1171,12 @@ bee::comp() {
   done
   local cur="${words[cursor]:-}" wordlist
   ((cursor == ${#words[@]})) && COMP_PARTIAL=0
-  if ((cursor == 1)); then # e.g. bee
+  if ((cursor == 1)); then
+    # e.g. bee
     local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
     wordlist="${comps[*]}"
-  else # e.g. bee install
+  else
+    # e.g. bee install
     wordlist="$(bee::comp_command_or_plugin "${words[1]}" "${words[@]:2}")"
   fi
   compgen -W "${wordlist}" -- "${cur}"
@@ -1189,14 +1205,16 @@ bee::comp_plugin() {
 
 bee::comp_command_or_plugin() {
   local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
-  while (($#)); do case "$1" in
-    --batch) comps=("${comps[@]/--batch/--allow-fail}"); shift ;;
-    --allow-fail) comps=("${comps[@]/--allow-fail/}"); shift ;;
-    --help) return ;;
-    --quiet) comps=("${comps[@]/--quiet/}"); shift ;;
-    --verbose) comps=("${comps[@]/--verbose/}"); shift ;;
-    *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --batch) comps=("${comps[@]/--batch/--allow-fail}"); shift ;;
+      --allow-fail) comps=("${comps[@]/--allow-fail/}"); shift ;;
+      --help) return ;;
+      --quiet) comps=("${comps[@]/--quiet/}"); shift ;;
+      --verbose) comps=("${comps[@]/--verbose/}"); shift ;;
+      *) break ;;
+    esac
+  done
 
   if (($#)); then
     case "$1" in
@@ -1237,10 +1255,12 @@ bee::comp_command_or_plugin() {
 ################################################################################
 bee::batch() {
   local -i allow_fail=0
-  while (($#)); do case "$1" in
-    --allow-fail) allow_fail=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --allow-fail) allow_fail=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   for batch in "$@"; do
     local cmd="${batch%% *}"
@@ -1276,13 +1296,15 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  while (($#)); do case "$1" in
-    --batch) shift; bee::batch "$@"; return ;;
-    --help) bee::help; return ;;
-    --quiet) BEE_QUIET=1; shift ;;
-    --verbose) BEE_VERBOSE=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac done
+  while (($#)); do
+    case "$1" in
+      --batch) shift; bee::batch "$@"; return ;;
+      --help) bee::help; return ;;
+      --quiet) BEE_QUIET=1; shift ;;
+      --verbose) BEE_VERBOSE=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
   if (($#)); then
     case "$1" in
