@@ -40,7 +40,7 @@ setup() {
   run bee version --latest --cached
   assert_output "1.2.3"
 
-  sleep 2
+  sleep 5
 
   # shellcheck disable=SC2016
   _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
