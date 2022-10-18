@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/sschmid/bee/actions/workflows/ci.yml">
-      <img alt="Tests" src="https://github.com/sschmid/bee/actions/workflows/tests.yml/badge.svg"></a>
+      <img alt="Tests" src="https://github.com/sschmid/bee/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://coveralls.io/github/sschmid/bee">
       <img alt="Coverage" src="https://coveralls.io/repos/github/sschmid/bee/badge.svg"></a>
   <a href="https://gitter.im/sschmid/bee">
