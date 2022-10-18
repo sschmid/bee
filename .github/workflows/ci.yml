@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        bash: [ "5.1", "5.2" ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: "Test bash-${{ matrix.bash }}"
+        run: TEST_BASH_VERSION=${{ matrix.bash }} test/run --docker
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    container: kcov/kcov
+    steps:
+      - name: "Install git"
+        run: apt-get update && apt-get install -y --fix-missing git
+
+      - name: "Checkout"
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: "Install Dependencies"
+        run: apt-get update && apt-get install -y --fix-missing $(cat DEPENDENCIES.md)
+
+      - name: "Coverage"
+        run: |
+          kcov --include-path=src coverage test/bats/bin/bats test
+          find coverage -type f -name "*.*" -exec sed -i 's/\/__w\/bee\/bee\///g' {} \;
+
+      - name: "Upload Coverage Report"
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }} Coverage Report
+          path: coverage
+
+  coveralls:
+    needs: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: "Download Coverage Report"
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }} Coverage Report
+          path: coverage
+
+      - name: "Generate lcov"
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"coverage/**/cobertura.xml" -targetdir:"coverage" -reporttypes:"lcov"
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: "coverage/lcov.info"

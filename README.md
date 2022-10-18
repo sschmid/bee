@@ -5,8 +5,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/sschmid/bee/actions/workflows/tests.yml">
+  <a href="https://github.com/sschmid/bee/actions/workflows/ci.yml">
       <img alt="Tests" src="https://github.com/sschmid/bee/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="https://coveralls.io/github/sschmid/bee">
+      <img alt="Coverage" src="https://coveralls.io/repos/github/sschmid/bee/badge.svg"></a>
   <a href="https://gitter.im/sschmid/bee">
       <img alt="Join the chat at https://gitter.im/sschmid/bee" src="https://img.shields.io/badge/gitter-chat-ED1965.svg?logo=gitter"></a>
   <a href="https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2Fsschmid%2Fbee&screen_name=s_schmid&tw_p=followbutton">
