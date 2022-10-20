@@ -86,6 +86,18 @@ EOF
   assert_output "# test bee-run.bash 1.0.0 sourced"
 }
 
+@test "applies bee 0.x migration" {
+  _setup_beefile "BEE_VERSION=0.41.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/testbee/src"
+  pushd "${BATS_TEST_TMPDIR}/testbee" > /dev/null || exit 1
+    echo "echo '# test bee 0.41.0 sourced'" > src/bee
+    chmod +x src/bee
+    git init; git add . ; _git_commit -m "Initial commit"; git tag 0.41.0
+  popd > /dev/null || exit 1
+  run bee :
+  assert_output "# test bee 0.41.0 sourced"
+}
+
 @test "completes bee with commands" {
   _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
