@@ -35,6 +35,21 @@ ${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/plugin.json
 EOF
 }
 
+@test "prints plugin info from custom location" {
+  # shellcheck disable=SC2030,SC2031
+  export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
+  run bee info customtestplugin
+  assert_success
+  cat << EOF | assert_output -
+${BATS_TEST_DIRNAME}/fixtures/custom_plugins/customtestplugin/1.0.0/plugin.json
+{
+  "dependencies": [
+    "testplugin:1.0.0"
+  ]
+}
+EOF
+}
+
 @test "prints plugin info when parsing error" {
   _setup_test_bee_hub_repo
   bee pull

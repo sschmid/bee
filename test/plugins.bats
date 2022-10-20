@@ -164,6 +164,16 @@ EOF
 }
 
 @test "completes bee plugins with multiple options and removes already used ones" {
-  local expected=(--lock --outdated --version)
+  local expected
+  expected=(--lock --outdated --version)
   assert_comp "bee plugins --all " "${expected[*]}"
+
+  expected=(--all --outdated --version)
+  assert_comp "bee plugins --lock " "${expected[*]}"
+
+  expected=(--all --lock --version)
+  assert_comp "bee plugins --outdated " "${expected[*]}"
+
+  expected=(--all --lock --outdated)
+  assert_comp "bee plugins --version " "${expected[*]}"
 }
