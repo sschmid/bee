@@ -35,7 +35,7 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: "Install Dependencies"
+      - name: "Install dependencies"
         run: apt-get update && apt-get install -y --fix-missing $(cat DEPENDENCIES.md)
 
       - name: "Coverage"
@@ -43,7 +43,7 @@ jobs:
           kcov --include-path=src /__w/bee/bee/coverage test/bats/bin/bats test
           find coverage -type f -name "*.*" -exec sed -i 's/\/__w\/bee\/bee\///g' {} \;
 
-      - name: "Upload Coverage Report"
+      - name: "Upload coverage report"
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }} Coverage Report
@@ -58,7 +58,7 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: "Download Coverage Report"
+      - name: "Download coverage report"
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.event.repository.name }} Coverage Report
