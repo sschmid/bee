@@ -40,7 +40,7 @@ jobs:
 
       - name: "Coverage"
         run: |
-          kcov --include-path=src coverage test/bats/bin/bats test
+          kcov --include-path=src /__w/bee/bee/coverage test/bats/bin/bats test
           find coverage -type f -name "*.*" -exec sed -i 's/\/__w\/bee\/bee\///g' {} \;
 
       - name: "Upload Coverage Report"
