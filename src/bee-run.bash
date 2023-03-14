@@ -84,7 +84,7 @@ bee::hash() {
     [[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=($(bee::split_args "${BEE_HUB_HASH_EXCLUDE:-}"))
     local path="$1" file_hash all
     local -a hashes=()
-    echo "$path"
+    echo "${path}"
     pushd "${path}" > /dev/null || exit 1
       local file
       local -i ignore=0
@@ -135,7 +135,7 @@ bee::hubs() {
     local cache_path
     for url in "${@:-"${BEE_HUBS[@]}"}"; do
       cache_path="$(bee::to_cache_path "${url}")"
-      if [[ -n "$cache_path" ]]; then
+      if [[ -n "${cache_path}" ]]; then
         cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
         [[ ! -d "${cache_path}" ]] || ls "${cache_path}"
       fi
@@ -749,7 +749,7 @@ bee::resolve() {
   local -i allow_local=${4:-0}
   local plugin_name="${plugin%:*}" plugin_version="${plugin##*:}" path
   path="${plugins_path}/${plugin_name}"
-  if [[ $allow_local -eq 1 && -f "${path}/${file}" ]]; then
+  if [[ ${allow_local} -eq 1 && -f "${path}/${file}" ]]; then
     echo -e "${plugin_name}\tlocal\t${path}\t1"
   else
     if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
@@ -809,7 +809,7 @@ bee::load_plugin() {
     BEE_LOAD_PLUGIN_PATH="${BEE_RESOLVE_PLUGIN_FULL_PATH}"
     BEE_LOAD_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_JSON_PATH}"
     bee::load_plugin_deps
-    if [[ $ignore_missing -eq 0 && ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
+    if [[ ${ignore_missing} -eq 0 && ${#BEE_LOAD_PLUGIN_MISSING[@]} -gt 0 ]]; then
       for missing in "${BEE_LOAD_PLUGIN_MISSING[@]}"; do
         bee::log_error "Missing plugin: '${missing}'"
       done
