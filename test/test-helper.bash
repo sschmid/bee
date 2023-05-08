@@ -2,6 +2,8 @@ load 'test_helper/bats-support/load.bash'
 load 'test_helper/bats-assert/load.bash'
 load 'test_helper/bats-file/load.bash'
 
+bats_require_minimum_version 1.5.0
+
 export BATS_TEST_DIRNAME
 PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." > /dev/null 2>&1 && pwd)"
 export PROJECT_ROOT

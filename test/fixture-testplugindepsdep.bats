@@ -31,7 +31,7 @@ setup() {
 }
 
 @test "fails to call deps" {
-  run testplugindepsdep::greet
+  run -127 testplugindepsdep::greet
   assert_failure
   assert_output --partial "greeting from testplugindepsdep 1.0.0"
   assert_output --partial "testplugindeps::greet: command not found"

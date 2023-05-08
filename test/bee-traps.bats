@@ -13,7 +13,7 @@ export -f _test_exit
 }
 
 @test "adds exit trap with error status" {
-  run bee --batch \
+  run -127 bee --batch \
     "bee::add_exit_trap _test_exit" \
     "not_a_command"
   assert_failure
@@ -35,7 +35,7 @@ export -f _test_exit
 }
 
 @test "fails in internal mode" {
-  run bee not_a_command
+  run -127 bee not_a_command
   assert_failure
   assert_output --partial "not_a_command: command not found"
 }
@@ -51,7 +51,7 @@ EOF
 }
 
 @test "fails in plugin mode" {
-  run bee testplugin not_a_command
+  run -127 bee testplugin not_a_command
   assert_failure
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --partial --index 1 "testplugin::not_a_command: command not found"
@@ -68,7 +68,7 @@ EOF
 }
 
 @test "fails quiet in plugin mode" {
-  run bee --quiet testplugin not_a_command
+  run -127 bee --quiet testplugin not_a_command
   assert_failure
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --partial --index 1 "testplugin::not_a_command: command not found"

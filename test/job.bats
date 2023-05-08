@@ -22,7 +22,7 @@ _prepare_job_logs() {
 }
 
 @test "runs job and fails" {
-  run bee job testjob not_a_command
+  run -127 bee job testjob not_a_command
   assert_failure
   assert_output "##Etestjob ${BEE_CHECK_FAIL}#"
 }
@@ -45,7 +45,7 @@ EOF
 }
 
 @test "runs job and fails with time" {
-  run bee job --time testjob not_a_command
+  run -127 bee job --time testjob not_a_command
   assert_failure
   assert_output "##Etestjob ${BEE_CHECK_FAIL} (0 seconds)#"
 }
@@ -66,7 +66,7 @@ EOF
 
 @test "logs error to logfile" {
   _prepare_job_logs
-  run bee job --logfile testjob not_a_command
+  run -127 bee job --logfile testjob not_a_command
   run cat "${BEE_RESOURCES}/logs/"*
   assert_output --partial "not_a_command: command not found"
 }
@@ -87,7 +87,7 @@ EOF
 
 @test "runs job and fails verbose" {
   _prepare_job_logs
-  run bee --verbose job --logfile testjob not_a_command
+  run -127 bee --verbose job --logfile testjob not_a_command
 
   assert_line --index 0 "testjob"
   assert_line --index 1 --partial "not_a_command: command not found"

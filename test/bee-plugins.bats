@@ -211,7 +211,7 @@ EOF
 }
 
 @test "fails when plugin help is missing" {
-  run bee --batch \
+  run -127 bee --batch \
     "bee::load_plugin testplugindeps" \
     "bee::run_plugin testplugindeps"
   assert_failure
