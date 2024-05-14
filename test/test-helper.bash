@@ -31,7 +31,8 @@ _set_beerc_with() {
   done
 }
 _set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
-  # shellcheck disable=SC1090
+
+# shellcheck disable=SC1090
 _source_beerc() { source "${BEE_RC}"; }
 
 _setup_beefile() {
