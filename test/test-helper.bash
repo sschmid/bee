@@ -65,7 +65,7 @@ assert_comp() {
   fi
 }
 
-# shellcheck disable=SC2207,SC2068,SC2206
+# shellcheck disable=SC2154,SC2207,SC2068,SC2206
 _comp() {
   export COMP_LINE="$1"
   export COMP_POINT="${#COMP_LINE}"
