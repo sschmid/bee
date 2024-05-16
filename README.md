@@ -1,4 +1,4 @@
-![Sherlog-Header](readme/bee-header.png)
+![Bee-Header](readme/bee-header.png)
 
 # 🐝 bee - plugin-based bash automation
 
