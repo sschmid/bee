@@ -1,4 +1,9 @@
 # shellcheck disable=SC1090,SC2153,SC2178
+
+################################################################################
+# defaults
+################################################################################
+
 : "${BEE_LATEST_VERSION_PATH:=https://raw.githubusercontent.com/sschmid/bee/main/version.txt}"
 : "${BEE_WIKI:=https://github.com/sschmid/bee/wiki}"
 : "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}" # 4h * 60 * 60
@@ -10,6 +15,10 @@ if [[ -v BEE_PLUGINS_PATHS ]]
 then BEE_PLUGINS_PATHS+=("${BEE_CACHES_PATH}/plugins")
 else BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
 fi
+
+################################################################################
+# help
+################################################################################
 
 bee::help() {
   cat << EOF
@@ -52,6 +61,7 @@ EOF
 ################################################################################
 # cache
 ################################################################################
+
 bee::cache::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     echo --clear
@@ -74,7 +84,9 @@ bee::cache() {
 ################################################################################
 # hash
 ################################################################################
+
 BEE_HUB_HASH_RESULT=""
+
 bee::hash() {
   if ((!$#)); then
     bee::help
@@ -112,6 +124,7 @@ bee::hash() {
 ################################################################################
 # hubs
 ################################################################################
+
 bee::hubs::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}" comps=(--all --list "${BEE_HUBS[*]}")
@@ -189,6 +202,7 @@ bee::to_cache_path() {
 ################################################################################
 # info
 ################################################################################
+
 bee::info::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     {
@@ -229,6 +243,7 @@ bee::info() {
 ################################################################################
 # install
 ################################################################################
+
 bee::install::comp() {
   local plugins
   plugins="$(bee::hubs --list)"
@@ -241,6 +256,7 @@ bee::install::comp() {
 }
 
 declare -Ag BEE_INSTALL_HASHES=()
+
 bee::install() {
   BEE_INSTALL_HASHES=()
   bee::pull
@@ -365,6 +381,7 @@ bee::install::recursively() {
 ################################################################################
 # job
 ################################################################################
+
 BEE_JOB_SPINNER_INTERVAL=0.1
 BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
 declare -ig BEE_JOB_SPINNER_PID=0
@@ -481,11 +498,14 @@ bee::job::EXIT() {
   fi
 }
 
-bee::job::duration() { ((!BEE_JOB_SHOW_TIME)) || echo " ($((SECONDS - BEE_JOB_T)) seconds)"; }
+bee::job::duration() {
+  ((!BEE_JOB_SHOW_TIME)) || echo " ($((SECONDS - BEE_JOB_T)) seconds)"
+}
 
 ################################################################################
 # lint
 ################################################################################
+
 bee::lint() {
   if ((!$#)); then
     bee::help
@@ -593,6 +613,7 @@ bee::lint() {
 }
 
 declare -ig BEE_HUB_LINT_ERROR=0
+
 bee::lint::assert_equal() {
   local key="$1" actual="$2" expected="$3"
   if [[ "${actual}" == "${expected}" ]]; then
@@ -624,6 +645,7 @@ bee::lint::optional() {
 ################################################################################
 # new
 ################################################################################
+
 bee::new() {
   local beefile="${1:-Beefile}"
   if [[ -f "${beefile}" ]]; then
@@ -668,6 +690,7 @@ EOF
 ################################################################################
 # plugins
 ################################################################################
+
 bee::plugins::comp() {
   local comps=(--all --lock --outdated --version)
   while (($#)); do
@@ -765,6 +788,7 @@ BEE_RESOLVE_PLUGIN_IS_LOCAL=""
 BEE_RESOLVE_PLUGIN_BASE_PATH=""
 BEE_RESOLVE_PLUGIN_FULL_PATH=""
 BEE_RESOLVE_PLUGIN_JSON_PATH=""
+
 bee::resolve_plugin() {
   local plugin="$1" plugin_name plugin_version plugin_path is_local
   local -i found=0
@@ -800,6 +824,7 @@ BEE_LOAD_PLUGIN_PATH=""
 BEE_LOAD_PLUGIN_JSON_PATH=""
 declare -Ag BEE_LOAD_PLUGIN_LOADED=()
 BEE_LOAD_PLUGIN_MISSING=()
+
 bee::load_plugin() {
   local -i ignore_missing=${2:-0}
   BEE_LOAD_PLUGIN_MISSING=()
@@ -848,6 +873,7 @@ declare -Ag BEE_PLUGIN_MAP=()
 declare -Ag BEE_PLUGIN_MAP_LOCK=()
 declare -Ag BEE_PLUGIN_MAP_LATEST=()
 declare -ag BEE_PLUGIN_MAP_CONFLICTS=()
+
 bee::map_plugins() {
   bee::map_plugins_recursively "$@"
   if ((${#BEE_PLUGIN_MAP_CONFLICTS[@]})); then
@@ -943,6 +969,7 @@ bee::run_plugin() {
 ################################################################################
 # pull
 ################################################################################
+
 bee::pull::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     local cmd="${1:-}" comps=(--force "${BEE_HUBS[*]}")
@@ -1008,6 +1035,7 @@ bee::pull() {
 ################################################################################
 # res
 ################################################################################
+
 bee::res() {
   if ((!$#)); then
     bee::help
@@ -1031,6 +1059,7 @@ bee::res() {
 ################################################################################
 # update
 ################################################################################
+
 bee::update::comp() {
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
     pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
@@ -1053,6 +1082,7 @@ bee::update() {
 ################################################################################
 # version
 ################################################################################
+
 bee::version::comp() {
   local cmd="${1:-}"
   if ((!$# || $# == 1 && COMP_PARTIAL)); then
@@ -1105,6 +1135,7 @@ bee::version() {
 ################################################################################
 # wiki
 ################################################################################
+
 bee::wiki() {
   if (($#)); then
     bee::help
@@ -1116,6 +1147,7 @@ bee::wiki() {
 ################################################################################
 # traps
 ################################################################################
+
 declare -ig BEE_VERBOSE=0
 declare -ig BEE_CANCELED=0
 declare -igr BEE_MODE_INTERNAL=0
@@ -1126,6 +1158,7 @@ declare -ig T=${SECONDS}
 declare -Ag BEE_TRAPS_INT=()
 declare -Ag BEE_TRAPS_TERM=()
 declare -Ag BEE_TRAPS_EXIT=()
+
 bee::add_int_trap() { BEE_TRAPS_INT["$1"]="$1"; }
 bee::add_term_trap() { BEE_TRAPS_TERM["$1"]="$1"; }
 bee::add_exit_trap() { BEE_TRAPS_EXIT["$1"]="$1"; }
@@ -1133,8 +1166,20 @@ bee::remove_int_trap() { unset 'BEE_TRAPS_INT["$1"]'; }
 bee::remove_term_trap() { unset 'BEE_TRAPS_TERM["$1"]'; }
 bee::remove_exit_trap() { unset 'BEE_TRAPS_EXIT["$1"]'; }
 
-bee::INT() { BEE_CANCELED=1; for t in "${BEE_TRAPS_INT[@]}"; do "$t"; done; }
-bee::TERM() { BEE_CANCELED=1; for t in "${BEE_TRAPS_TERM[@]}"; do "$t"; done; }
+bee::INT() {
+  BEE_CANCELED=1
+  for t in "${BEE_TRAPS_INT[@]}"; do
+    "$t"
+  done
+}
+
+bee::TERM() {
+  BEE_CANCELED=1
+  for t in "${BEE_TRAPS_TERM[@]}"; do
+    "$t"
+  done
+}
+
 bee::EXIT() {
   local -i status=$?
   for t in "${BEE_TRAPS_EXIT[@]}"; do "$t" ${status}; done
@@ -1155,6 +1200,7 @@ bee::EXIT() {
 ################################################################################
 # completion
 ################################################################################
+
 declare -ag BEE_OPTIONS=(--batch --help --quiet --verbose)
 declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull res update version wiki)
 
@@ -1253,6 +1299,7 @@ bee::comp_command_or_plugin() {
 ################################################################################
 # run
 ################################################################################
+
 bee::batch() {
   local -i allow_fail=0
   while (($#)); do
