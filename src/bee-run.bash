@@ -195,7 +195,7 @@ bee::to_cache_path() {
     git@*) local path="${1#git@}"; echo "$(dirname "${path/://}")/$(basename "$1" .git)" ;;
     ssh://*) local path="${1#ssh://}"; echo "$(dirname "${path#git@}")/$(basename "$1" .git)" ;;
     file://*) basename "$1" ;;
-    *) bee::log_warn "Unsupported url: $1" ;;
+    *) bee::log_warning "Unsupported url: $1" ;;
   esac
 }
 
@@ -320,7 +320,7 @@ bee::install::recursively() {
             fi
             if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
               if (( force )); then
-                bee::log_warn "${plugin_name}:${plugin_version} sha256 mismatch!" \
+                bee::log_warning "${plugin_name}:${plugin_version} sha256 mismatch!" \
                   "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
                   "Consider deleting ${plugin_path} and run 'bee install ${plugin_name}:${plugin_version}'."
                 echo -e "${indent}${bullet}${BEE_COLOR_WARN}${BEE_CHECK_SUCCESS} ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
@@ -877,7 +877,7 @@ declare -ag BEE_PLUGIN_MAP_CONFLICTS=()
 bee::map_plugins() {
   bee::map_plugins_recursively "$@"
   if (( ${#BEE_PLUGIN_MAP_CONFLICTS[@]} )); then
-    bee::log_warn "Version conflicts:" "${BEE_PLUGIN_MAP_CONFLICTS[*]}"
+    bee::log_warning "Version conflicts:" "${BEE_PLUGIN_MAP_CONFLICTS[*]}"
   fi
   for plugin_name in "${!BEE_PLUGIN_MAP_LATEST[@]}"; do
     if [[ -v BEE_PLUGIN_MAP_LOCK["${plugin_name}"] ]]
@@ -1186,7 +1186,7 @@ bee::EXIT() {
   if (( ! BEE_QUIET && BEE_MODE == BEE_MODE_PLUGIN )); then
     local duration="$(( SECONDS - T )) seconds"
     if (( BEE_CANCELED )); then
-      bee::log_warn "bzzzz (${duration})"
+      bee::log_warning "bzzzz (${duration})"
     else
       if (( status )); then
         bee::log_error "bzzzz ${status} (${duration})"

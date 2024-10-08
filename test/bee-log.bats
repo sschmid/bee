@@ -123,13 +123,13 @@ EOF
 #################################################################################
 
 @test "logs warn message" {
-  run bee bee::log_warn message
+  run bee bee::log_warning message
   assert_success
   assert_output "${BEE_WARNING} message"
 }
 
 @test "logs multiple warn messages" {
-  run bee bee::log_warn message1 message2 message3
+  run bee bee::log_warning message1 message2 message3
   assert_success
   cat << EOF | assert_output -
 ${BEE_WARNING} message1
@@ -139,7 +139,7 @@ EOF
 }
 
 @test "logs warn message even when quiet" {
-  run bee --quiet bee::log_warn message
+  run bee --quiet bee::log_warning message
   assert_success
   assert_output "${BEE_WARNING} message"
 }
