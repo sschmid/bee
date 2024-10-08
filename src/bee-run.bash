@@ -97,7 +97,7 @@ bee::hash() {
     local path="$1" file_hash all
     local -a hashes=()
     echo "${path}"
-    pushd "${path}" > /dev/null || exit 1
+    pushd "${path}" >/dev/null || exit 1
       local file
       local -i ignore=0
       while read -r file; do
@@ -114,7 +114,7 @@ bee::hash() {
           hashes+=("${file_hash// */}")
         fi
       done < <(find . -type f | LC_ALL=C sort)
-    popd > /dev/null || exit 1
+    popd >/dev/null || exit 1
     all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
     echo "${all}"
     BEE_HUB_HASH_RESULT="${all// */}"
@@ -315,7 +315,7 @@ bee::install::recursively() {
             if [[ -v BEE_INSTALL_HASHES["${plugin_path}"] ]]; then
               BEE_HUB_HASH_RESULT="${BEE_INSTALL_HASHES["${plugin_path}"]}"
             else
-              bee::hash "${plugin_path}" > /dev/null
+              bee::hash "${plugin_path}" >/dev/null
               BEE_INSTALL_HASHES["${plugin_path}"]="${BEE_HUB_HASH_RESULT}"
             fi
             if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
@@ -452,7 +452,7 @@ bee::job::start_spinner() {
   bee::add_int_trap bee::job::INT
   bee::add_exit_trap bee::job::EXIT
   if [[ -t 1 ]]; then
-    tput civis &> /dev/null || true
+    tput civis &>/dev/null || true
     stty -echo
     bee::job::spin &
     BEE_JOB_SPINNER_PID=$!
@@ -465,11 +465,11 @@ bee::job::stop_spinner() {
   if [[ -t 1 ]]; then
     if (( BEE_JOB_SPINNER_PID != 0 )); then
       kill -9 ${BEE_JOB_SPINNER_PID} || true
-      wait ${BEE_JOB_SPINNER_PID} &> /dev/null || true
+      wait ${BEE_JOB_SPINNER_PID} &>/dev/null || true
       BEE_JOB_SPINNER_PID=0
     fi
     stty echo
-    tput cnorm &> /dev/null || true
+    tput cnorm &>/dev/null || true
   fi
   BEE_JOB_RUNNING=0
 }
@@ -559,16 +559,16 @@ bee::lint() {
     if [[ -n "${cache_path}" ]]; then
       cache_path="${BEE_LINT_CACHE_PATH}/${cache_path}"
       if [[ -d "${cache_path}" ]]; then
-        pushd "${cache_path}" > /dev/null || exit 1
+        pushd "${cache_path}" >/dev/null || exit 1
           bee::job "git fetch" git fetch
-        popd > /dev/null || exit 1
+        popd >/dev/null || exit 1
       else
         bee::job "git clone" git clone "${git_url}" "${cache_path}"
       fi
     fi
 
     if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
-      pushd "${cache_path}" > /dev/null || exit 1
+      pushd "${cache_path}" >/dev/null || exit 1
         bee::job "git checkout tag" git checkout -q "${git_tag}"
 
         key="version file"
@@ -605,7 +605,7 @@ bee::lint() {
         bee::lint::assert_equal "${key}" \
           "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
           "$(echo "${deps}" | tr '\n' ' ')"
-      popd > /dev/null || exit 1
+      popd >/dev/null || exit 1
     fi
 
     (( ! BEE_HUB_LINT_ERROR )) || return 1
@@ -866,7 +866,7 @@ bee::load_plugin_deps() {
 }
 
 bee:map_bee_plugins() {
-  [[ ! -v BEE_PLUGINS ]] || bee::map_plugins "${BEE_PLUGINS[@]}" > /dev/null
+  [[ ! -v BEE_PLUGINS ]] || bee::map_plugins "${BEE_PLUGINS[@]}" >/dev/null
 }
 
 declare -Ag BEE_PLUGIN_MAP=()
@@ -1020,9 +1020,9 @@ bee::pull() {
       if [[ -n "${cache_path}" ]]; then
         cache_path="${BEE_HUBS_CACHE_PATH}/${cache_path}"
         if [[ -d "${cache_path}" ]]; then
-          pushd "${cache_path}" > /dev/null || exit 1
+          pushd "${cache_path}" >/dev/null || exit 1
             git pull
-          popd > /dev/null || exit 1
+          popd >/dev/null || exit 1
         else
           git clone "${url}" "${cache_path}" || true
         fi
@@ -1062,21 +1062,21 @@ bee::res() {
 
 bee::update::comp() {
   if (( ! $# || $# == 1 && COMP_PARTIAL )); then
-    pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
+    pushd "${BEE_SYSTEM_HOME}" >/dev/null || exit 1
       git branch -r --format '%(refname:short)' \
         | cut -d/ -f2- \
         | tail -n +2
-    popd > /dev/null || exit 1
+    popd >/dev/null || exit 1
   fi
 }
 
 bee::update() {
   local branch="${1:-main}"
-  pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
+  pushd "${BEE_SYSTEM_HOME}" >/dev/null || exit 1
     git switch "${branch}"
     git pull
     bee::log "bee is up-to-date and ready to bzzzz"
-  popd > /dev/null || exit 1
+  popd >/dev/null || exit 1
 }
 
 ################################################################################

@@ -9,18 +9,18 @@ setup() {
 _setup_mock_bee_hub_repo() {
   local hub="$1" plugin="$2"
   mkdir -p "${BATS_TEST_TMPDIR}/${hub}/${plugin}/1.0.0"
-  pushd "${BATS_TEST_TMPDIR}/${hub}" > /dev/null || exit 1
+  pushd "${BATS_TEST_TMPDIR}/${hub}" >/dev/null || exit 1
     touch "${plugin}/1.0.0/plugin.json"
     git init; git add . ; _git_commit -m "Initial commit"
-  popd > /dev/null || exit 1
+  popd >/dev/null || exit 1
 }
 
 _update_mock_bee_hub_repo() {
   local hub="$1" plugin="$2" version="$3"
   mkdir -p "${BATS_TEST_TMPDIR}/${hub}/${plugin}/${version}"
-  pushd "${BATS_TEST_TMPDIR}/${hub}" > /dev/null || exit 1
+  pushd "${BATS_TEST_TMPDIR}/${hub}" >/dev/null || exit 1
     touch "${plugin}/${version}/plugin.json"; git add . ; _git_commit -m "Release ${version}"
-  popd > /dev/null || exit 1
+  popd >/dev/null || exit 1
 }
 
 @test "clones all registered hubs" {

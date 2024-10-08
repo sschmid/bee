@@ -73,7 +73,7 @@ EOF
 @test "installs specified bee version" {
   _setup_beefile "BEE_VERSION=1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src/os"
-  pushd "${BATS_TEST_TMPDIR}/testbee" > /dev/null || exit 1
+  pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
     echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
     cp -r "${PROJECT_ROOT}/src/os" src
@@ -81,7 +81,7 @@ EOF
     echo "echo '# test bee-run.bash 1.1.0 sourced'" > src/bee-run.bash
     cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash;
     git add . ; _git_commit -m "Bump version"; git tag "1.1.0"
-  popd > /dev/null || exit 1
+  popd >/dev/null || exit 1
   run bee :
   assert_output "# test bee-run.bash 1.0.0 sourced"
 }
@@ -89,11 +89,11 @@ EOF
 @test "applies bee 0.x migration" {
   _setup_beefile "BEE_VERSION=0.41.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src"
-  pushd "${BATS_TEST_TMPDIR}/testbee" > /dev/null || exit 1
+  pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
     echo "echo '# test bee 0.41.0 sourced'" > src/bee
     chmod +x src/bee
     git init; git add . ; _git_commit -m "Initial commit"; git tag 0.41.0
-  popd > /dev/null || exit 1
+  popd >/dev/null || exit 1
   run bee :
   assert_output "# test bee 0.41.0 sourced"
 }
