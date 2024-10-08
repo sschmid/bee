@@ -72,7 +72,7 @@ EOF
   run bee bee::map_plugins testplugin:1.0.0 testplugin:2.0.0
   assert_success
   cat << EOF | assert_output -
-${BEE_WARN} Version conflicts:
+${BEE_WARNING} Version conflicts:
 testplugin:1.0.0 <-> testplugin:2.0.0
 testplugin:2.0.0
 EOF

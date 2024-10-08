@@ -240,7 +240,7 @@ EOF
   bee pull
   run bee install --force testplugin:0.1.0
   assert_success
-  assert_output --partial "${BEE_WARN} testplugin:0.1.0 sha256 mismatch"
+  assert_output --partial "${BEE_WARNING} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #W${BEE_CHECK_SUCCESS} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }

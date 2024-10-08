@@ -36,5 +36,5 @@ setup() {
 @test "warns when unsupported url" {
   run bee bee::to_cache_path "unknown"
   assert_success
-  assert_output "${BEE_WARN} Unsupported url: unknown"
+  assert_output "${BEE_WARNING} Unsupported url: unknown"
 }
