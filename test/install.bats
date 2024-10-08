@@ -13,7 +13,7 @@ setup() {
   cat << EOF | assert_output -
 Installing
 └── #E${BEE_CHECK_FAIL} unknown#
-${BEE_ERR} Couldn't install plugin: unknown
+${BEE_ERROR} Couldn't install plugin: unknown
 EOF
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
 }
@@ -80,7 +80,7 @@ EOF
   cat << EOF | assert_output -
 Installing
 └── #E${BEE_CHECK_FAIL} testplugin:9.0.0#
-${BEE_ERR} Couldn't install plugin: testplugin:9.0.0
+${BEE_ERROR} Couldn't install plugin: testplugin:9.0.0
 EOF
   assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/testplugin"
 }
@@ -213,8 +213,8 @@ Installing
     │   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
     │   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
     └── #E${BEE_CHECK_FAIL} othermissing:1.0.0#
-${BEE_ERR} Couldn't install plugin: missing:1.0.0
-${BEE_ERR} Couldn't install plugin: othermissing:1.0.0
+${BEE_ERROR} Couldn't install plugin: missing:1.0.0
+${BEE_ERROR} Couldn't install plugin: othermissing:1.0.0
 EOF
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testpluginmissingdep/1.0.0/testpluginmissingdep.bash"
   assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
@@ -229,7 +229,7 @@ EOF
   bee pull
   run bee install testplugin:0.1.0
   assert_success
-  assert_output --partial "${BEE_ERR} testplugin:0.1.0 sha256 mismatch"
+  assert_output --partial "${BEE_ERROR} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #E${BEE_CHECK_FAIL} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
   assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
@@ -252,7 +252,7 @@ EOF
   bee install testplugin:0.1.0
   run bee install testplugin:0.1.0
   assert_success
-  assert_output --partial "${BEE_ERR} testplugin:0.1.0 sha256 mismatch"
+  assert_output --partial "${BEE_ERROR} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #E${BEE_CHECK_FAIL} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
   assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }

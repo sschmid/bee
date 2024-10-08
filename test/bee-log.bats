@@ -151,14 +151,14 @@ EOF
 @test "logs error message" {
   run bee bee::log_error message
   assert_success
-  assert_output "${BEE_ERR} message"
+  assert_output "${BEE_ERROR} message"
 }
 
 @test "logs multiple error messages" {
   run bee bee::log_error message1 message2 message3
   assert_success
   cat << EOF | assert_output -
-${BEE_ERR} message1
+${BEE_ERROR} message1
 message2
 message3
 EOF
@@ -167,5 +167,5 @@ EOF
 @test "logs error message even when quiet" {
   run bee --quiet bee::log_error message
   assert_success
-  assert_output "${BEE_ERR} message"
+  assert_output "${BEE_ERROR} message"
 }

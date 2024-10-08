@@ -26,7 +26,7 @@ setup() {
   run bee new "test/Beefile"
   run bee new "test/Beefile"
   assert_failure
-  assert_output "${BEE_ERR} test/Beefile already exists"
+  assert_output "${BEE_ERROR} test/Beefile already exists"
 }
 
 @test "sets default vars" {

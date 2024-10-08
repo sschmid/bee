@@ -55,7 +55,7 @@ EOF
   assert_failure
   assert_line --index 0 "# testplugin 2.0.0 sourced"
   assert_line --partial --index 1 "testplugin::not_a_command: command not found"
-  assert_line --partial --index 2 "${BEE_ERR} bzzzz 127"
+  assert_line --partial --index 2 "${BEE_ERROR} bzzzz 127"
 }
 
 @test "runs quiet in plugin mode" {

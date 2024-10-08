@@ -20,7 +20,7 @@ export BEE_CHECK_FAIL="BEE_CHECK_FAIL"
 export BEE_RESULT="BEE_RESULT"
 export BEE_ICON="BEE_ICON"
 export BEE_WARNING="BEE_WARNING"
-export BEE_ERR="BEE_ERR"
+export BEE_ERROR="BEE_ERROR"
 
 _set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
 _set_beerc_with() {

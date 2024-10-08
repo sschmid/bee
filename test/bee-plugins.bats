@@ -194,8 +194,8 @@ EOF
 # testplugindeps 1.0.0 sourced
 # testplugin 1.0.0 sourced
 # othertestplugin 1.0.0 sourced
-${BEE_ERR} Missing plugin: 'missing:1.0.0'
-${BEE_ERR} Missing plugin: 'othermissing:1.0.0'
+${BEE_ERROR} Missing plugin: 'missing:1.0.0'
+${BEE_ERROR} Missing plugin: 'othermissing:1.0.0'
 EOF
 }
 

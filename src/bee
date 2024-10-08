@@ -36,7 +36,7 @@ IFS=$'\n\t'
 : "${BEE_RESULT:="➜"}"
 : "${BEE_ICON:="🐝"}"
 : "${BEE_WARNING:="🟠"}"
-: "${BEE_ERR:="🔴"}"
+: "${BEE_ERROR:="🔴"}"
 
 ################################################################################
 # logging
@@ -67,7 +67,7 @@ bee::log_warn() {
 }
 
 bee::log_error() {
-  echo "${BEE_ERR} $*" >&2
+  echo "${BEE_ERROR} $*" >&2
 }
 
 bee::env() {
