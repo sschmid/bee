@@ -135,11 +135,9 @@ Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
 │   │   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 │   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-├── testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-│   ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-│   └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-└── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+└── testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+    ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+    └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 EOF
 }
 
@@ -160,11 +158,9 @@ EOF
   run bee install
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
-├── localplugin:local (${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/localplugin.bash)
-│   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-│   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-└── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+└── localplugin:local (${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/localplugin.bash)
+    ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+    └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
 }
 

@@ -273,8 +273,8 @@ bee::install() {
   elif [[ -v BEE_FILE ]]; then
     if [[ -f "${BEE_FILE}.lock" ]]; then
       echo "Installing plugins based on ${BEE_FILE}.lock"
-      mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
-      mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
+      mapfile -t plugins < <(awk '/^├── / {print $2}; /^└── / {print $2}' "${BEE_FILE}.lock")
+      mapfile -t plugins < <(awk '!line[$0]++' <<< "${plugins[*]}")
       bee::install::recursively ${force} 0 "" "${plugins[@]}"
     else
       echo "Installing plugins based on ${BEE_FILE}"
@@ -733,7 +733,7 @@ bee::plugins() {
     fi
     if (( show_lock )); then
       [[ -v BEE_FILE && -f "${BEE_FILE}.lock" ]] || return 1
-      mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
+      mapfile -t plugins < <(tr -d '└├│─' < "${BEE_FILE}.lock")
       mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
     fi
     for plugin in "${plugins[@]}"; do
