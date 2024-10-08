@@ -207,7 +207,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "5ebab3a1c8be86a86145ecb7edcfa567e4c0a24066953e321debd8ea23ffd472"
+  "sha256": "37b987c21cf91f12d61aa9b3e2dda4b921f6467e6c83acd6f0765f825a4e0bef"
 }
 EOF
 
@@ -363,7 +363,7 @@ EOF
 }
 EOF
 
-  assert_lint_error --regexp 'sha256.*xxx.*5ebab3a1c8be86a86145ecb7edcfa567e4c0a24066953e321debd8ea23ffd472'
+  assert_lint_error --regexp 'sha256.*xxx.*37b987c21cf91f12d61aa9b3e2dda4b921f6467e6c83acd6f0765f825a4e0bef'
 }
 
 @test "lints missing plugin bash file" {
@@ -420,7 +420,7 @@ EOF
   "info": "bee testplugin",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
   "tag": "v2.0.0",
-  "sha256": "5ebab3a1c8be86a86145ecb7edcfa567e4c0a24066953e321debd8ea23ffd472"
+  "sha256": "37b987c21cf91f12d61aa9b3e2dda4b921f6467e6c83acd6f0765f825a4e0bef"
 }
 EOF
 
