@@ -631,7 +631,7 @@ bee::new() {
     return 1
   else
     cat << EOF > "${beefile}"
-BEE_PROJECT=$(basename "${PWD}")
+BEE_PROJECT="$(basename "${PWD}")"
 BEE_VERSION=$(bee::version)
 
 # Which plugins would you like to load?
