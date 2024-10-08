@@ -5,14 +5,10 @@ set -e
 
 [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
 if [[ $# -gt 0 && "$1" == "--docker" ]]; then
-  test/shellcheck
   DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION="${TEST_BASH_VERSION}" --progress=plain --target test -t sschmid/bee/test .
   docker run --rm sschmid/bee/test
+  test/shellcheck
 else
-  if (($#)); then
-    test/bats/bin/bats "$@"
-  else
-    test/bats/bin/bats --tap test
-    test/shellcheck
-  fi
+  test/bats/bin/bats "${@:-test}"
+  test/shellcheck
 fi

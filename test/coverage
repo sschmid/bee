@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+[[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
+kcov \
+  --dump-summary \
+  --bash-parser="$(which bash)" \
+  --include-path=src \
+  --exclude-line='done <,: #' \
+  --exclude-region='# KCOV_EXCL_START:# KCOV_EXCL_STOP' \
+  coverage \
+  test/bats/bin/bats "${@:-test}"

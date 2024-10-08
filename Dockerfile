@@ -16,4 +16,4 @@ CMD ["bee"]
 FROM bee AS test
 WORKDIR /usr/local/opt/bee
 COPY test test
-RUN test/bats/bin/bats --tap test
+RUN test/bats/bin/bats test
