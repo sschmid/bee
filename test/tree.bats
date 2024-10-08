@@ -7,14 +7,14 @@ _tree() {
   local -a plugins=("$@")
   local plugin_name plugin_deps bullet
   local -i i n=${#plugins[@]}
-  for ((i = 0; i < n; i++)); do
+  for (( i = 0; i < n; i++ )); do
     plugin_name="${plugins[i]%% *}"
     plugin_deps="${plugins[i]#* }"
-    ((i == n - 1)) && bullet="└── " || bullet="├── "
+    (( i == n - 1 )) && bullet="└── " || bullet="├── "
     echo "${indent}${bullet}${plugin_name}"
 #    echo "${indent}${bullet}${plugin_name}" >&3
     if [[ "${plugin_name}" != "${plugin_deps}" ]]; then
-      if ((i == n - 1)); then
+      if (( i == n - 1 )); then
         # shellcheck disable=SC2086
         _tree "${indent}    " ${plugin_deps}
       else

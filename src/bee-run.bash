@@ -63,15 +63,15 @@ EOF
 ################################################################################
 
 bee::cache::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     echo --clear
-  elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
+  elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
     [[ ! -d "${BEE_CACHES_PATH}" ]] || ls "${BEE_CACHES_PATH}"
   fi
 }
 
 bee::cache() {
-  if (($#)); then
+  if (( $# )); then
     case "$1" in
       --clear) rm -rf "${BEE_CACHES_PATH}${2:+/$2}" ;;
       *) bee::help ;;
@@ -88,7 +88,7 @@ bee::cache() {
 BEE_HUB_HASH_RESULT=""
 
 bee::hash() {
-  if ((!$#)); then
+  if (( ! $# )); then
     bee::help
   else
     local exclude=(^./.git .DS_Store$)
@@ -108,7 +108,7 @@ bee::hash() {
             break
           fi
         done
-        if ((!ignore)); then
+        if (( ! ignore )); then
           file_hash="$(os_sha256sum "${file}")"
           echo "${file_hash}"
           hashes+=("${file_hash// */}")
@@ -126,7 +126,7 @@ bee::hash() {
 ################################################################################
 
 bee::hubs::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     local cmd="${1:-}" comps=(--all --list "${BEE_HUBS[*]}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
@@ -136,7 +136,7 @@ bee::hubs::comp() {
 
 bee::hubs() {
   local -i show_all=0 list=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --all) show_all=1; shift ;;
       --list) list=1; shift ;;
@@ -144,7 +144,7 @@ bee::hubs() {
     esac
   done
 
-  if ((list)); then
+  if (( list )); then
     local cache_path
     for url in "${@:-"${BEE_HUBS[@]}"}"; do
       cache_path="$(bee::to_cache_path "${url}")"
@@ -165,18 +165,18 @@ bee::hubs() {
         if [[ -d "${cache_path}" ]]; then
           mapfile -t plugins < <(ls "${cache_path}")
           n=${#plugins[@]}
-          for ((i = 0; i < n; i++)); do
+          for (( i = 0; i < n; i++ )); do
             plugin_name="${plugins[i]}"
-            ((i == n - 1)) && bullet="└── " || bullet="├── "
+            (( i == n - 1 )) && bullet="└── " || bullet="├── "
             echo "${bullet}${plugin_name}"
 
-            if ((show_all)); then
+            if (( show_all )); then
               mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -V)
               m=${#versions[@]}
-              for ((j = 0; j < m; j++)); do
+              for (( j = 0; j < m; j++ )); do
                 plugin_version="$(basename "${versions[j]}")"
-                ((i == n - 1)) && indent="    " || indent="│    "
-                ((j == m - 1)) && bullet="└── " || bullet="├── "
+                (( i == n - 1 )) && indent="    " || indent="│    "
+                (( j == m - 1 )) && bullet="└── " || bullet="├── "
                 echo "${indent}${bullet}${plugin_version}"
               done
             fi
@@ -204,7 +204,7 @@ bee::to_cache_path() {
 ################################################################################
 
 bee::info::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     {
       bee::hubs --list
       bee::comp_plugins
@@ -213,7 +213,7 @@ bee::info::comp() {
 }
 
 bee::info() {
-  if ((!$#)); then
+  if (( ! $# )); then
     bee::help
   else
     local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
@@ -228,7 +228,7 @@ bee::info() {
     done
     for path in "${BEE_PLUGINS_PATHS[@]}"; do
       while read -r plugin_name plugin_version spec_path is_local; do
-        if ((is_local))
+        if (( is_local ))
         then spec_path="${spec_path}/plugin.json"
         else spec_path="${spec_path}/${plugin_version}/plugin.json"
         fi
@@ -247,7 +247,7 @@ bee::info() {
 bee::install::comp() {
   local plugins
   plugins="$(bee::hubs --list)"
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     local cmd="${1:-}" comps=(--force "${plugins}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
@@ -261,13 +261,13 @@ bee::install() {
   BEE_INSTALL_HASHES=()
   bee::pull
   local -i force=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --force) force=1; shift ;;
       --) shift; break ;; *) break ;;
     esac
   done
-  if (($#)); then
+  if (( $# )); then
     echo "Installing"
     bee::install::recursively ${force} 0 "" "$@"
   elif [[ -v BEE_FILE ]]; then
@@ -292,10 +292,10 @@ bee::install::recursively() {
   local -a plugins=("$@") missing=()
   local plugin plugin_name plugin_version cache_path spec_path is_local bullet
   local -i i n=${#plugins[@]} found=0 already_installed=0
-  for ((i = 0; i < n; i++)); do
+  for (( i = 0; i < n; i++ )); do
     found=0
     plugin="${plugins[i]// /}"
-    ((i == n - 1)) && bullet="└── " || bullet="├── "
+    (( i == n - 1 )) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
       while read -r plugin_name plugin_version spec_path is_local; do
@@ -304,7 +304,7 @@ bee::install::recursively() {
         local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
-          ((lock)) && echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
+          (( lock )) && echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
           if [[ -d "${plugin_path}" ]]; then
             already_installed=1
           else
@@ -319,7 +319,7 @@ bee::install::recursively() {
               BEE_INSTALL_HASHES["${plugin_path}"]="${BEE_HUB_HASH_RESULT}"
             fi
             if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
-              if ((force)); then
+              if (( force )); then
                 bee::log_warn "${plugin_name}:${plugin_version} sha256 mismatch!" \
                   "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
                   "Consider deleting ${plugin_path} and run 'bee install ${plugin_name}:${plugin_version}'."
@@ -332,7 +332,7 @@ bee::install::recursively() {
                 echo -e "${indent}${bullet}${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
               fi
             else
-              if ((already_installed)); then
+              if (( already_installed )); then
                 echo -e "${indent}${bullet}${plugin_name}:${plugin_version} (${url})"
               else
                 echo -e "${indent}${bullet}${BEE_COLOR_SUCCESS}${BEE_CHECK_SUCCESS} ${plugin_name}:${plugin_version} (${url})${BEE_COLOR_RESET}"
@@ -343,23 +343,23 @@ bee::install::recursively() {
           fi
           # shellcheck disable=SC2086
           if [[ -n "${deps}" ]]; then
-            if ((i == n - 1))
+            if (( i == n - 1 ))
             then bee::install::recursively ${force} ${lock} "${indent}    " ${deps}
             else bee::install::recursively ${force} ${lock} "${indent}│   " ${deps}
             fi
           fi
         done < <(jq -r '[.git, .tag, .sha256, .dependencies[]?] | @tsv' "${spec_path}")
       done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
-      ((found)) && break
+      (( found )) && break
     done
-    if ((!found)); then
+    if (( ! found )); then
       bee::load_plugin "${plugin}" 1
       if [[ -n "${BEE_LOAD_PLUGIN_NAME}" ]]; then
-        ((lock)) && echo "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local" >> "${BEE_FILE}.lock"
+        (( lock )) && echo "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local" >> "${BEE_FILE}.lock"
         echo -e "${indent}${bullet}${BEE_LOAD_PLUGIN_NAME}:local (${BEE_LOAD_PLUGIN_PATH})"
         if [[ -f "${BEE_LOAD_PLUGIN_JSON_PATH}" ]]; then
           # shellcheck disable=SC2046,SC2086
-          if ((i == n - 1))
+          if (( i == n - 1 ))
           then bee::install::recursively ${force} ${lock} "${indent}    " $(jq -r '.dependencies[]?' "${BEE_LOAD_PLUGIN_JSON_PATH}")
           else bee::install::recursively ${force} ${lock} "${indent}│   " $(jq -r '.dependencies[]?' "${BEE_LOAD_PLUGIN_JSON_PATH}")
           fi
@@ -370,7 +370,7 @@ bee::install::recursively() {
       fi
     fi
   done
-  if ((${#missing[@]})); then
+  if (( ${#missing[@]} )); then
     for m in "${missing[@]}"; do
       bee::log_error "Couldn't install plugin: ${m}"
     done
@@ -394,7 +394,7 @@ BEE_JOB_LOGFILE=""
 
 bee::job::comp() {
   local comps=(--logfile --time)
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --logfile) comps=("${comps[@]/--logfile/}"); shift ;;
       --time) comps=("${comps[@]/--time/}"); shift ;;
@@ -405,8 +405,8 @@ bee::job::comp() {
 }
 
 bee::job() {
-  if (($# >= 2)); then
-    while (($#)); do
+  if (( $# >= 2 )); then
+    while (( $# )); do
       case "$1" in
         --logfile) BEE_JOB_LOG_TO_FILE=1; shift ;;
         --time) BEE_JOB_SHOW_TIME=1; shift ;;
@@ -423,14 +423,14 @@ bee::job() {
 
 bee::job::start() {
   BEE_JOB_TITLE="$1"; shift
-  if ((BEE_JOB_LOG_TO_FILE)); then
+  if (( BEE_JOB_LOG_TO_FILE )); then
     mkdir -p "${BEE_RESOURCES}/logs"
     BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y%m%d%H%M%S')-job-${BEE_JOB_TITLE// /-}-${RANDOM}${RANDOM}.log"
   else
     BEE_JOB_LOGFILE=/dev/null
   fi
 
-  if ((BEE_VERBOSE)); then
+  if (( BEE_VERBOSE )); then
     echo "${BEE_JOB_TITLE}"
     bee::run "$@" 2>&1 | tee "${BEE_JOB_LOGFILE}"
   else
@@ -442,7 +442,7 @@ bee::job::start() {
 bee::job::finish() {
   bee::job::stop_spinner
   local line_reset
-  ((!BEE_VERBOSE)) && line_reset="${BEE_LINE_RESET}" || line_reset=""
+  (( ! BEE_VERBOSE )) && line_reset="${BEE_LINE_RESET}" || line_reset=""
   echo -e "${line_reset}${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}$(bee::job::duration)${BEE_COLOR_RESET}"
 }
 
@@ -463,7 +463,7 @@ bee::job::stop_spinner() {
   bee::remove_int_trap bee::job::INT
   bee::remove_exit_trap bee::job::EXIT
   if [[ -t 1 ]]; then
-    if ((BEE_JOB_SPINNER_PID != 0)); then
+    if (( BEE_JOB_SPINNER_PID != 0 )); then
       kill -9 ${BEE_JOB_SPINNER_PID} || true
       wait ${BEE_JOB_SPINNER_PID} &> /dev/null || true
       BEE_JOB_SPINNER_PID=0
@@ -484,22 +484,22 @@ bee::job::spin() {
 }
 
 bee::job::INT() {
-  ((BEE_JOB_RUNNING)) || return 0
+  (( BEE_JOB_RUNNING )) || return 0
   bee::job::stop_spinner
   echo "Aborted by $(whoami)$(bee::job::duration)" >> "${BEE_JOB_LOGFILE}"
 }
 
 bee::job::EXIT() {
   local -i status=$1
-  ((BEE_JOB_RUNNING)) || return 0
-  if ((status)); then
+  (( BEE_JOB_RUNNING )) || return 0
+  if (( status )); then
     bee::job::stop_spinner
     echo -e "${BEE_LINE_RESET}${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}$(bee::job::duration)${BEE_COLOR_RESET}"
   fi
 }
 
 bee::job::duration() {
-  ((!BEE_JOB_SHOW_TIME)) || echo " ($((SECONDS - BEE_JOB_T)) seconds)"
+  (( ! BEE_JOB_SHOW_TIME )) || echo " ($(( SECONDS - BEE_JOB_T )) seconds)"
 }
 
 ################################################################################
@@ -507,7 +507,7 @@ bee::job::duration() {
 ################################################################################
 
 bee::lint() {
-  if ((!$#)); then
+  if (( ! $# )); then
     bee::help
   else
     local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
@@ -608,7 +608,7 @@ bee::lint() {
       popd > /dev/null || exit 1
     fi
 
-    ((!BEE_HUB_LINT_ERROR)) || return 1
+    (( ! BEE_HUB_LINT_ERROR )) || return 1
   fi
 }
 
@@ -693,7 +693,7 @@ EOF
 
 bee::plugins::comp() {
   local comps=(--all --lock --outdated --version)
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --all) comps=("${comps[@]/--all/}"); shift ;;
       --lock) comps=("${comps[@]/--lock/}"); shift ;;
@@ -710,7 +710,7 @@ bee::plugins() {
   local -i show_lock=0
   local -i show_outdated=0
   local -i show_version=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --all) show_all=1; shift ;;
       --lock) show_lock=1; shift ;;
@@ -720,18 +720,18 @@ bee::plugins() {
     esac
   done
 
-  if (($#)); then
+  if (( $# )); then
     bee::help
   else
     local plugin_entry plugin_version
     local -a plugins found=() missing=()
-    if ((show_all)); then
+    if (( show_all )); then
       mapfile -t plugins < <(bee::comp_plugins)
       plugins=("${BEE_PLUGINS[@]}" "${plugins[@]}")
     else
       plugins=("${BEE_PLUGINS[@]}")
     fi
-    if ((show_lock)); then
+    if (( show_lock )); then
       [[ -v BEE_FILE && -f "${BEE_FILE}.lock" ]] || return 1
       mapfile -t plugins < <(< "${BEE_FILE}.lock" tr -d '└├│─')
       mapfile -t plugins < <(echo "${plugins[*]// /}" | awk '!line[$0]++')
@@ -741,12 +741,12 @@ bee::plugins() {
       if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
         plugin_entry="${BEE_RESOLVE_PLUGIN_NAME}"
         plugin_version="${BEE_RESOLVE_PLUGIN_VERSION}"
-        ((show_version || show_lock || show_outdated)) && plugin_entry="${plugin_entry}:${plugin_version}"
-        if ((show_lock)); then
+        (( show_version || show_lock || show_outdated )) && plugin_entry="${plugin_entry}:${plugin_version}"
+        if (( show_lock )); then
           if [[ -z "${BEE_RESOLVE_PLUGIN_FULL_PATH}" ]]; then
             missing+=("${BEE_COLOR_FAIL}${BEE_CHECK_FAIL} ${plugin_entry}${BEE_COLOR_RESET}")
           fi
-        elif ((show_outdated)); then
+        elif (( show_outdated )); then
           bee::resolve_plugin "${BEE_RESOLVE_PLUGIN_NAME}"
           if [[ -n "${BEE_RESOLVE_PLUGIN_FULL_PATH}" && "${BEE_RESOLVE_PLUGIN_VERSION}" != "${plugin_version}" ]]; then
             found+=("${plugin_entry} ${BEE_RESULT} ${BEE_RESOLVE_PLUGIN_NAME}:${BEE_RESOLVE_PLUGIN_VERSION}")
@@ -759,8 +759,8 @@ bee::plugins() {
       fi
     done
 
-    ((${#found[@]})) && echo "${found[*]}" | LC_ALL=C sort -u
-    if ((${#missing[@]})); then
+    (( ${#found[@]} )) && echo "${found[*]}" | LC_ALL=C sort -u
+    if (( ${#missing[@]} )); then
       echo -e "${missing[*]}" | LC_ALL=C sort -u
       return 1
     fi
@@ -799,7 +799,7 @@ bee::resolve_plugin() {
       BEE_RESOLVE_PLUGIN_VERSION="${plugin_version}"
       BEE_RESOLVE_PLUGIN_IS_LOCAL=${is_local}
       BEE_RESOLVE_PLUGIN_BASE_PATH="${plugin_path}"
-      if ((BEE_RESOLVE_PLUGIN_IS_LOCAL)); then
+      if (( BEE_RESOLVE_PLUGIN_IS_LOCAL )); then
         BEE_RESOLVE_PLUGIN_FULL_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_NAME}.bash"
         BEE_RESOLVE_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/plugin.json"
       else
@@ -807,9 +807,9 @@ bee::resolve_plugin() {
         BEE_RESOLVE_PLUGIN_JSON_PATH="${BEE_RESOLVE_PLUGIN_BASE_PATH}/${BEE_RESOLVE_PLUGIN_VERSION}/plugin.json"
       fi
     done < <(bee::resolve "${plugin}" "${plugins_path}" "${plugin%:*}.bash" 1)
-    ((found)) && break
+    (( found )) && break
   done
-  if ((!found)); then
+  if (( ! found )); then
     BEE_RESOLVE_PLUGIN_NAME=""
     BEE_RESOLVE_PLUGIN_VERSION=""
     BEE_RESOLVE_PLUGIN_IS_LOCAL=0
@@ -876,7 +876,7 @@ declare -ag BEE_PLUGIN_MAP_CONFLICTS=()
 
 bee::map_plugins() {
   bee::map_plugins_recursively "$@"
-  if ((${#BEE_PLUGIN_MAP_CONFLICTS[@]})); then
+  if (( ${#BEE_PLUGIN_MAP_CONFLICTS[@]} )); then
     bee::log_warn "Version conflicts:" "${BEE_PLUGIN_MAP_CONFLICTS[*]}"
   fi
   for plugin_name in "${!BEE_PLUGIN_MAP_LATEST[@]}"; do
@@ -957,7 +957,7 @@ bee::mapped_plugin() {
 
 bee::run_plugin() {
   local plugin="$1"; shift
-  if (($#)); then
+  if (( $# )); then
     [[ $(command -v "bee::secrets") == "bee::secrets" ]] && bee::secrets "${plugin}" "$@"
     local cmd="$1"; shift
     "${plugin}::${cmd}" "$@"
@@ -971,7 +971,7 @@ bee::run_plugin() {
 ################################################################################
 
 bee::pull::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     local cmd="${1:-}" comps=(--force "${BEE_HUBS[*]}")
     compgen -W "${comps[*]}" -- "${cmd}"
   else
@@ -992,7 +992,7 @@ bee::prompt() {
 
 bee::pull() {
   local -i force=0 pull=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --force) force=1; shift ;;
       --) shift; break ;; *) break ;;
@@ -1002,18 +1002,18 @@ bee::pull() {
   mkdir -p "${BEE_HUBS_CACHE_PATH}"
   local cache_file="${BEE_HUBS_CACHE_PATH}/.bee_pull_cooldown"
 
-  if ((force)); then
+  if (( force )); then
     pull=1
   else
     local -i now ts delta
     [[ ! -f "${cache_file}" ]] && echo "0" > "${cache_file}"
     now=$(date +%s)
     ts="$(cat "${cache_file}")"
-    delta=$((now - ts))
-    ((delta < BEE_HUB_PULL_COOLDOWN)) || pull=1
+    delta=$(( now - ts ))
+    (( delta < BEE_HUB_PULL_COOLDOWN )) || pull=1
   fi
 
-  if ((pull)); then
+  if (( pull )); then
     local cache_path
     for url in "${@:-"${BEE_HUBS[@]}"}"; do
       cache_path="$(bee::to_cache_path "${url}")"
@@ -1037,7 +1037,7 @@ bee::pull() {
 ################################################################################
 
 bee::res() {
-  if ((!$#)); then
+  if (( ! $# )); then
     bee::help
   else
     local resources_dir target_dir
@@ -1061,7 +1061,7 @@ bee::res() {
 ################################################################################
 
 bee::update::comp() {
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     pushd "${BEE_SYSTEM_HOME}" > /dev/null || exit 1
       git branch -r --format '%(refname:short)' \
         | cut -d/ -f2- \
@@ -1085,9 +1085,9 @@ bee::update() {
 
 bee::version::comp() {
   local cmd="${1:-}"
-  if ((!$# || $# == 1 && COMP_PARTIAL)); then
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     echo --latest
-  elif (($# == 1 || $# == 2 && COMP_PARTIAL)); then
+  elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
     case "${cmd}" in
       --latest) echo "--cached" ;;
     esac
@@ -1096,7 +1096,7 @@ bee::version::comp() {
 
 bee::version() {
   local -i latest=0 cached=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --latest) latest=1; shift ;;
       --cached) cached=1; shift ;;
@@ -1104,10 +1104,10 @@ bee::version() {
     esac
   done
 
-  if (($#)); then
+  if (( $# )); then
     bee::help
-  elif ((latest)); then
-    if ((cached)); then
+  elif (( latest )); then
+    if (( cached )); then
       mkdir -p "${BEE_CACHES_PATH}"
       local -i last_ts now delta
       local cache cache_file="${BEE_CACHES_PATH}/.bee_latest_version_cache"
@@ -1115,8 +1115,8 @@ bee::version() {
       now=$(date +%s)
       cache="$(cat "${cache_file}")"
       last_ts="${cache%%,*}"
-      delta=$((now - last_ts))
-      if ((delta > BEE_LATEST_VERSION_CACHE_EXPIRE)); then
+      delta=$(( now - last_ts ))
+      if (( delta > BEE_LATEST_VERSION_CACHE_EXPIRE )); then
         local version
         version="$(curl -fsSL "${BEE_LATEST_VERSION_PATH}")"
         echo "${now},${version}" > "${cache_file}"
@@ -1137,7 +1137,7 @@ bee::version() {
 ################################################################################
 
 bee::wiki() {
-  if (($#)); then
+  if (( $# )); then
     bee::help
   else
     os_open "${BEE_WIKI}"
@@ -1183,12 +1183,12 @@ bee::TERM() {
 bee::EXIT() {
   local -i status=$?
   for t in "${BEE_TRAPS_EXIT[@]}"; do "$t" ${status}; done
-  if ((!BEE_QUIET && BEE_MODE == BEE_MODE_PLUGIN)); then
-    local duration="$((SECONDS - T)) seconds"
-    if ((BEE_CANCELED)); then
+  if (( ! BEE_QUIET && BEE_MODE == BEE_MODE_PLUGIN )); then
+    local duration="$(( SECONDS - T )) seconds"
+    if (( BEE_CANCELED )); then
       bee::log_warn "bzzzz (${duration})"
     else
-      if ((status)); then
+      if (( status )); then
         bee::log_error "bzzzz ${status} (${duration})"
       else
         bee::log "bzzzz (${duration})"
@@ -1212,12 +1212,12 @@ bee::comp() {
   local words=($(bee::split_args "${COMP_LINE}"))
   local -i head=0 cursor=0
   for word in "${words[@]}"; do
-    ((head += ${#word} + 1))
-    ((head <= COMP_POINT)) && ((cursor += 1))
+    (( head += ${#word} + 1 ))
+    (( head <= COMP_POINT )) && (( cursor += 1 ))
   done
   local cur="${words[cursor]:-}" wordlist
-  ((cursor == ${#words[@]})) && COMP_PARTIAL=0
-  if ((cursor == 1)); then
+  (( cursor == ${#words[@]} )) && COMP_PARTIAL=0
+  if (( cursor == 1 )); then
     # e.g. bee
     local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
     wordlist="${comps[*]}"
@@ -1243,7 +1243,7 @@ bee::comp_plugins() {
 
 bee::comp_plugin() {
   local plugin="$1"
-  local -i n=$((${#plugin} + 3))
+  local -i n=$(( ${#plugin} + 3 ))
   compgen -A function |
     grep --color=never "^${plugin}::*" |
     cut -c $n- || true
@@ -1251,7 +1251,7 @@ bee::comp_plugin() {
 
 bee::comp_command_or_plugin() {
   local comps=("${BEE_OPTIONS[@]}" "${BEE_COMMANDS[@]}" "$(bee::comp_plugins)")
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --batch) comps=("${comps[@]/--batch/--allow-fail}"); shift ;;
       --allow-fail) comps=("${comps[@]/--allow-fail/}"); shift ;;
@@ -1262,7 +1262,7 @@ bee::comp_command_or_plugin() {
     esac
   done
 
-  if (($#)); then
+  if (( $# )); then
     case "$1" in
       cache) shift; bee::cache::comp "$@"; return ;;
       env) shift; compgen -v; return ;;
@@ -1284,7 +1284,7 @@ bee::comp_command_or_plugin() {
       local comp="${BEE_LOAD_PLUGIN_NAME}::comp"
       if [[ $(command -v "${comp}") == "${comp}" ]]; then
         "${comp}" "$@"
-      elif ((!$# || $# == 1 && COMP_PARTIAL)); then
+      elif (( ! $# || $# == 1 && COMP_PARTIAL )); then
         bee::comp_plugin "${BEE_LOAD_PLUGIN_NAME}"
       fi
       return
@@ -1302,7 +1302,7 @@ bee::comp_command_or_plugin() {
 
 bee::batch() {
   local -i allow_fail=0
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --allow-fail) allow_fail=1; shift ;;
       --) shift; break ;; *) break ;;
@@ -1314,12 +1314,12 @@ bee::batch() {
     local args="${batch#* }"
     if [[ "${args}" != "${cmd}" ]]; then
       # shellcheck disable=SC2046
-      if ((allow_fail))
+      if (( allow_fail ))
       then bee::run "${cmd}" $(bee::split_args "${args}") || true
       else bee::run "${cmd}" $(bee::split_args "${args}")
       fi
     else
-      if ((allow_fail))
+      if (( allow_fail ))
       then bee::run "${cmd}" || true
       else bee::run "${cmd}"
       fi
@@ -1343,7 +1343,7 @@ bee::run() {
   trap bee::TERM TERM
   trap bee::EXIT EXIT
 
-  while (($#)); do
+  while (( $# )); do
     case "$1" in
       --batch) shift; bee::batch "$@"; return ;;
       --help) bee::help; return ;;
@@ -1353,7 +1353,7 @@ bee::run() {
     esac
   done
 
-  if (($#)); then
+  if (( $# )); then
     case "$1" in
       cache) shift; bee::cache "$@"; return ;;
       env) shift; bee::env "$@"; return ;;

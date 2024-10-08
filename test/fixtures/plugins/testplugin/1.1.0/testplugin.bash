@@ -9,7 +9,7 @@ if [[ ! -v TEST_PLUGIN_QUIET ]]; then
 fi
 
 testplugin() {
-  if (($#)); then
+  if (( $# )); then
     # shellcheck disable=SC2145
     echo "hello from testplugin 1.1.0 - $@"
   else
@@ -22,7 +22,7 @@ testplugin::help() {
 }
 
 testplugin::greet() {
-  if (($#)); then
+  if (( $# )); then
     # shellcheck disable=SC2145
     echo "greeting $@ from testplugin 1.1.0"
   else

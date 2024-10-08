@@ -58,7 +58,7 @@ assert_bee_help() {
 
 assert_comp() {
   _comp "$@"
-  if(($#)); then
+  if(( $# )); then
     assert_equal "${actual[*]}" "${expected[*]}"
   else
     refute_output

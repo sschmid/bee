@@ -3,7 +3,7 @@ if [[ ! -v TEST_PLUGIN_QUIET ]]; then
 fi
 
 testplugindepsdep() {
-  if (($#>0)); then
+  if (( $# > 0 )); then
     # shellcheck disable=SC2145
     echo "hello from testplugindepsdep 1.0.0 - $@"
   else

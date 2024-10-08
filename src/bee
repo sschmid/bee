@@ -45,7 +45,7 @@ IFS=$'\n\t'
 declare -ig BEE_QUIET=0
 
 bee::log_echo() {
-  ((BEE_QUIET)) || echo "$*"
+  (( BEE_QUIET )) || echo "$*"
 }
 
 bee::log() {
