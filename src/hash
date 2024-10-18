@@ -36,11 +36,11 @@ pushd "$1" >/dev/null || exit 1
     if (( ! ignore )); then
       file_hash="$(os_sha256sum "${file}")"
       echo "${file_hash}" >&2
-      hashes+=("${file_hash// */}")
+      hashes+=("${file_hash%% *}")
     fi
   done < <(find . -type f | LC_ALL=C sort)
 popd >/dev/null || exit 1
 
 all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
 echo "${all}" >&2
-echo "${all// */}"
+echo "${all%% *}"
