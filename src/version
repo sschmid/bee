@@ -25,20 +25,20 @@ fi
 if (( latest )); then
   if (( cached )); then
     mkdir -p "${BEE_CACHE_PATH}"
-    declare -i last_ts now delta
     cache_file="${BEE_CACHE_PATH}/.bee_latest_version_cache"
-    [[ -f "${cache_file}" ]] || echo "0,0" > "${cache_file}"
+    declare -i last_ts now delta
     now=$(date +%s)
-    cache="$(cat "${cache_file}")"
-    last_ts="${cache%%,*}"
+    if [[ -f "${cache_file}" ]]; then
+      IFS=, read -r last_ts version < "${cache_file}"
+    else
+      last_ts=0
+    fi
     delta=$(( now - last_ts ))
     if (( delta > BEE_LATEST_VERSION_CACHE_EXPIRE )); then
       version="$(curl -fsSL "${BEE_LATEST_VERSION_PATH}")"
       echo "${now},${version}" > "${cache_file}"
-      echo "${version}"
-    else
-      echo "${cache##*,}"
     fi
+    echo "${version}"
   else
     curl -fsSL "${BEE_LATEST_VERSION_PATH}"
   fi
