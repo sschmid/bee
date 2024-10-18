@@ -42,7 +42,7 @@ export BEE_ERROR="${BEE_ERROR:-"🔴"}"
 # logging
 ################################################################################
 
-declare -ig BEE_QUIET=0
+declare -ix BEE_QUIET=0
 
 bee::log_echo() {
   (( BEE_QUIET )) || echo "$*"
@@ -75,6 +75,14 @@ bee::env() {
     echo "${!v}"
   done
 }
+
+export -f bee::log_echo
+export -f bee::log
+export -f bee::log_info
+export -f bee::log_func
+export -f bee::log_warning
+export -f bee::log_error
+export -f bee::env
 
 ################################################################################
 # bee
