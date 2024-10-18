@@ -6,6 +6,7 @@ setup() {
 
 @test "shows help when args" {
   run bee plugins test
+  assert_failure
   assert_bee_help
 }
 

@@ -40,6 +40,7 @@ _lint() {
 
 @test "shows help when no args" {
   run bee lint
+  assert_failure
   assert_bee_help
 }
 

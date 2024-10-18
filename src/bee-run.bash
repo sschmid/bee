@@ -30,7 +30,7 @@ bee::help() {
 ██████╔╝███████╗███████╗
 ╚═════╝ ╚══════╝╚══════╝
 
-${BEE_ICON} bee $(bee::version) - plugin-based bash automation
+${BEE_ICON} bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
 
 usage: bee [--help]
            [--quiet] [--verbose]
@@ -194,6 +194,7 @@ bee::info::comp() {
 bee::info() {
   if (( ! $# )); then
     bee::help
+    exit 1
   else
     local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
     for url in "${BEE_HUBS[@]}"; do
@@ -396,6 +397,7 @@ bee::job() {
     bee::job::finish
   else
     bee::help
+    exit 1
   fi
 }
 
@@ -487,6 +489,7 @@ bee::job::duration() {
 bee::lint() {
   if (( ! $# )); then
     bee::help
+    exit 1
   else
     local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
     local -a plugin_deps
@@ -700,6 +703,7 @@ bee::plugins() {
 
   if (( $# )); then
     bee::help
+    exit 1
   else
     local plugin_entry plugin_version
     local -a plugins found=() missing=()
@@ -1017,6 +1021,7 @@ bee::pull() {
 bee::res() {
   if (( ! $# )); then
     bee::help
+    exit 1
   else
     local resources_dir target_dir
     for plugin in "$@" ; do
@@ -1084,6 +1089,7 @@ bee::version() {
 
   if (( $# )); then
     bee::help
+    exit 1
   elif (( latest )); then
     if (( cached )); then
       mkdir -p "${BEE_CACHE_PATH}"
@@ -1117,6 +1123,7 @@ bee::version() {
 bee::wiki() {
   if (( $# )); then
     bee::help
+    exit 1
   else
     os_open "${BEE_WIKI}"
   fi
@@ -1364,5 +1371,6 @@ bee::run() {
     "$@"
   else
     bee::help
+    exit 1
   fi
 }

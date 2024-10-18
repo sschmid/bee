@@ -35,6 +35,7 @@ assert_bee_system_home() {
 
 @test "sources bee-run.bash" {
   run bee
+  assert_failure
   assert_bee_help
 }
 

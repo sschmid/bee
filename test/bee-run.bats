@@ -6,6 +6,7 @@ setup() {
 
 @test "prints bee help when no args" {
   run bee
+  assert_failure
   assert_bee_help
 }
 

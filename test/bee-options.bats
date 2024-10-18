@@ -5,6 +5,7 @@ setup() {
 
 @test "prints bee help" {
   run bee --help
+  assert_success
   assert_bee_help
 }
 
@@ -79,6 +80,7 @@ EOF
 
 @test "prints bee help when options only" {
   run bee --
+  assert_failure
   assert_bee_help
 }
 

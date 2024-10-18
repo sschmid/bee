@@ -4,6 +4,7 @@ setup() {
 
 @test "shows help when no args" {
   run bee hash
+  assert_failure
   assert_bee_help
 }
 

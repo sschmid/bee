@@ -4,15 +4,16 @@ setup() {
   _source_beerc
 }
 
+@test "shows help when unknown args" {
+  run bee cache unknown
+  assert_failure
+  assert_bee_help
+}
+
 @test "opens cache path" {
   run bee cache
   assert_success
   assert_output "${BEE_CACHE_PATH}"
-}
-
-@test "shows help when unknown args" {
-  run bee cache unknown
-  assert_bee_help
 }
 
 @test "clears cache" {

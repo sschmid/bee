@@ -9,9 +9,11 @@ _prepare_job_logs() {
 
 @test "shows help when not enough args" {
   run bee job
+  assert_failure
   assert_bee_help
 
   run bee job test
+  assert_failure
   assert_bee_help
 }
 

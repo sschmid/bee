@@ -54,7 +54,6 @@ _git_commit() {
 }
 
 assert_bee_help() {
-  assert_success
   assert_output --partial "plugin-based bash automation"
 }
 

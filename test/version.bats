@@ -5,6 +5,7 @@ setup() {
 
 @test "shows help when args" {
   run bee version test
+  assert_failure
   assert_bee_help
 }
 
