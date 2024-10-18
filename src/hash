@@ -11,7 +11,7 @@ IFS=$'\n\t'
 ########################################
 
 if (( ! $# )); then
-  bee::help
+  "${BEE_HOME}/src/help"
   exit 1
 fi
 

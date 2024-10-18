@@ -17,50 +17,6 @@ else BEE_PLUGINS_PATHS=("${BEE_CACHE_PATH}/plugins")
 fi
 
 ################################################################################
-# help
-################################################################################
-
-bee::help() {
-  cat << EOF
-
-██████╗ ███████╗███████╗
-██╔══██╗██╔════╝██╔════╝
-██████╔╝█████╗  █████╗
-██╔══██╗██╔══╝  ██╔══╝
-██████╔╝███████╗███████╗
-╚═════╝ ╚══════╝╚══════╝
-
-${BEE_ICON} bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
-
-usage: bee [--help]
-           [--quiet] [--verbose]
-           [--batch] <command> [<args>]
-
-  cache [--clear [<path>]]                open (or --clear) cache
-  env <vars>                              print env variables
-  hash <path>                             generate plugin hash
-  hubs [--all | --list ] [<urls>]         list hubs and their plugins (--all versions as --list)
-  info <plugin>                           print plugin spec
-  install [--force] [<plugins>]           install plugins (--force ignore sha256 mismatch)
-  job [--time] [--logfile]
-      <title> <command>                   run command as a job (show elapsed --time)
-                                          (write output to --logfile in bee resources directory)
-  lint <spec>                             validate plugin spec
-  new [<path>]                            create new Beefile
-  plugins [--all | --lock | --outdated]
-          [--version]                     list (--all or --outdated) plugins (with --version)
-  pull [--force] [<urls>]                 update hubs (--force ignore pull cooldown)
-  res <plugins>                           copy plugin resources into bee resources directory
-  update                                  update bee to the latest version
-  version [--latest] [--cached]           print (--latest) version (--cached locally)
-  wiki                                    open wiki
-
-EOF
-}
-
-export -f bee::help
-
-################################################################################
 # hash
 ################################################################################
 
@@ -159,7 +115,7 @@ bee::info::comp() {
 
 bee::info() {
   if (( ! $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   else
     local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
@@ -362,7 +318,7 @@ bee::job() {
     bee::job::start "$@"
     bee::job::finish
   else
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   fi
 }
@@ -454,7 +410,7 @@ bee::job::duration() {
 
 bee::lint() {
   if (( ! $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   else
     local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
@@ -668,7 +624,7 @@ bee::plugins() {
   done
 
   if (( $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   else
     local plugin_entry plugin_version
@@ -986,7 +942,7 @@ bee::pull() {
 
 bee::res() {
   if (( ! $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   else
     local resources_dir target_dir
@@ -1054,7 +1010,7 @@ bee::version() {
   done
 
   if (( $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   elif (( latest )); then
     if (( cached )); then
@@ -1088,7 +1044,7 @@ bee::version() {
 
 bee::wiki() {
   if (( $# )); then
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   else
     os_open "${BEE_WIKI}"
@@ -1297,7 +1253,7 @@ bee::run() {
   while (( $# )); do
     case "$1" in
       --batch) shift; bee::batch "$@"; return ;;
-      --help) bee::help; return ;;
+      --help) "${BEE_HOME}/src/help"; return ;;
       --quiet) BEE_QUIET=1; shift ;;
       --verbose) BEE_VERBOSE=1; shift ;;
       --) shift; break ;; *) break ;;
@@ -1336,7 +1292,7 @@ bee::run() {
     # run args, e.g. bee echo "message"
     "$@"
   else
-    bee::help
+    "${BEE_HOME}/src/help"
     exit 1
   fi
 }
