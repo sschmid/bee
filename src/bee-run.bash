@@ -540,51 +540,6 @@ bee::lint::optional() {
 }
 
 ################################################################################
-# new
-################################################################################
-
-bee::new() {
-  local beefile="${1:-Beefile}"
-  if [[ -f "${beefile}" ]]; then
-    bee::log_error "${beefile} already exists"
-    return 1
-  else
-    cat << EOF > "${beefile}"
-BEE_PROJECT="$(basename "${PWD}")"
-BEE_VERSION=$(bee::version)
-
-# Which plugins would you like to load?
-# Standard plugins can be found in the official bee plugin register: https://github.com/sschmid/beehub
-# More registers (and private registers) can be added by customizing ~/.beerc
-#   BEE_HUBS=(
-#     https://github.com/sschmid/beehub.git
-#     https://github.com/my/beehub.git
-#   )
-#
-# Custom local plugins may be added by customizing ~/.beerc
-#   BEE_PLUGINS_PATHS=("${HOME}/path/to/my/plugins")
-#
-# Example format: BEE_PLUGINS=(changelog github:2.0.0 semver slack:1.0.0)
-# You can specify a plugin version like this: plugin:x.y.z,
-# otherwise the latest plugin version will be used
-BEE_PLUGINS=(
-  # android
-  # changelog
-  # github
-  # ios
-  # macos
-  # sample
-  # semver
-  # slack
-  # tree
-  # unity
-)
-EOF
-    bee::log_echo "Created ${beefile}"
-  fi
-}
-
-################################################################################
 # plugins
 ################################################################################
 
@@ -1264,7 +1219,7 @@ bee::run() {
       install) shift; bee::install "$@"; return ;;
       job) shift; bee::job "$@"; return ;;
       lint) shift; bee::lint "$@"; return ;;
-      new) shift; bee::new "$@"; return ;;
+      new) shift; "${BEE_HOME}/src/new" "$@"; return ;;
       plugins) shift; bee:map_bee_plugins; bee::plugins "$@"; return ;;
       prompt) shift; bee::prompt; return ;;
       pull) shift; bee::pull "$@"; return ;;
