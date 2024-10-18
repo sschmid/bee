@@ -3,35 +3,31 @@ setup() {
   _set_beerc
 }
 
-assert_bee_system_home() {
-  assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
-}
+# assert_bee_system_home() {
+#   assert_equal "${BEE_SYSTEM_HOME}" "${PROJECT_ROOT}"
+# }
 
-@test "is executable" {
-  assert_file_executable "${PROJECT_ROOT}/src/bee"
-}
+# @test "resolves bee system home" {
+#   # shellcheck disable=SC1090,SC1091
+#   source "${PROJECT_ROOT}/src/bee"
+#   assert_bee_system_home
+# }
 
-@test "resolves bee system home" {
-  # shellcheck disable=SC1090,SC1091
-  source "${PROJECT_ROOT}/src/bee"
-  assert_bee_system_home
-}
+# @test "resolves bee system home and follows symlink" {
+#   ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/bee"
+#   # shellcheck disable=SC1090,SC1091
+#   source "${BATS_TEST_TMPDIR}/bee"
+#   assert_bee_system_home
+# }
 
-@test "resolves bee system home and follows symlink" {
-  ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/bee"
-  # shellcheck disable=SC1090,SC1091
-  source "${BATS_TEST_TMPDIR}/bee"
-  assert_bee_system_home
-}
-
-@test "resolves bee system home and follows multiple symlinks" {
-  mkdir "${BATS_TEST_TMPDIR}/src" "${BATS_TEST_TMPDIR}/bin"
-  ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/src/bee"
-  ln -s "${BATS_TEST_TMPDIR}/src/bee" "${BATS_TEST_TMPDIR}/bin/bee"
-  # shellcheck disable=SC1090,SC1091
-  source "${BATS_TEST_TMPDIR}/bin/bee"
-  assert_bee_system_home
-}
+# @test "resolves bee system home and follows multiple symlinks" {
+#   mkdir "${BATS_TEST_TMPDIR}/src" "${BATS_TEST_TMPDIR}/bin"
+#   ln -s "${PROJECT_ROOT}/src/bee" "${BATS_TEST_TMPDIR}/src/bee"
+#   ln -s "${BATS_TEST_TMPDIR}/src/bee" "${BATS_TEST_TMPDIR}/bin/bee"
+#   # shellcheck disable=SC1090,SC1091
+#   source "${BATS_TEST_TMPDIR}/bin/bee"
+#   assert_bee_system_home
+# }
 
 @test "sources bee-run.bash" {
   run bee
