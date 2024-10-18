@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+########################################
+# Open the bee wiki in the default browser
+########################################
+
+if (( $# )); then
+  "${BEE_HOME}/src/help"
+  exit 1
+fi
+
+os_open "${BEE_WIKI}"

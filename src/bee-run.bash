@@ -5,7 +5,7 @@
 ################################################################################
 
 : "${BEE_LATEST_VERSION_PATH:=https://raw.githubusercontent.com/sschmid/bee/main/version.txt}"
-: "${BEE_WIKI:=https://github.com/sschmid/bee/wiki}"
+declare -rx BEE_WIKI="${BEE_WIKI:-"https://github.com/sschmid/bee/wiki"}"
 : "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}" # 4h * 60 * 60
 : "${BEE_HUB_PULL_COOLDOWN:=900}" # 15m * 60
 
@@ -988,19 +988,6 @@ bee::version() {
 }
 
 ################################################################################
-# wiki
-################################################################################
-
-bee::wiki() {
-  if (( $# )); then
-    "${BEE_HOME}/src/help"
-    exit 1
-  else
-    os_open "${BEE_WIKI}"
-  fi
-}
-
-################################################################################
 # traps
 ################################################################################
 
@@ -1226,7 +1213,7 @@ bee::run() {
       res) shift; bee:map_bee_plugins; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
       version) shift; bee::version "$@"; return ;;
-      wiki) shift; bee::wiki "$@"; return ;;
+      wiki) shift; "${BEE_HOME}/src/wiki" "$@"; return ;;
     esac
 
     # run bee plugin, e.g. bee github me
