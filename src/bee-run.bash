@@ -66,40 +66,6 @@ export -f bee::help
 
 BEE_HUB_HASH_RESULT=""
 
-bee::hash() {
-  if (( ! $# )); then
-    bee::help
-  else
-    local exclude=(^./.git .DS_Store$)
-    # shellcheck disable=SC2207
-    [[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=($(bee::split_args "${BEE_HUB_HASH_EXCLUDE:-}"))
-    local path="$1" file_hash all
-    local -a hashes=()
-    echo "${path}"
-    pushd "${path}" >/dev/null || exit 1
-      local file
-      local -i ignore=0
-      while read -r file; do
-        ignore=0
-        for pattern in "${exclude[@]}"; do
-          if [[ "${file}" =~ ${pattern} ]]; then
-            ignore=1
-            break
-          fi
-        done
-        if (( ! ignore )); then
-          file_hash="$(os_sha256sum "${file}")"
-          echo "${file_hash}"
-          hashes+=("${file_hash// */}")
-        fi
-      done < <(find . -type f | LC_ALL=C sort)
-    popd >/dev/null || exit 1
-    all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
-    echo "${all}"
-    BEE_HUB_HASH_RESULT="${all// */}"
-  fi
-}
-
 ################################################################################
 # hubs
 ################################################################################
@@ -294,7 +260,7 @@ bee::install::recursively() {
             if [[ -v BEE_INSTALL_HASHES["${plugin_path}"] ]]; then
               BEE_HUB_HASH_RESULT="${BEE_INSTALL_HASHES["${plugin_path}"]}"
             else
-              bee::hash "${plugin_path}" >/dev/null
+              BEE_HUB_HASH_RESULT="$("${BEE_HOME}/src/hash" "${plugin_path}" 2>/dev/null)"
               BEE_INSTALL_HASHES["${plugin_path}"]="${BEE_HUB_HASH_RESULT}"
             fi
             if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
@@ -569,7 +535,7 @@ bee::lint() {
         bee::lint::assert_exist "${key}" "${license_file}"
 
         key="sha256"
-        bee::hash "${PWD}"
+        BEE_HUB_HASH_RESULT="$("${BEE_HOME}/src/hash" "${PWD}")"
         bee::lint::assert_equal "${key}" "${sha256_hash}" "${BEE_HUB_HASH_RESULT}"
 
         key="plugin file"
@@ -1318,6 +1284,9 @@ bee::split_args() {
   for arg in $@; do echo "${arg}"; done
 }
 
+# TODO remove
+export -f bee::split_args
+
 bee::run() {
   if [[ -v COMP_LINE ]]; then
     bee::comp
@@ -1342,7 +1311,7 @@ bee::run() {
     case "$1" in
       cache) shift; "${BEE_HOME}/src/cache" "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
-      hash) shift; bee::hash "$@"; return ;;
+      hash) shift; "${BEE_HOME}/src/hash" "$@"; return ;;
       hubs) shift; bee::hubs "$@"; return ;;
       info) shift; bee::info "$@"; return ;;
       install) shift; bee::install "$@"; return ;;
