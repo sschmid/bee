@@ -14,7 +14,7 @@ setup() {
   bee pull
   run bee info testplugin:1.0.0
   assert_success
-  assert_output --partial "${BATS_TEST_TMPDIR}/caches/hubs/testhub/testplugin/1.0.0/plugin.json"
+  assert_output --partial "${BATS_TEST_TMPDIR}/cache/hubs/testhub/testplugin/1.0.0/plugin.json"
   assert_output --partial '"name": "testplugin"'
   assert_output --partial '"version": "1.0.0"'
 }

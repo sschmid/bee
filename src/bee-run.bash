@@ -9,11 +9,11 @@
 : "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}" # 4h * 60 * 60
 : "${BEE_HUB_PULL_COOLDOWN:=900}" # 15m * 60
 
-BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
-BEE_LINT_CACHE_PATH="${BEE_CACHES_PATH}/lint"
+BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
+BEE_LINT_CACHE_PATH="${BEE_CACHE_PATH}/lint"
 if [[ -v BEE_PLUGINS_PATHS ]]
-then BEE_PLUGINS_PATHS+=("${BEE_CACHES_PATH}/plugins")
-else BEE_PLUGINS_PATHS=("${BEE_CACHES_PATH}/plugins")
+then BEE_PLUGINS_PATHS+=("${BEE_CACHE_PATH}/plugins")
+else BEE_PLUGINS_PATHS=("${BEE_CACHE_PATH}/plugins")
 fi
 
 ################################################################################
@@ -66,18 +66,18 @@ bee::cache::comp() {
   if (( ! $# || $# == 1 && COMP_PARTIAL )); then
     echo --clear
   elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
-    [[ ! -d "${BEE_CACHES_PATH}" ]] || ls "${BEE_CACHES_PATH}"
+    [[ ! -d "${BEE_CACHE_PATH}" ]] || ls "${BEE_CACHE_PATH}"
   fi
 }
 
 bee::cache() {
   if (( $# )); then
     case "$1" in
-      --clear) rm -rf "${BEE_CACHES_PATH}${2:+/$2}" ;;
+      --clear) rm -rf "${BEE_CACHE_PATH}${2:+/$2}" ;;
       *) bee::help ;;
     esac
   else
-    os_open "${BEE_CACHES_PATH}"
+    os_open "${BEE_CACHE_PATH}"
   fi
 }
 
@@ -300,7 +300,7 @@ bee::install::recursively() {
       while read -r plugin_name plugin_version spec_path is_local; do
         found=1
         spec_path="${spec_path}/${plugin_version}/plugin.json"
-        local plugin_path="${BEE_CACHES_PATH}/plugins/${plugin_name}/${plugin_version}"
+        local plugin_path="${BEE_CACHE_PATH}/plugins/${plugin_name}/${plugin_version}"
         local git tag sha deps
         while read -r git tag sha deps; do
           (( lock )) && echo "${indent}${bullet}${plugin_name}:${plugin_version}" >> "${BEE_FILE}.lock"
@@ -1107,9 +1107,9 @@ bee::version() {
     bee::help
   elif (( latest )); then
     if (( cached )); then
-      mkdir -p "${BEE_CACHES_PATH}"
+      mkdir -p "${BEE_CACHE_PATH}"
       local -i last_ts now delta
-      local cache cache_file="${BEE_CACHES_PATH}/.bee_latest_version_cache"
+      local cache cache_file="${BEE_CACHE_PATH}/.bee_latest_version_cache"
       [[ ! -f "${cache_file}" ]] && echo "0,0" > "${cache_file}"
       now=$(date +%s)
       cache="$(cat "${cache_file}")"

@@ -8,7 +8,7 @@ setup() {
 @test "opens cache path" {
   run bee cache
   assert_success
-  assert_output "${BEE_CACHES_PATH}"
+  assert_output "${BEE_CACHE_PATH}"
 }
 
 @test "shows help when unknown args" {
@@ -17,18 +17,18 @@ setup() {
 }
 
 @test "clears cache" {
-  mkdir -p "${BEE_CACHES_PATH}"
+  mkdir -p "${BEE_CACHE_PATH}"
   run bee cache --clear
   assert_success
-  assert_dir_not_exist "${BEE_CACHES_PATH}"
+  assert_dir_not_exist "${BEE_CACHE_PATH}"
 }
 
 @test "clears cache sub folder" {
-  mkdir -p "${BEE_CACHES_PATH}/test"
+  mkdir -p "${BEE_CACHE_PATH}/test"
   run bee cache --clear test
   assert_success
-  assert_dir_not_exist "${BEE_CACHES_PATH}/test"
-  assert_dir_exist "${BEE_CACHES_PATH}"
+  assert_dir_not_exist "${BEE_CACHE_PATH}/test"
+  assert_dir_exist "${BEE_CACHE_PATH}"
 }
 
 @test "ignores clearing cache sub folder that doesn't exist" {
@@ -41,14 +41,14 @@ setup() {
 }
 
 @test "completes bee cache --clear with sub folders" {
-  mkdir -p "${BEE_CACHES_PATH}/test1"
-  mkdir -p "${BEE_CACHES_PATH}/test2"
+  mkdir -p "${BEE_CACHE_PATH}/test1"
+  mkdir -p "${BEE_CACHE_PATH}/test2"
   local expected=(test1 test2)
   assert_comp "bee cache --clear " "${expected[*]}"
 }
 
 @test "no completion after sub folders" {
-  mkdir -p "${BEE_CACHES_PATH}/test1"
-  mkdir -p "${BEE_CACHES_PATH}/test2"
+  mkdir -p "${BEE_CACHE_PATH}/test1"
+  mkdir -p "${BEE_CACHE_PATH}/test2"
   assert_comp "bee cache --clear test1 "
 }

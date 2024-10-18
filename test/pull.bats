@@ -3,7 +3,7 @@ setup() {
   load "test-helper-hub.bash"
   _set_beerc
   _source_beerc
-  BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
+  BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
 }
 
 _setup_mock_bee_hub_repo() {

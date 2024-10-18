@@ -7,11 +7,11 @@ BEE_HUBS=(
   "file://${BATS_TEST_TMPDIR}/testhub"
   "file://${BATS_TEST_TMPDIR}/othertesthub"
 )
-BEE_CACHES_PATH="${BATS_TEST_TMPDIR}/caches"
+BEE_CACHE_PATH="${BATS_TEST_TMPDIR}/caches"
 
 if [[ -v TEST_BEE_PLUGINS_NEED_INSTALL ]]; then
   BEE_PLUGINS_PATHS=(
-    "${BEE_CACHES_PATH}/plugins"
+    "${BEE_CACHE_PATH}/plugins"
     "${BATS_TEST_DIRNAME}/fixtures/custom_plugins"
   )
 elif [[ -v TEST_BEE_PLUGINS_PATHS_CUSTOM ]]; then

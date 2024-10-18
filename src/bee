@@ -19,7 +19,7 @@ IFS=$'\n\t'
 : "${BEE_RC:="${HOME}/.beerc"}"
 : "${BEE_RESOURCES:=.bee}"
 : "${BEE_ORIGIN:=https://github.com/sschmid/bee.git}"
-: "${BEE_CACHES_PATH:="${HOME}/.bee/caches"}"
+: "${BEE_CACHE_PATH:="${HOME}/.bee/cache"}"
 : "${BEE_OSTYPE:=${OSTYPE%%[[:digit:]]*}}"
 
 ################################################################################
@@ -99,7 +99,7 @@ elif [[ -f "Beefile" ]]; then
 fi
 
 if [[ -v BEE_VERSION ]]; then
-  BEE_HOME="${BEE_CACHES_PATH}/bee/${BEE_VERSION}"
+  BEE_HOME="${BEE_CACHE_PATH}/bee/${BEE_VERSION}"
   [[ ! -d "${BEE_HOME}" ]] &&
     git -c advice.detachedHead=false clone -q --depth 1 --branch "${BEE_VERSION}" "${BEE_ORIGIN}" "${BEE_HOME}"
 else

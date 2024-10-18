@@ -15,7 +15,7 @@ Installing
 └── #E${BEE_CHECK_FAIL} unknown#
 ${BEE_ERROR} Couldn't install plugin: unknown
 EOF
-  assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/unknown"
+  assert_dir_not_exist "${BEE_CACHE_PATH}/plugins/unknown"
 }
 
 @test "pulls before installing" {
@@ -25,7 +25,7 @@ EOF
   _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
   run bee install testplugin
   assert_success
-  BEE_HUBS_CACHE_PATH="${BEE_CACHES_PATH}/hubs"
+  BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
 }
 
@@ -42,7 +42,7 @@ EOF
 Installing
 └── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "installs latest plugin version" {
@@ -55,7 +55,7 @@ EOF
 Installing
 └── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "installs specified plugin version" {
@@ -68,7 +68,7 @@ EOF
 Installing
 └── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "doesn't install unknown plugin version" {
@@ -82,7 +82,7 @@ Installing
 └── #E${BEE_CHECK_FAIL} testplugin:9.0.0#
 ${BEE_ERROR} Couldn't install plugin: testplugin:9.0.0
 EOF
-  assert_dir_not_exist "${BEE_CACHES_PATH}/plugins/testplugin"
+  assert_dir_not_exist "${BEE_CACHE_PATH}/plugins/testplugin"
 }
 
 @test "installs multiple plugins" {
@@ -96,8 +96,8 @@ Installing
 ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 └── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "installs plugins with dependencies" {
@@ -114,9 +114,9 @@ Installing
     ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
     └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "skips installing already installed plugins" {
@@ -130,7 +130,7 @@ EOF
 Installing
 └── testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/2.0.0/testplugin.bash"
 }
 
 @test "installs plugins with dependencies recursively" {
@@ -151,10 +151,10 @@ Installing
 │   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "installs local plugins with dependencies recursively" {
@@ -172,7 +172,7 @@ Installing
     ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
     └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "installs local plugins with local tag with dependencies recursively" {
@@ -190,7 +190,7 @@ Installing
     ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
     └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
 }
 
 @test "fails late when plugins are missing" {
@@ -216,11 +216,11 @@ Installing
 ${BEE_ERROR} Couldn't install plugin: missing:1.0.0
 ${BEE_ERROR} Couldn't install plugin: othermissing:1.0.0
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testpluginmissingdep/1.0.0/testpluginmissingdep.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testpluginmissingdep/1.0.0/testpluginmissingdep.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "deletes newly installed plugin when hash doesn't match" {
@@ -231,7 +231,7 @@ EOF
   assert_success
   assert_output --partial "${BEE_ERROR} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #E${BEE_CHECK_FAIL} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
-  assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
 
 @test "forces install plugin with wrong hash" {
@@ -242,7 +242,7 @@ EOF
   assert_success
   assert_output --partial "${BEE_WARNING} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #W${BEE_CHECK_SUCCESS} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
 
 @test "deletes already installed plugin when hash doesn't match" {
@@ -254,7 +254,7 @@ EOF
   assert_success
   assert_output --partial "${BEE_ERROR} testplugin:0.1.0 sha256 mismatch"
   assert_output --partial "└── #E${BEE_CHECK_FAIL} testplugin:0.1.0 (file://${BATS_TEST_TMPDIR}/testhub)#"
-  assert_file_not_exist "${BEE_CACHES_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/testplugin/0.1.0/testplugin.bash"
 }
 
 @test "installs plugins from Beefile" {
@@ -276,10 +276,10 @@ Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile
 │   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
 └── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
 EOF
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
-  assert_file_exist "${BEE_CACHES_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindepsdep/1.0.0/testplugindepsdep.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/testplugin/1.0.0/testplugin.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/othertestplugin/1.0.0/othertestplugin.bash"
 }
 
 @test "completes bee install with options and plugins" {

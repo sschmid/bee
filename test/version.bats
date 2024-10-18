@@ -17,13 +17,13 @@ setup() {
 @test "reads latest version" {
   run bee version --latest
   assert_output "1.2.3"
-  assert_file_not_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
+  assert_file_not_exist "${BATS_TEST_TMPDIR}/cache/.bee_latest_version_cache"
 }
 
 @test "caches latest version" {
   run bee version --latest --cached
   assert_output "1.2.3"
-  assert_file_exist "${BATS_TEST_TMPDIR}/caches/.bee_latest_version_cache"
+  assert_file_exist "${BATS_TEST_TMPDIR}/cache/.bee_latest_version_cache"
 }
 
 @test "reads cached latest version" {
