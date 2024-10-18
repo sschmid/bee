@@ -26,17 +26,17 @@ export BEE_CACHE_PATH="${BEE_CACHE_PATH:-"${HOME}/.bee/cache"}"
 # theme
 ################################################################################
 
-: "${BEE_COLOR_SUCCESS:=\033[0;32m}"
-: "${BEE_COLOR_WARN:=\033[0;33m}"
-: "${BEE_COLOR_FAIL:=\033[0;31m}"
-: "${BEE_COLOR_RESET:=\033[0m}"
-: "${BEE_LINE_RESET:=\r\033[2K}"
-: "${BEE_CHECK_SUCCESS:="✔"}"
-: "${BEE_CHECK_FAIL:="✗"}"
-: "${BEE_RESULT:="➜"}"
-: "${BEE_ICON:="🐝"}"
-: "${BEE_WARNING:="🟠"}"
-: "${BEE_ERROR:="🔴"}"
+export BEE_COLOR_SUCCESS="${BEE_COLOR_SUCCESS:-\033[0;32m}"
+export BEE_COLOR_WARN="${BEE_COLOR_WARN:-\033[0;33m}"
+export BEE_COLOR_FAIL="${BEE_COLOR_FAIL:-\033[0;31m}"
+export BEE_COLOR_RESET="${BEE_COLOR_RESET:-\033[0m}"
+export BEE_LINE_RESET="${BEE_LINE_RESET:-\r\033[2K}"
+export BEE_CHECK_SUCCESS="${BEE_CHECK_SUCCESS:-"✔"}"
+export BEE_CHECK_FAIL="${BEE_CHECK_FAIL:-"✗"}"
+export BEE_RESULT="${BEE_RESULT:-"➜"}"
+export BEE_ICON="${BEE_ICON:-"🐝"}"
+export BEE_WARNING="${BEE_WARNING:-"🟠"}"
+export BEE_ERROR="${BEE_ERROR:-"🔴"}"
 
 ################################################################################
 # logging
