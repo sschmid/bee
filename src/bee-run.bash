@@ -17,12 +17,6 @@ else BEE_PLUGINS_PATHS=("${BEE_CACHE_PATH}/plugins")
 fi
 
 ################################################################################
-# hash
-################################################################################
-
-BEE_HUB_HASH_RESULT=""
-
-################################################################################
 # hubs
 ################################################################################
 
@@ -191,7 +185,7 @@ bee::install::recursively() {
   local indent="$3"
   shift 3
   local -a plugins=("$@") missing=()
-  local plugin plugin_name plugin_version cache_path spec_path is_local bullet
+  local plugin plugin_name plugin_version cache_path spec_path is_local bullet hash
   local -i i n=${#plugins[@]} found=0 already_installed=0
   for (( i = 0; i < n; i++ )); do
     found=0
@@ -214,12 +208,12 @@ bee::install::recursively() {
           fi
           if [[ -d "${plugin_path}" ]]; then
             if [[ -v BEE_INSTALL_HASHES["${plugin_path}"] ]]; then
-              BEE_HUB_HASH_RESULT="${BEE_INSTALL_HASHES["${plugin_path}"]}"
+              hash="${BEE_INSTALL_HASHES["${plugin_path}"]}"
             else
-              BEE_HUB_HASH_RESULT="$("${BEE_HOME}/src/hash" "${plugin_path}" 2>/dev/null)"
-              BEE_INSTALL_HASHES["${plugin_path}"]="${BEE_HUB_HASH_RESULT}"
+              hash="$("${BEE_HOME}/src/hash" "${plugin_path}" 2>/dev/null)"
+              BEE_INSTALL_HASHES["${plugin_path}"]="${hash}"
             fi
-            if [[ "${BEE_HUB_HASH_RESULT}" != "${sha}" ]]; then
+            if [[ "${hash}" != "${sha}" ]]; then
               if (( force )); then
                 bee::log_warning "${plugin_name}:${plugin_version} sha256 mismatch!" \
                   "Plugin was tampered with or version has been modified. Authenticity is not guaranteed." \
@@ -413,7 +407,7 @@ bee::lint() {
     "${BEE_HOME}/src/help"
     exit 1
   else
-    local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash
+    local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash hash
     local -a plugin_deps
 
     key="name"
@@ -491,8 +485,8 @@ bee::lint() {
         bee::lint::assert_exist "${key}" "${license_file}"
 
         key="sha256"
-        BEE_HUB_HASH_RESULT="$("${BEE_HOME}/src/hash" "${PWD}")"
-        bee::lint::assert_equal "${key}" "${sha256_hash}" "${BEE_HUB_HASH_RESULT}"
+        hash="$("${BEE_HOME}/src/hash" "${PWD}")"
+        bee::lint::assert_equal "${key}" "${sha256_hash}" "${hash}"
 
         key="plugin file"
         local plugin_file="${plugin_name}.bash"
