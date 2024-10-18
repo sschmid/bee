@@ -12,31 +12,31 @@ setup() {
 @test "ignores .git and .DS_Store by default" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" > "${BATS_TEST_TMPDIR}/test/file1"
-  echo "test2" > "${BATS_TEST_TMPDIR}/test/file2"
+  echo "test1" > "${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test2" > "${BATS_TEST_TMPDIR}/test/file 2"
 
   run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
   assert_success
   assert_equal "${output}" "a27685987e1e8bb3b81f9de9299ae1c93872680be504f28627ea7b5ef33eeeea"
   assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-634b027b1b69e1242d40d53e312b3b4ac7710f55be81f289b549446ef6778bee  ./file1
-7d6fd7774f0d87624da6dcf16d0d3d104c3191e771fbe2f39c86aed4b2bf1a0f  ./file2
+634b027b1b69e1242d40d53e312b3b4ac7710f55be81f289b549446ef6778bee  ./file 1
+7d6fd7774f0d87624da6dcf16d0d3d104c3191e771fbe2f39c86aed4b2bf1a0f  ./file 2
 a27685987e1e8bb3b81f9de9299ae1c93872680be504f28627ea7b5ef33eeeea  -"
 }
 
 @test "ignores custom patterns" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" > "${BATS_TEST_TMPDIR}/test/file1"
-  echo "test2" > "${BATS_TEST_TMPDIR}/test/file2"
-  echo "test3" > "${BATS_TEST_TMPDIR}/test/file3"
-  export BEE_HUB_HASH_EXCLUDE="file1 file2"
+  echo "test1" > "${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test2" > "${BATS_TEST_TMPDIR}/test/file 2"
+  echo "test3" > "${BATS_TEST_TMPDIR}/test/file 3"
+  export BEE_HUB_HASH_EXCLUDE="file 1,file 2"
 
   run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
   assert_success
   assert_equal "${output}" "1f51d29e27f42e9f42b32cbbb5e09208c7a8d2fd0410cb9609b17e3be793137f"
   assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-ab03c34f1ece08211fe2a8039fd6424199b3f5d7b55ff13b1134b364776c45c5  ./file3
+ab03c34f1ece08211fe2a8039fd6424199b3f5d7b55ff13b1134b364776c45c5  ./file 3
 1f51d29e27f42e9f42b32cbbb5e09208c7a8d2fd0410cb9609b17e3be793137f  -"
 }
 

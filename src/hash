@@ -19,8 +19,8 @@ declare -a exclude=(^./.git .DS_Store$)
 declare -a hashes=()
 declare -i ignore=0
 
-# shellcheck disable=SC2207
-[[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=($(bee::split_args "${BEE_HUB_HASH_EXCLUDE:-}"))
+# shellcheck disable=SC2206
+[[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=(${BEE_HUB_HASH_EXCLUDE//,/$'\n'})
 
 echo "$1" >&2
 

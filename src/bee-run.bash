@@ -1284,9 +1284,6 @@ bee::split_args() {
   for arg in $@; do echo "${arg}"; done
 }
 
-# TODO remove
-export -f bee::split_args
-
 bee::run() {
   if [[ -v COMP_LINE ]]; then
     bee::comp
