@@ -1,7 +1,6 @@
 setup() {
   load "test-helper.bash"
   export BEE_WIKI="test wiki"
-  export BEE_OSTYPE="generic"
 }
 
 @test "shows help when args" {

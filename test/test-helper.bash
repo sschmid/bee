@@ -22,6 +22,8 @@ export BEE_ICON="BEE_ICON"
 export BEE_WARNING="BEE_WARNING"
 export BEE_ERROR="BEE_ERROR"
 
+export BEE_OSTYPE="generic"
+
 _set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
 _set_beerc_with() {
   cp "${BATS_TEST_DIRNAME}/fixtures/beerc.bash" "${BATS_TEST_TMPDIR}/beerc.bash"

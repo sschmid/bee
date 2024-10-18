@@ -58,28 +58,7 @@ usage: bee [--help]
 EOF
 }
 
-################################################################################
-# cache
-################################################################################
-
-bee::cache::comp() {
-  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
-    echo --clear
-  elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
-    [[ ! -d "${BEE_CACHE_PATH}" ]] || ls "${BEE_CACHE_PATH}"
-  fi
-}
-
-bee::cache() {
-  if (( $# )); then
-    case "$1" in
-      --clear) rm -rf "${BEE_CACHE_PATH}${2:+/$2}" ;;
-      *) bee::help ;;
-    esac
-  else
-    os_open "${BEE_CACHE_PATH}"
-  fi
-}
+export -f bee::help
 
 ################################################################################
 # hash
@@ -1203,7 +1182,7 @@ bee::EXIT() {
 declare -ag BEE_OPTIONS=(--batch --help --quiet --verbose)
 declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull res update version wiki)
 
-declare -ig COMP_PARTIAL=1
+declare -ix COMP_PARTIAL=1
 # Add this to your .bashrc
 # complete -C bee bee
 bee::comp() {
@@ -1263,7 +1242,7 @@ bee::comp_command_or_plugin() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; bee::cache::comp "$@"; return ;;
+      cache) shift; "${BEE_HOME}/src/cache-comp" "$@"; return ;;
       env) shift; compgen -v; return ;;
       hubs) shift; bee::hubs::comp "$@"; return ;;
       info) shift; bee::info::comp "$@"; return ;;
@@ -1354,7 +1333,7 @@ bee::run() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; bee::cache "$@"; return ;;
+      cache) shift; "${BEE_HOME}/src/cache" "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
       hash) shift; bee::hash "$@"; return ;;
       hubs) shift; bee::hubs "$@"; return ;;

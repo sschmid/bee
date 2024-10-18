@@ -7,7 +7,7 @@ BEE_HUBS=(
   "file://${BATS_TEST_TMPDIR}/testhub"
   "file://${BATS_TEST_TMPDIR}/othertesthub"
 )
-BEE_CACHE_PATH="${BATS_TEST_TMPDIR}/caches"
+BEE_CACHE_PATH="${BATS_TEST_TMPDIR}/cache"
 
 if [[ -v TEST_BEE_PLUGINS_NEED_INSTALL ]]; then
   BEE_PLUGINS_PATHS=(

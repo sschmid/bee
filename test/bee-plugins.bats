@@ -230,7 +230,6 @@ EOF
 }
 
 @test "sources optional os file" {
-  export BEE_OSTYPE="generic"
   run bee --batch \
     "bee::load_plugin testplugin:1.5.0" \
     "bee::run_plugin testplugin os test"

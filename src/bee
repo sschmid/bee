@@ -19,7 +19,7 @@ IFS=$'\n\t'
 : "${BEE_RC:="${HOME}/.beerc"}"
 : "${BEE_RESOURCES:=.bee}"
 : "${BEE_ORIGIN:=https://github.com/sschmid/bee.git}"
-: "${BEE_CACHE_PATH:="${HOME}/.bee/cache"}"
+export BEE_CACHE_PATH="${BEE_CACHE_PATH:-"${HOME}/.bee/cache"}"
 : "${BEE_OSTYPE:=${OSTYPE%%[[:digit:]]*}}"
 
 ################################################################################
@@ -125,6 +125,9 @@ bee::load_os() {
     source "${path}/os/generic.bash"
 #    bee::log_warning "Missing platform support for ${BEE_OSTYPE} (${OSTYPE})"
   fi
+
+  export -f os_open
+  export -f os_sha256sum
 }
 
 bee::load_os "${BEE_HOME}/src"
