@@ -41,7 +41,7 @@ setup() {
   run bee version --latest --cached
   assert_output "1.2.3"
 
-  sleep 5
+  sleep 2
 
   # shellcheck disable=SC2016
   _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
@@ -49,10 +49,18 @@ setup() {
   assert_output "99.99.99"
 }
 
+################################################################################
+# Completions
+################################################################################
+
 @test "completes bee version with --latest" {
   assert_comp "bee version " "--latest"
 }
 
 @test "completes bee version --latest with --cached" {
   assert_comp "bee version --latest " "--cached"
+}
+
+@test "no completion after --cached" {
+  assert_comp "bee version --latest --cached "
 }

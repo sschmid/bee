@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+########################################
+# Print the version of bee
+# Arguments:
+#   options
+########################################
+
+declare -i latest=0 cached=0
+while (( $# )); do
+  case "$1" in
+    --latest) latest=1; shift ;;
+    --cached) cached=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac
+done
+
+if (( $# )); then
+  "${BEE_HOME}/src/help"
+  exit 1
+fi
+
+if (( latest )); then
+  if (( cached )); then
+    mkdir -p "${BEE_CACHE_PATH}"
+    declare -i last_ts now delta
+    cache_file="${BEE_CACHE_PATH}/.bee_latest_version_cache"
+    [[ -f "${cache_file}" ]] || echo "0,0" > "${cache_file}"
+    now=$(date +%s)
+    cache="$(cat "${cache_file}")"
+    last_ts="${cache%%,*}"
+    delta=$(( now - last_ts ))
+    if (( delta > BEE_LATEST_VERSION_CACHE_EXPIRE )); then
+      version="$(curl -fsSL "${BEE_LATEST_VERSION_PATH}")"
+      echo "${now},${version}" > "${cache_file}"
+      echo "${version}"
+    else
+      echo "${cache##*,}"
+    fi
+  else
+    curl -fsSL "${BEE_LATEST_VERSION_PATH}"
+  fi
+else
+  cat "${BEE_HOME}/version.txt"
+fi

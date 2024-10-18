@@ -4,9 +4,9 @@
 # defaults
 ################################################################################
 
-: "${BEE_LATEST_VERSION_PATH:=https://raw.githubusercontent.com/sschmid/bee/main/version.txt}"
+declare -rx BEE_LATEST_VERSION_PATH="${BEE_LATEST_VERSION_PATH:-"https://raw.githubusercontent.com/sschmid/bee/main/version.txt"}"
 declare -rx BEE_WIKI="${BEE_WIKI:-"https://github.com/sschmid/bee/wiki"}"
-: "${BEE_LATEST_VERSION_CACHE_EXPIRE:=14400}" # 4h * 60 * 60
+declare -irx BEE_LATEST_VERSION_CACHE_EXPIRE="${BEE_LATEST_VERSION_CACHE_EXPIRE:-14400}" # 4h * 60 * 60
 : "${BEE_HUB_PULL_COOLDOWN:=900}" # 15m * 60
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
@@ -835,8 +835,8 @@ bee::pull::comp() {
 bee::prompt() {
   [[ -v BEE_FILE ]] || return 1
   local current_version latest_version
-  current_version=$(bee::version)
-  latest_version=$(bee::version --latest --cached)
+  current_version=$("${BEE_HOME}/src/version")
+  latest_version=$("${BEE_HOME}/src/version" --latest --cached)
   if [[ "${current_version}" == "${latest_version}" ]]
   then echo "${BEE_ICON} ${current_version}"
   else echo "${BEE_ICON} ${current_version}*"
@@ -931,60 +931,6 @@ bee::update() {
     git pull
     bee::log "bee is up-to-date and ready to bzzzz"
   popd >/dev/null || exit 1
-}
-
-################################################################################
-# version
-################################################################################
-
-bee::version::comp() {
-  local cmd="${1:-}"
-  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
-    echo --latest
-  elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
-    case "${cmd}" in
-      --latest) echo "--cached" ;;
-    esac
-  fi
-}
-
-bee::version() {
-  local -i latest=0 cached=0
-  while (( $# )); do
-    case "$1" in
-      --latest) latest=1; shift ;;
-      --cached) cached=1; shift ;;
-      --) shift; break ;; *) break ;;
-    esac
-  done
-
-  if (( $# )); then
-    "${BEE_HOME}/src/help"
-    exit 1
-  elif (( latest )); then
-    if (( cached )); then
-      mkdir -p "${BEE_CACHE_PATH}"
-      local -i last_ts now delta
-      local cache cache_file="${BEE_CACHE_PATH}/.bee_latest_version_cache"
-      [[ ! -f "${cache_file}" ]] && echo "0,0" > "${cache_file}"
-      now=$(date +%s)
-      cache="$(cat "${cache_file}")"
-      last_ts="${cache%%,*}"
-      delta=$(( now - last_ts ))
-      if (( delta > BEE_LATEST_VERSION_CACHE_EXPIRE )); then
-        local version
-        version="$(curl -fsSL "${BEE_LATEST_VERSION_PATH}")"
-        echo "${now},${version}" > "${cache_file}"
-        echo "${version}"
-      else
-        echo "${cache##*,}"
-      fi
-    else
-      curl -fsSL "${BEE_LATEST_VERSION_PATH}"
-    fi
-  else
-    cat "${BEE_HOME}/version.txt"
-  fi
 }
 
 ################################################################################
@@ -1117,7 +1063,7 @@ bee::comp_command_or_plugin() {
       plugins) shift; bee::plugins::comp "$@"; return ;;
       res) shift; bee::hubs --list; return ;;
       update) shift; bee::update::comp "$@"; return ;;
-      version) shift; bee::version::comp "$@"; return ;;
+      version) shift; "${BEE_HOME}/src/version-comp" "$@"; return ;;
     esac
 
     bee:map_bee_plugins
@@ -1212,7 +1158,7 @@ bee::run() {
       pull) shift; bee::pull "$@"; return ;;
       res) shift; bee:map_bee_plugins; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
-      version) shift; bee::version "$@"; return ;;
+      version) shift; "${BEE_HOME}/src/version" "$@"; return ;;
       wiki) shift; "${BEE_HOME}/src/wiki" "$@"; return ;;
     esac
 
