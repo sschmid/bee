@@ -1,9 +1,9 @@
 ########################################
-# Hash files in a directory
+# Compute combined hash of files in directory
 # Arguments:
 #   directory
 # Outputs:
-#   Single hash for all files in directory
+#   hash
 ########################################
 
 if (( ! $# )); then

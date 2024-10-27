@@ -1,5 +1,7 @@
 ########################################
 # Open the bee wiki in the default browser
+# Arguments:
+#   None
 ########################################
 
 if (( $# )); then

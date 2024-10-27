@@ -1,7 +1,7 @@
 ########################################
-# Delete cache directories
+# Open or clear cache directories
 # Arguments:
-#   options, subdirectory
+#   None | --clear [directory]
 ########################################
 
 if (( $# )); then

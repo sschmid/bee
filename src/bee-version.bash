@@ -1,7 +1,7 @@
 ########################################
 # Print the version of bee
 # Arguments:
-#   options
+#   [--latest] [--cached]
 ########################################
 
 declare -i latest=0 cached=0

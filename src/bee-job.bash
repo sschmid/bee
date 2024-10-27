@@ -1,3 +1,9 @@
+########################################
+# Run plugin or commands as a job
+# Arguments:
+#   [--logfile] [--time] title command [arguments]
+########################################
+
 job_spinner_interval=0.1
 job_spinner_frames=(
   '🐝'
