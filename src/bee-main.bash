@@ -1053,7 +1053,7 @@ bee::comp_command_or_plugin() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; source "${BEE_HOME}/src/cache-comp" "$@"; return ;;
+      cache) shift; bee::source "cache-comp" "$@"; return ;;
       env) shift; compgen -v; return ;;
       hubs) shift; bee::hubs::comp "$@"; return ;;
       info) shift; bee::info::comp "$@"; return ;;
@@ -1122,6 +1122,11 @@ bee::split_args() {
   for arg in $@; do echo "${arg}"; done
 }
 
+bee::source() {
+  local cmd="$1"; shift
+  (source "${BEE_HOME}/src/${cmd}.bash" "$@")
+}
+
 bee::main() {
   if [[ -v COMP_LINE ]]; then
     bee::comp
@@ -1144,7 +1149,7 @@ bee::main() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; source "${BEE_HOME}/src/bee-cache.bash" "$@"; return ;;
+      cache) shift; bee::source "bee-cache" "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
       hash) shift; "${BEE_HOME}/src/hash" "$@"; return ;;
       hubs) shift; bee::hubs "$@"; return ;;
