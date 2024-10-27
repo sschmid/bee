@@ -4,9 +4,9 @@
 # defaults
 ################################################################################
 
-declare -rx BEE_LATEST_VERSION_PATH="${BEE_LATEST_VERSION_PATH:-"https://raw.githubusercontent.com/sschmid/bee/main/version.txt"}"
+declare -r BEE_LATEST_VERSION_PATH="${BEE_LATEST_VERSION_PATH:-"https://raw.githubusercontent.com/sschmid/bee/main/version.txt"}"
 declare -r BEE_WIKI="${BEE_WIKI:-"https://github.com/sschmid/bee/wiki"}"
-declare -irx BEE_LATEST_VERSION_CACHE_EXPIRE="${BEE_LATEST_VERSION_CACHE_EXPIRE:-14400}" # 4h * 60 * 60
+declare -ir BEE_LATEST_VERSION_CACHE_EXPIRE="${BEE_LATEST_VERSION_CACHE_EXPIRE:-14400}" # 4h * 60 * 60
 : "${BEE_HUB_PULL_COOLDOWN:=900}" # 15m * 60
 
 BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
@@ -835,8 +835,8 @@ bee::pull::comp() {
 bee::prompt() {
   [[ -v BEE_FILE ]] || return 1
   local current_version latest_version
-  current_version=$("${BEE_HOME}/src/version")
-  latest_version=$("${BEE_HOME}/src/version" --latest --cached)
+  current_version=$(bee::source "bee-version")
+  latest_version=$(bee::source "bee-version" --latest --cached)
   if [[ "${current_version}" == "${latest_version}" ]]
   then echo "${BEE_ICON} ${current_version}"
   else echo "${BEE_ICON} ${current_version}*"
@@ -1063,7 +1063,7 @@ bee::comp_command_or_plugin() {
       plugins) shift; bee::plugins::comp "$@"; return ;;
       res) shift; bee::hubs --list; return ;;
       update) shift; bee::update::comp "$@"; return ;;
-      version) shift; "${BEE_HOME}/src/version-comp" "$@"; return ;;
+      version) shift; bee::source "bee-version-comp" "$@"; return ;;
     esac
 
     bee:map_bee_plugins
@@ -1163,7 +1163,7 @@ bee::main() {
       pull) shift; bee::pull "$@"; return ;;
       res) shift; bee:map_bee_plugins; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
-      version) shift; "${BEE_HOME}/src/version" "$@"; return ;;
+      version) shift; bee::source "bee-version" "$@"; return ;;
       wiki) shift; bee::source "bee-wiki" "$@"; return ;;
     esac
 

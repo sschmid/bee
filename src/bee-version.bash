@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-
 ########################################
 # Print the version of bee
 # Arguments:
