@@ -993,7 +993,7 @@ bee::EXIT() {
 declare -ag BEE_OPTIONS=(--batch --help --quiet --verbose)
 declare -ag BEE_COMMANDS=(cache env hash hubs info install job lint new plugins pull res update version wiki)
 
-declare -ix COMP_PARTIAL=1
+declare -i COMP_PARTIAL=1
 # Add this to your .bashrc
 # complete -C bee bee
 bee::comp() {
@@ -1053,7 +1053,7 @@ bee::comp_command_or_plugin() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; "${BEE_HOME}/src/cache-comp" "$@"; return ;;
+      cache) shift; source "${BEE_HOME}/src/cache-comp" "$@"; return ;;
       env) shift; compgen -v; return ;;
       hubs) shift; bee::hubs::comp "$@"; return ;;
       info) shift; bee::info::comp "$@"; return ;;
@@ -1144,7 +1144,7 @@ bee::run() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; "${BEE_HOME}/src/cache" "$@"; return ;;
+      cache) shift; source "${BEE_HOME}/src/bee-cache.bash" "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
       hash) shift; "${BEE_HOME}/src/hash" "$@"; return ;;
       hubs) shift; bee::hubs "$@"; return ;;

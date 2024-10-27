@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-
 ########################################
 # Delete cache directories
 # Arguments:
@@ -11,7 +7,7 @@ IFS=$'\n\t'
 if (( $# )); then
   case "$1" in
     --clear) rm -rf "${BEE_CACHE_PATH}${2:+/$2}" ;;
-    *) "${BEE_HOME}/src/help"; exit 1 ;;
+    *) source "${BEE_HOME}/src/help"; exit 1 ;;
   esac
 else
   os_open "${BEE_CACHE_PATH}"
