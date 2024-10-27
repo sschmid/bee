@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-
 ########################################
 # Open the bee wiki in the default browser
 ########################################

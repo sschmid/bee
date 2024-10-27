@@ -5,7 +5,7 @@
 ################################################################################
 
 declare -rx BEE_LATEST_VERSION_PATH="${BEE_LATEST_VERSION_PATH:-"https://raw.githubusercontent.com/sschmid/bee/main/version.txt"}"
-declare -rx BEE_WIKI="${BEE_WIKI:-"https://github.com/sschmid/bee/wiki"}"
+declare -r BEE_WIKI="${BEE_WIKI:-"https://github.com/sschmid/bee/wiki"}"
 declare -irx BEE_LATEST_VERSION_CACHE_EXPIRE="${BEE_LATEST_VERSION_CACHE_EXPIRE:-14400}" # 4h * 60 * 60
 : "${BEE_HUB_PULL_COOLDOWN:=900}" # 15m * 60
 
@@ -1164,7 +1164,7 @@ bee::main() {
       res) shift; bee:map_bee_plugins; bee::res "$@"; return ;;
       update) shift; bee::update "$@"; return ;;
       version) shift; "${BEE_HOME}/src/version" "$@"; return ;;
-      wiki) shift; "${BEE_HOME}/src/wiki" "$@"; return ;;
+      wiki) shift; bee::source "bee-wiki" "$@"; return ;;
     esac
 
     # run bee plugin, e.g. bee github me
