@@ -9,8 +9,9 @@ beefile="${1:-"Beefile"}"
 if [[ -f "${beefile}" ]]; then
   bee::log_error "${beefile} already exists"
   exit 1
-else
-  cat << EOF > "${beefile}"
+fi
+
+cat << EOF > "${beefile}"
 BEE_PROJECT="$(basename "${PWD}")"
 BEE_VERSION=$(cat "${BEE_HOME}/version.txt")
 
@@ -41,5 +42,4 @@ BEE_PLUGINS=(
   # unity
 )
 EOF
-  bee::log_echo "Created ${beefile}"
-fi
+bee::log_echo "Created ${beefile}"

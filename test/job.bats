@@ -15,6 +15,10 @@ _prepare_job_logs() {
   run bee job test
   assert_failure
   assert_bee_help
+
+  run bee job --logfile --time
+  assert_failure
+  assert_bee_help
 }
 
 @test "runs job and succeeds" {
