@@ -274,131 +274,6 @@ bee::install::recursively() {
 }
 
 ################################################################################
-# job
-################################################################################
-
-BEE_JOB_SPINNER_INTERVAL=0.1
-BEE_JOB_SPINNER_FRAMES=('🐝' ' 🐝' '  🐝' '   🐝' '    🐝' '     🐝' '      🐝' '       🐝' '        🐝' '         🐝' '        🐝' '       🐝' '      🐝' '     🐝' '    🐝' '   🐝' '  🐝' ' 🐝' '🐝')
-declare -ig BEE_JOB_SPINNER_PID=0
-declare -ig BEE_JOB_RUNNING=0
-declare -ig BEE_JOB_T=0
-declare -ig BEE_JOB_LOG_TO_FILE=0
-declare -ig BEE_JOB_SHOW_TIME=0
-BEE_JOB_TITLE=""
-BEE_JOB_LOGFILE=""
-
-bee::job::comp() {
-  local comps=(--logfile --time)
-  while (( $# )); do
-    case "$1" in
-      --logfile) comps=("${comps[@]/--logfile/}"); shift ;;
-      --time) comps=("${comps[@]/--time/}"); shift ;;
-      --) shift; break ;; *) break ;;
-    esac
-  done
-  compgen -W "${comps[*]}" -- "${1:-}"
-}
-
-bee::job() {
-  if (( $# >= 2 )); then
-    while (( $# )); do
-      case "$1" in
-        --logfile) BEE_JOB_LOG_TO_FILE=1; shift ;;
-        --time) BEE_JOB_SHOW_TIME=1; shift ;;
-        --) shift; break ;; *) break ;;
-      esac
-    done
-
-    bee::job::start "$@"
-    bee::job::finish
-  else
-    bee::source "bee-help"
-    exit 1
-  fi
-}
-
-bee::job::start() {
-  BEE_JOB_TITLE="$1"; shift
-  if (( BEE_JOB_LOG_TO_FILE )); then
-    mkdir -p "${BEE_RESOURCES}/logs"
-    BEE_JOB_LOGFILE="${BEE_RESOURCES}/logs/$(date -u '+%Y%m%d%H%M%S')-job-${BEE_JOB_TITLE// /-}-${RANDOM}${RANDOM}.log"
-  else
-    BEE_JOB_LOGFILE=/dev/null
-  fi
-
-  if (( BEE_VERBOSE )); then
-    echo "${BEE_JOB_TITLE}"
-    bee::main "$@" 2>&1 | tee "${BEE_JOB_LOGFILE}"
-  else
-    bee::job::start_spinner
-    bee::main "$@" &> "${BEE_JOB_LOGFILE}"
-  fi
-}
-
-bee::job::finish() {
-  bee::job::stop_spinner
-  local line_reset
-  (( ! BEE_VERBOSE )) && line_reset="${BEE_LINE_RESET}" || line_reset=""
-  echo -e "${line_reset}${BEE_COLOR_SUCCESS}${BEE_JOB_TITLE} ${BEE_CHECK_SUCCESS}$(bee::job::duration)${BEE_COLOR_RESET}"
-}
-
-bee::job::start_spinner() {
-  BEE_JOB_RUNNING=1
-  BEE_JOB_T=${SECONDS}
-  bee::add_int_trap bee::job::INT
-  bee::add_exit_trap bee::job::EXIT
-  if [[ -t 1 ]]; then
-    tput civis &>/dev/null || true
-    stty -echo
-    bee::job::spin &
-    BEE_JOB_SPINNER_PID=$!
-  fi
-}
-
-bee::job::stop_spinner() {
-  bee::remove_int_trap bee::job::INT
-  bee::remove_exit_trap bee::job::EXIT
-  if [[ -t 1 ]]; then
-    if (( BEE_JOB_SPINNER_PID != 0 )); then
-      kill -9 ${BEE_JOB_SPINNER_PID} || true
-      wait ${BEE_JOB_SPINNER_PID} &>/dev/null || true
-      BEE_JOB_SPINNER_PID=0
-    fi
-    stty echo
-    tput cnorm &>/dev/null || true
-  fi
-  BEE_JOB_RUNNING=0
-}
-
-bee::job::spin() {
-  while true; do
-    for i in "${BEE_JOB_SPINNER_FRAMES[@]}"; do
-      echo -ne "${BEE_LINE_RESET}${BEE_JOB_TITLE}$(bee::job::duration) ${i}"
-      sleep ${BEE_JOB_SPINNER_INTERVAL}
-    done
-  done
-}
-
-bee::job::INT() {
-  (( BEE_JOB_RUNNING )) || return 0
-  bee::job::stop_spinner
-  echo "Aborted by $(whoami)$(bee::job::duration)" >> "${BEE_JOB_LOGFILE}"
-}
-
-bee::job::EXIT() {
-  local -i status=$1
-  (( BEE_JOB_RUNNING )) || return 0
-  if (( status )); then
-    bee::job::stop_spinner
-    echo -e "${BEE_LINE_RESET}${BEE_COLOR_FAIL}${BEE_JOB_TITLE} ${BEE_CHECK_FAIL}$(bee::job::duration)${BEE_COLOR_RESET}"
-  fi
-}
-
-bee::job::duration() {
-  (( ! BEE_JOB_SHOW_TIME )) || echo " ($(( SECONDS - BEE_JOB_T )) seconds)"
-}
-
-################################################################################
 # lint
 ################################################################################
 
@@ -457,16 +332,16 @@ bee::lint() {
       cache_path="${BEE_LINT_CACHE_PATH}/${cache_path}"
       if [[ -d "${cache_path}" ]]; then
         pushd "${cache_path}" >/dev/null || exit 1
-          bee::job "git fetch" git fetch
+          bee::source "bee-job" "git fetch" git fetch
         popd >/dev/null || exit 1
       else
-        bee::job "git clone" git clone "${git_url}" "${cache_path}"
+        bee::source "bee-job" "git clone" git clone "${git_url}" "${cache_path}"
       fi
     fi
 
     if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
       pushd "${cache_path}" >/dev/null || exit 1
-        bee::job "git checkout tag" git checkout -q "${git_tag}"
+        bee::source "bee-job" "git checkout tag" git checkout -q "${git_tag}"
 
         key="version file"
         local version_file="version.txt"
@@ -1058,7 +933,7 @@ bee::comp_command_or_plugin() {
       hubs) shift; bee::hubs::comp "$@"; return ;;
       info) shift; bee::info::comp "$@"; return ;;
       install) shift; bee::install::comp "$@"; return ;;
-      job) shift; bee::job::comp "$@"; return ;;
+      job) shift; bee::source "bee-job-comp" "$@"; return ;;
       pull) shift; bee::pull::comp "$@"; return ;;
       plugins) shift; bee::plugins::comp "$@"; return ;;
       res) shift; bee::hubs --list; return ;;
@@ -1124,6 +999,8 @@ bee::split_args() {
 
 bee::source() {
   local cmd="$1"; shift
+  # Run in subshell to avoid polluting the current shell
+  # while still allowing the script to access variables and functions
   (source "${BEE_HOME}/src/${cmd}.bash" "$@")
 }
 
@@ -1138,6 +1015,7 @@ bee::main() {
   trap bee::EXIT EXIT
 
   while (( $# )); do
+    # shellcheck disable=SC2034
     case "$1" in
       --batch) shift; bee::batch "$@"; return ;;
       --help) bee::source "bee-help"; return ;;
@@ -1155,7 +1033,7 @@ bee::main() {
       hubs) shift; bee::hubs "$@"; return ;;
       info) shift; bee::info "$@"; return ;;
       install) shift; bee::install "$@"; return ;;
-      job) shift; bee::job "$@"; return ;;
+      job) shift; bee::source "bee-job" "$@"; return ;;
       lint) shift; bee::lint "$@"; return ;;
       new) shift; bee::source "bee-new" "$@"; return ;;
       plugins) shift; bee:map_bee_plugins; bee::plugins "$@"; return ;;
