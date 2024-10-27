@@ -16,7 +16,7 @@ bee::lint::assert_equal() {
   if [[ "${actual}" == "${expected}" ]]; then
     printf '%-24b%b\n' "${BEE_COLOR_SUCCESS}${key}" "${BEE_CHECK_SUCCESS} ${actual}${BEE_COLOR_RESET}"
   else
-    printf '%-24b%b\n' "${BEE_COLOR_FAIL}${key}" "${BEE_CHECK_FAIL} ${actual} (must be ${expected})${BEE_COLOR_RESET}"
+    printf '%-24b%b\n' "${BEE_COLOR_FAIL}${key}" "${BEE_CHECK_FAIL} ${actual} (must be ${expected})${BEE_COLOR_RESET}" >&2
     lint_error=1
   fi
 }
@@ -26,7 +26,7 @@ bee::lint::assert_exist() {
   if [[ "${actual}" != "null" ]]; then
     printf '%-24b%b\n' "${BEE_COLOR_SUCCESS}${key}" "${BEE_CHECK_SUCCESS} ${actual}${BEE_COLOR_RESET}"
   else
-    printf '%-24b%b\n' "${BEE_COLOR_FAIL}${key}" "${BEE_CHECK_FAIL} ${actual} (required)${BEE_COLOR_RESET}"
+    printf '%-24b%b\n' "${BEE_COLOR_FAIL}${key}" "${BEE_CHECK_FAIL} ${actual} (required)${BEE_COLOR_RESET}" >&2
     lint_error=1
   fi
 }
@@ -35,7 +35,7 @@ bee::lint::optional() {
   local key="$1" actual="$2"
   if [[ "${actual}" != "null" ]]
   then printf '%-24b%b\n' "${BEE_COLOR_SUCCESS}${key}" "${BEE_CHECK_SUCCESS} ${actual}${BEE_COLOR_RESET}"
-  else printf '%-24b%b\n' "${BEE_COLOR_WARN}${key}" "${actual}${BEE_COLOR_RESET}"
+  else printf '%-24b%b\n' "${BEE_COLOR_WARN}${key}" "${actual}${BEE_COLOR_RESET}" >&2
   fi
 }
 
