@@ -39,45 +39,40 @@ bee::lint::optional() {
   fi
 }
 
+bee::lint::assert_key_equals() {
+  local key="$1" expected="$2" actual
+  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+  bee::lint::assert_equal "${key}" "${actual}" "${expected}"
+}
+
+bee::lint::assert_key_exists() {
+  local key="$1" actual
+  actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+  bee::lint::assert_exist "${key}" "${actual}"
+}
+
 spec_path="$1"
 
-key="name"
-plugin_name="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
+plugin_name="$(jq -rc --arg key "name" '.[$key]' "${spec_path}")"
 expected="$(basename "$(dirname "$(dirname "${spec_path}")")")"
-bee::lint::assert_equal "${key}" "${plugin_name}" "${expected}"
+bee::lint::assert_equal "name" "${plugin_name}" "${expected}"
 
-key="version"
-actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
 expected="$(basename "$(dirname "${spec_path}")")"
-bee::lint::assert_equal "${key}" "${actual}" "${expected}"
+bee::lint::assert_key_equals "version" "${expected}"
 
-key="license"
-actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${actual}"
+bee::lint::assert_key_exists "license"
+bee::lint::assert_key_exists "homepage"
+bee::lint::assert_key_exists "authors"
+bee::lint::assert_key_exists "info"
 
-key="homepage"
-actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${actual}"
+git_url="$(jq -rc --arg key "git" '.[$key]' "${spec_path}")"
+bee::lint::assert_exist "git" "${git_url}"
 
-key="authors"
-actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${actual}"
+git_tag="$(jq -rc --arg key "tag" '.[$key]' "${spec_path}")"
+bee::lint::assert_exist "tag" "${git_tag}"
 
-key="info"
-actual="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${actual}"
-
-key="git"
-git_url="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${git_url}"
-
-key="tag"
-git_tag="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${git_tag}"
-
-key="sha256"
-sha256_hash="$(jq -rc --arg key "${key}" '.[$key]' "${spec_path}")"
-bee::lint::assert_exist "${key}" "${sha256_hash}"
+sha256_hash="$(jq -rc --arg key "sha256" '.[$key]' "${spec_path}")"
+bee::lint::assert_exist "sha256" "${sha256_hash}"
 
 key="dependencies"
 plugin_deps=("$(jq -rc --arg key "${key}" '.[$key][]? // null' "${spec_path}")")
@@ -110,26 +105,22 @@ if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
       bee::lint::assert_exist "${key}" "${version_file}"
     fi
 
-    key="license file"
     license_file="LICENSE.txt"
     [[ -f "${license_file}" ]] || license_file="null"
-    bee::lint::assert_exist "${key}" "${license_file}"
+    bee::lint::assert_exist "license file" "${license_file}"
 
-    key="sha256"
     hash="$(bee::source "bee-hash" "${PWD}")"
-    bee::lint::assert_equal "${key}" "${sha256_hash}" "${hash}"
+    bee::lint::assert_equal "sha256" "${sha256_hash}" "${hash}"
 
-    key="plugin file"
     plugin_file="${plugin_name}.bash"
     [[ -f "${plugin_file}" ]] || plugin_file="null"
-    bee::lint::assert_exist "${key}" "${plugin_file}"
+    bee::lint::assert_exist "plugin file" "${plugin_file}"
 
-    key="dependencies"
     if [[ -f plugin.json ]]
     then deps="$(jq -r '.dependencies[]? // null' plugin.json)"
     else deps="null"
     fi
-    bee::lint::assert_equal "${key}" \
+    bee::lint::assert_equal "dependencies" \
       "$(echo -n "${plugin_deps[@]}" | tr '\n' ' ')" \
       "$(echo -n "${deps}" | tr '\n' ' ')"
   popd >/dev/null || exit 1
