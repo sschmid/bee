@@ -4,6 +4,21 @@
 #   [--logfile] [--time] title command [arguments]
 ########################################
 
+declare -ig job_log_to_file=0
+declare -ig job_show_time=0
+while (( $# )); do
+  case "$1" in
+    --logfile) job_log_to_file=1; shift ;;
+    --time) job_show_time=1; shift ;;
+    --) shift; break ;; *) break ;;
+  esac
+done
+
+if (( $# < 2 )); then
+  bee::source "bee-help"
+  exit 1
+fi
+
 job_spinner_interval=0.1
 job_spinner_frames=(
   '🐝'
@@ -70,28 +85,6 @@ bee::job::EXIT() {
   fi
 }
 
-declare -ig spinner_pid=0
-declare -ig job_is_running=0
-declare -ig job_time=0
-
-declare -ig job_log_to_file=0
-declare -ig job_show_time=0
-job_title=""
-job_logfile=""
-
-while (( $# )); do
-  case "$1" in
-    --logfile) job_log_to_file=1; shift ;;
-    --time) job_show_time=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac
-done
-
-if (( $# < 2 )); then
-  bee::source "bee-help"
-  exit 1
-fi
-
 # Setup job
 job_title="$1"; shift
 if (( job_log_to_file )); then
@@ -100,6 +93,10 @@ if (( job_log_to_file )); then
 else
   job_logfile=/dev/null
 fi
+
+declare -ig job_is_running=0
+declare -ig job_time=0
+declare -ig spinner_pid=0
 
 if (( BEE_VERBOSE )); then
   # Run job without spinner
