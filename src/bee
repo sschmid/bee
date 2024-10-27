@@ -114,7 +114,7 @@ else
   BEE_HOME="${BEE_SYSTEM_HOME}"
 fi
 
-declare -rx BEE_HOME
+declare -r BEE_HOME
 
 bee_migration_1000() {
   if [[ -v BEE_VERSION ]]; then

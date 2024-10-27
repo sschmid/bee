@@ -7,7 +7,7 @@
 if (( $# )); then
   case "$1" in
     --clear) rm -rf "${BEE_CACHE_PATH}${2:+/$2}" ;;
-    *) source "${BEE_HOME}/src/help"; exit 1 ;;
+    *) bee::source "bee-help"; exit 1 ;;
   esac
 else
   os_open "${BEE_CACHE_PATH}"

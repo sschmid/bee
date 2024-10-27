@@ -7,7 +7,7 @@
 ########################################
 
 if (( ! $# )); then
-  "${BEE_HOME}/src/help"
+  bee::source "bee-help"
   exit 1
 fi
 

@@ -109,7 +109,7 @@ bee::info::comp() {
 
 bee::info() {
   if (( ! $# )); then
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   else
     local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
@@ -312,7 +312,7 @@ bee::job() {
     bee::job::start "$@"
     bee::job::finish
   else
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   fi
 }
@@ -404,7 +404,7 @@ bee::job::duration() {
 
 bee::lint() {
   if (( ! $# )); then
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   else
     local spec_path="$1" key actual expected cache_path plugin_name git_url git_tag sha256_hash hash
@@ -573,7 +573,7 @@ bee::plugins() {
   done
 
   if (( $# )); then
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   else
     local plugin_entry plugin_version
@@ -891,7 +891,7 @@ bee::pull() {
 
 bee::res() {
   if (( ! $# )); then
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   else
     local resources_dir target_dir
@@ -1140,7 +1140,7 @@ bee::main() {
   while (( $# )); do
     case "$1" in
       --batch) shift; bee::batch "$@"; return ;;
-      --help) "${BEE_HOME}/src/help"; return ;;
+      --help) bee::source "bee-help"; return ;;
       --quiet) BEE_QUIET=1; shift ;;
       --verbose) BEE_VERBOSE=1; shift ;;
       --) shift; break ;; *) break ;;
@@ -1179,7 +1179,7 @@ bee::main() {
     # run args, e.g. bee echo "message"
     "$@"
   else
-    "${BEE_HOME}/src/help"
+    bee::source "bee-help"
     exit 1
   fi
 }
