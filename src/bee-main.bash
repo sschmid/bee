@@ -328,10 +328,10 @@ bee::job::start() {
 
   if (( BEE_VERBOSE )); then
     echo "${BEE_JOB_TITLE}"
-    bee::run "$@" 2>&1 | tee "${BEE_JOB_LOGFILE}"
+    bee::main "$@" 2>&1 | tee "${BEE_JOB_LOGFILE}"
   else
     bee::job::start_spinner
-    bee::run "$@" &> "${BEE_JOB_LOGFILE}"
+    bee::main "$@" &> "${BEE_JOB_LOGFILE}"
   fi
 }
 
@@ -1104,13 +1104,13 @@ bee::batch() {
     if [[ "${args}" != "${cmd}" ]]; then
       # shellcheck disable=SC2046
       if (( allow_fail ))
-      then bee::run "${cmd}" $(bee::split_args "${args}") || true
-      else bee::run "${cmd}" $(bee::split_args "${args}")
+      then bee::main "${cmd}" $(bee::split_args "${args}") || true
+      else bee::main "${cmd}" $(bee::split_args "${args}")
       fi
     else
       if (( allow_fail ))
-      then bee::run "${cmd}" || true
-      else bee::run "${cmd}"
+      then bee::main "${cmd}" || true
+      else bee::main "${cmd}"
       fi
     fi
   done
@@ -1122,7 +1122,7 @@ bee::split_args() {
   for arg in $@; do echo "${arg}"; done
 }
 
-bee::run() {
+bee::main() {
   if [[ -v COMP_LINE ]]; then
     bee::comp
     exit 0

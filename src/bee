@@ -139,5 +139,5 @@ bee::load_os() {
 
 bee::load_os "${BEE_HOME}/src"
 
-source "${BEE_HOME}/src/bee-run.bash"
-[[ "${BASH_SOURCE[0]}" != "$0" ]] || bee::run "$@"
+source "${BEE_HOME}/src/bee-main.bash"
+[[ "${BASH_SOURCE[0]}" != "$0" ]] || bee::main "$@"

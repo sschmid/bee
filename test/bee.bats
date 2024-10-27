@@ -29,7 +29,7 @@ setup() {
 #   assert_bee_system_home
 # }
 
-@test "sources bee-run.bash" {
+@test "sources bee-main.bash" {
   run bee
   assert_failure
   assert_bee_help
@@ -71,16 +71,16 @@ EOF
   _setup_beefile "BEE_VERSION=1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src/os"
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
-    echo "echo '# test bee-run.bash 1.0.0 sourced'" > src/bee-run.bash
-    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash
+    echo "echo '# test bee-main.bash 1.0.0 sourced'" > src/bee-main.bash
+    cat "${PROJECT_ROOT}/src/bee-main.bash" >> src/bee-main.bash
     cp -r "${PROJECT_ROOT}/src/os" src
     git init; git add . ; _git_commit -m "Initial commit"; git tag 1.0.0
-    echo "echo '# test bee-run.bash 1.1.0 sourced'" > src/bee-run.bash
-    cat "${PROJECT_ROOT}/src/bee-run.bash" >> src/bee-run.bash;
+    echo "echo '# test bee-main.bash 1.1.0 sourced'" > src/bee-main.bash
+    cat "${PROJECT_ROOT}/src/bee-main.bash" >> src/bee-main.bash;
     git add . ; _git_commit -m "Bump version"; git tag "1.1.0"
   popd >/dev/null || exit 1
   run bee :
-  assert_output "# test bee-run.bash 1.0.0 sourced"
+  assert_output "# test bee-main.bash 1.0.0 sourced"
 }
 
 @test "applies bee 0.x migration" {

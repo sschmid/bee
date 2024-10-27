@@ -73,7 +73,7 @@ bee update
 
 bee is very flexible and can be customized heavily.
 See [bee](https://github.com/sschmid/bee/blob/main/src/bee#L15-L32) and
-[bee-run.bash](https://github.com/sschmid/bee/blob/main/src/bee-run.bash#L2-L5)
+[bee-main.bash](https://github.com/sschmid/bee/blob/main/src/bee-main.bash#L2-L5)
 and overwrite default values in `~/.beerc`
 
 --------------------------------------------------------------------------------
