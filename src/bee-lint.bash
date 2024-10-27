@@ -130,8 +130,8 @@ if [[ -n "${cache_path}" && -d "${cache_path}" ]]; then
     else deps="null"
     fi
     bee::lint::assert_equal "${key}" \
-      "$(echo "${plugin_deps[@]}" | tr '\n' ' ')" \
-      "$(echo "${deps}" | tr '\n' ' ')"
+      "$(echo -n "${plugin_deps[@]}" | tr '\n' ' ')" \
+      "$(echo -n "${deps}" | tr '\n' ' ')"
   popd >/dev/null || exit 1
 fi
 
