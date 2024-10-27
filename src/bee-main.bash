@@ -210,7 +210,7 @@ bee::install::recursively() {
             if [[ -v BEE_INSTALL_HASHES["${plugin_path}"] ]]; then
               hash="${BEE_INSTALL_HASHES["${plugin_path}"]}"
             else
-              hash="$("${BEE_HOME}/src/hash" "${plugin_path}" 2>/dev/null)"
+              hash="$(bee::source "bee-hash" "${plugin_path}" 2>/dev/null)"
               BEE_INSTALL_HASHES["${plugin_path}"]="${hash}"
             fi
             if [[ "${hash}" != "${sha}" ]]; then
@@ -485,7 +485,7 @@ bee::lint() {
         bee::lint::assert_exist "${key}" "${license_file}"
 
         key="sha256"
-        hash="$("${BEE_HOME}/src/hash" "${PWD}")"
+        hash="$(bee::source "bee-hash" "${PWD}")"
         bee::lint::assert_equal "${key}" "${sha256_hash}" "${hash}"
 
         key="plugin file"
@@ -1151,7 +1151,7 @@ bee::main() {
     case "$1" in
       cache) shift; bee::source "bee-cache" "$@"; return ;;
       env) shift; bee::env "$@"; return ;;
-      hash) shift; "${BEE_HOME}/src/hash" "$@"; return ;;
+      hash) shift; bee::source "bee-hash" "$@"; return ;;
       hubs) shift; bee::hubs "$@"; return ;;
       info) shift; bee::info "$@"; return ;;
       install) shift; bee::install "$@"; return ;;
