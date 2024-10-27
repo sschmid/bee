@@ -1157,7 +1157,7 @@ bee::main() {
       install) shift; bee::install "$@"; return ;;
       job) shift; bee::job "$@"; return ;;
       lint) shift; bee::lint "$@"; return ;;
-      new) shift; "${BEE_HOME}/src/new" "$@"; return ;;
+      new) shift; bee::source "bee-new" "$@"; return ;;
       plugins) shift; bee:map_bee_plugins; bee::plugins "$@"; return ;;
       prompt) shift; bee::prompt; return ;;
       pull) shift; bee::pull "$@"; return ;;
