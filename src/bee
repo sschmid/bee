@@ -42,7 +42,7 @@ declare BEE_CACHE_PATH="${BEE_CACHE_PATH:-"${HOME}/.bee/cache"}"
 # logging
 ################################################################################
 
-declare -ix BEE_QUIET=0
+declare -i BEE_QUIET=0
 
 bee::log_echo() {
   (( BEE_QUIET )) || echo "$*"
@@ -75,14 +75,6 @@ bee::env() {
     echo "${!v}"
   done
 }
-
-export -f bee::log_echo
-export -f bee::log
-export -f bee::log_info
-export -f bee::log_func
-export -f bee::log_warning
-export -f bee::log_error
-export -f bee::env
 
 ################################################################################
 # bee
