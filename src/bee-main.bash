@@ -1053,7 +1053,7 @@ bee::comp_command_or_plugin() {
 
   if (( $# )); then
     case "$1" in
-      cache) shift; bee::source "cache-comp" "$@"; return ;;
+      cache) shift; bee::source "bee-cache-comp" "$@"; return ;;
       env) shift; compgen -v; return ;;
       hubs) shift; bee::hubs::comp "$@"; return ;;
       info) shift; bee::info::comp "$@"; return ;;
