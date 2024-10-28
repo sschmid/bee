@@ -65,7 +65,7 @@ bee::hubs() {
             echo "${bullet}${plugin_name}"
 
             if (( show_all )); then
-              mapfile -t versions < <(find "${cache_path}/${plugin_name}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -V)
+              mapfile -t versions < <(find "${cache_path}/${plugin_name}" -maxdepth 1 -mindepth 1 -type d | LC_ALL=C sort -V)
               m=${#versions[@]}
               for (( j = 0; j < m; j++ )); do
                 plugin_version="$(basename "${versions[j]}")"
@@ -362,7 +362,7 @@ bee::resolve() {
     echo -e "${plugin_name}\tlocal\t${path}\t1"
   else
     if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
-      plugin_version="$(basename "$(find "${path}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
+      plugin_version="$(basename "$(find "${path}" -maxdepth 1 -mindepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
     fi
     [[ ! -f "${path}/${plugin_version}/${file}" ]] || echo -e "${plugin_name}\t${plugin_version}\t${path}\t0"
   fi
@@ -758,7 +758,7 @@ bee::comp_plugins() {
   # shellcheck disable=SC2015
   for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
     if [[ -d "${plugins_path}" ]]; then
-      find "${plugins_path}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;
+      find "${plugins_path}" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;
     fi
   done
 }
