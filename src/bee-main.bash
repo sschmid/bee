@@ -31,48 +31,6 @@ bee::to_cache_path() {
 }
 
 ################################################################################
-# info
-################################################################################
-
-bee::info::comp() {
-  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
-    {
-      bee::source "bee-hubs" --list
-      bee::comp_plugins
-    } | awk '!line[$0]++'
-  fi
-}
-
-bee::info() {
-  if (( ! $# )); then
-    bee::source "bee-help"
-    exit 1
-  else
-    local plugin="$1" plugin_name plugin_version cache_path spec_path is_local
-    for url in "${BEE_HUBS[@]}"; do
-      cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
-      while read -r plugin_name plugin_version spec_path is_local; do
-        spec_path="${spec_path}/${plugin_version}/plugin.json"
-        echo "${spec_path}"
-        jq . "${spec_path}" || cat "${spec_path}"
-        return
-      done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
-    done
-    for path in "${BEE_PLUGINS_PATHS[@]}"; do
-      while read -r plugin_name plugin_version spec_path is_local; do
-        if (( is_local ))
-        then spec_path="${spec_path}/plugin.json"
-        else spec_path="${spec_path}/${plugin_version}/plugin.json"
-        fi
-        echo "${spec_path}"
-        jq . "${spec_path}" || cat "${spec_path}"
-        return
-      done < <(bee::resolve "${plugin}" "${path}" "plugin.json" 1)
-    done
-  fi
-}
-
-################################################################################
 # install
 ################################################################################
 
@@ -726,7 +684,7 @@ bee::comp_command_or_plugin() {
       cache) shift; bee::source "bee-cache-comp" "$@"; return ;;
       env) shift; compgen -v; return ;;
       hubs) shift; bee::source "bee-hubs-comp" "$@"; return ;;
-      info) shift; bee::info::comp "$@"; return ;;
+      info) shift; bee::source "bee-info-comp" "$@"; return ;;
       install) shift; bee::install::comp "$@"; return ;;
       job) shift; bee::source "bee-job-comp" "$@"; return ;;
       pull) shift; bee::pull::comp "$@"; return ;;
@@ -826,7 +784,7 @@ bee::main() {
       env) shift; bee::env "$@"; return ;;
       hash) shift; bee::source "bee-hash" "$@"; return ;;
       hubs) shift; bee::source "bee-hubs" "$@"; return ;;
-      info) shift; bee::info "$@"; return ;;
+      info) shift; bee::source "bee-info" "$@"; return ;;
       install) shift; bee::install "$@"; return ;;
       job) shift; bee::source "bee-job" "$@"; return ;;
       lint) shift; bee::source "bee-lint" "$@"; return ;;
