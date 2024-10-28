@@ -10,6 +10,8 @@ if (( ! $# )); then
 fi
 
 plugin="$1"
+
+# shellcheck disable=SC2034
 for url in "${BEE_HUBS[@]}"; do
   cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
   while read -r plugin_name plugin_version spec_path is_local; do
@@ -19,6 +21,8 @@ for url in "${BEE_HUBS[@]}"; do
     exit
   done < <(bee::resolve "${plugin}" "${cache_path}" "plugin.json")
 done
+
+# shellcheck disable=SC2034
 for path in "${BEE_PLUGINS_PATHS[@]}"; do
   while read -r plugin_name plugin_version spec_path is_local; do
     if (( is_local ))
