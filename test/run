@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 set -e
-
-: "${TEST_BASH_VERSION:=5.1}"
-
 [[ ! -f test/bats/bin/bats ]] && git submodule update --init --recursive
-if [[ $# -gt 0 && "$1" == "--docker" ]]; then
-  DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION="${TEST_BASH_VERSION}" --progress=plain --target test -t sschmid/bee/test .
-  docker run --rm sschmid/bee/test
-  test/shellcheck
-else
-  test/bats/bin/bats "${@:-test}"
-  test/shellcheck
-fi
+
+declare -rx TEST_BASH_VERSION="${TEST_BASH_VERSION:-"5.2"}"
+
+case "${1:-}" in
+  --docker)
+    DOCKER_BUILDKIT=1 docker build --build-arg BASH_VERSION="${TEST_BASH_VERSION}" --progress=plain \
+      --target test -t sschmid/pw/test -f docker/alpine/Dockerfile .
+    ;;
+  --parallel)
+    declare -i cpus=$2; shift 2
+    test/bats/bin/bats --jobs ${cpus} "${@:-test}"
+    test/shellcheck
+    ;;
+  *)
+    test/bats/bin/bats "${@:-test}"
+    test/shellcheck
+    ;;
+esac
