@@ -1,17 +1,16 @@
 ########################################
 # Create new Beefile
 # Arguments:
-#   path
+#   [path]
 ########################################
+main() {
+  local beefile="${1:-Beefile}"
+  if [[ -f "${beefile}" ]]; then
+    bee::log_error "${beefile} already exists"
+    return 1
+  fi
 
-beefile="${1:-"Beefile"}"
-
-if [[ -f "${beefile}" ]]; then
-  bee::log_error "${beefile} already exists"
-  exit 1
-fi
-
-cat << EOF > "${beefile}"
+  cat << EOF > "${beefile}"
 BEE_PROJECT="$(basename "${PWD}")"
 BEE_VERSION=$(cat "${BEE_HOME}/version.txt")
 
@@ -30,16 +29,19 @@ BEE_VERSION=$(cat "${BEE_HOME}/version.txt")
 # You can specify a plugin version like this: plugin:x.y.z,
 # otherwise the latest plugin version will be used
 BEE_PLUGINS=(
-  # android
-  # changelog
-  # github
-  # ios
-  # macos
-  # sample
-  # semver
-  # slack
-  # tree
-  # unity
+# android
+# changelog
+# github
+# ios
+# macos
+# sample
+# semver
+# slack
+# tree
+# unity
 )
 EOF
-bee::log_echo "Created ${beefile}"
+  bee::log_echo "Created ${beefile}"
+}
+
+main "$@"

@@ -1,7 +1,11 @@
-if (( ! $# || $# == 1 && COMP_PARTIAL )); then
-  echo --latest
-elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
-  case "${1:-}" in
-    --latest) echo "--cached" ;;
-  esac
-fi
+main() {
+  if (( ! $# || $# == 1 && COMP_PARTIAL )); then
+    echo --latest
+  elif (( $# == 1 || $# == 2 && COMP_PARTIAL )); then
+    case "${1:-}" in
+      --latest) echo "--cached" ;;
+    esac
+  fi
+}
+
+main "$@"

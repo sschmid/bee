@@ -5,38 +5,39 @@
 # Outputs:
 #   hash
 ########################################
+main() {
+  if (( ! $# )); then
+    bee::source "bee-help"
+    exit 1
+  fi
 
-if (( ! $# )); then
-  bee::source "bee-help"
-  exit 1
-fi
-
-declare -a exclude=(^./.git .DS_Store$)
-declare -a hashes=()
-declare -i ignore=0
-
-# shellcheck disable=SC2206
-[[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=(${BEE_HUB_HASH_EXCLUDE//,/$'\n'})
-
-echo "$1" >&2
-
-pushd "$1" >/dev/null || exit 1
-  while read -r file; do
-    ignore=0
-    for pattern in "${exclude[@]}"; do
-      if [[ "${file}" =~ ${pattern} ]]; then
-        ignore=1
-        break
+  local path="$1" file_hash all
+  local -a exclude=(^./.git .DS_Store$) hashes=()
+  # shellcheck disable=SC2206
+  [[ -v BEE_HUB_HASH_EXCLUDE ]] && exclude+=(${BEE_HUB_HASH_EXCLUDE//,/$'\n'})
+  echo "${path}" >&2
+  pushd "${path}" >/dev/null || exit 1
+    local file pattern
+    local -i ignore=0
+    while read -r file; do
+      ignore=0
+      for pattern in "${exclude[@]}"; do
+        if [[ "${file}" =~ ${pattern} ]]; then
+          ignore=1
+          break
+        fi
+      done
+      if (( ! ignore )); then
+        file_hash="$(os_sha256sum "${file}")"
+        echo "${file_hash}" >&2
+        hashes+=("${file_hash%% *}")
       fi
-    done
-    if (( ! ignore )); then
-      file_hash="$(os_sha256sum "${file}")"
-      echo "${file_hash}" >&2
-      hashes+=("${file_hash%% *}")
-    fi
-  done < <(find . -type f | LC_ALL=C sort)
-popd >/dev/null || exit 1
+    done < <(find . -type f | LC_ALL=C sort)
+  popd >/dev/null || exit 1
 
-all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
-echo "${all}" >&2
-echo "${all%% *}"
+  all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
+  echo "${all}" >&2
+  echo "${all%% *}"
+}
+
+main "$@"

@@ -3,10 +3,13 @@
 # Arguments:
 #   None
 ########################################
+main() {
+  if (( $# )); then
+    bee::source "bee-help"
+    exit 1
+  fi
 
-if (( $# )); then
-  bee::source "bee-help"
-  exit 1
-fi
+  os_open "${BEE_WIKI}"
+}
 
-os_open "${BEE_WIKI}"
+main "$@"

@@ -631,12 +631,13 @@ bee::main() {
   trap bee::EXIT EXIT
 
   while (( $# )); do
-    # shellcheck disable=SC2034
     case "$1" in
       --batch) shift; bee::batch "$@"; return ;;
       --help) bee::source "bee-help"; return ;;
       --quiet) BEE_QUIET=1; shift ;;
-      --verbose) BEE_VERBOSE=1; shift ;;
+      --verbose)
+        # shellcheck disable=SC2034
+        BEE_VERBOSE=1; shift ;;
       --) shift; break ;; *) break ;;
     esac
   done

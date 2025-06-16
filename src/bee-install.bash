@@ -3,6 +3,7 @@
 # Arguments:
 #   [--force] [plugin ...]
 ########################################
+declare -Ag install_hashes=()
 
 bee::install::recursively() {
   local -i force="$1" lock="$2"
@@ -97,28 +98,32 @@ bee::install::recursively() {
   fi
 }
 
-bee::pull
-declare -Ag install_hashes=()
-declare -ig force=0
-while (( $# )); do
-  case "$1" in
-    --force) force=1; shift ;;
-    --) shift; break ;; *) break ;;
-  esac
-done
+main() {
+  local -i force=0
+  while (( $# )); do
+    case "$1" in
+      --force) force=1; shift ;;
+      --) shift; break ;; *) break ;;
+    esac
+  done
 
-if (( $# )); then
-  echo "Installing"
-  bee::install::recursively ${force} 0 "" "$@"
-elif [[ -v BEE_FILE ]]; then
-  if [[ -f "${BEE_FILE}.lock" ]]; then
-    echo "Installing plugins based on ${BEE_FILE}.lock"
-    mapfile -t plugins < <(awk '/^├── / || /^└── / { if (!line[$2]++) print $2 }' "${BEE_FILE}.lock")
-    bee::install::recursively ${force} 0 "" "${plugins[@]}"
+  bee::pull
+
+  if (( $# )); then
+    echo "Installing"
+    bee::install::recursively ${force} 0 "" "$@"
+  elif [[ -v BEE_FILE ]]; then
+    if [[ -f "${BEE_FILE}.lock" ]]; then
+      echo "Installing plugins based on ${BEE_FILE}.lock"
+      mapfile -t plugins < <(awk '/^├── / || /^└── / { if (!line[$2]++) print $2 }' "${BEE_FILE}.lock")
+      bee::install::recursively ${force} 0 "" "${plugins[@]}"
+    else
+      echo "Installing plugins based on ${BEE_FILE}"
+      bee::install::recursively ${force} 1 "" "${BEE_PLUGINS[@]}"
+    fi
   else
-    echo "Installing plugins based on ${BEE_FILE}"
-    bee::install::recursively ${force} 1 "" "${BEE_PLUGINS[@]}"
+    echo "No Beefile"
   fi
-else
-  echo "No Beefile"
-fi
+}
+
+main "$@"
