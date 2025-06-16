@@ -3,6 +3,7 @@
 # Arguments:
 #   plugin
 ########################################
+# shellcheck disable=SC2034
 main() {
   if (( ! $# )); then
     bee::source "bee-help"

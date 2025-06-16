@@ -18,6 +18,7 @@ bee::install::recursively() {
     (( i == n - 1 )) && bullet="└── " || bullet="├── "
     for url in "${BEE_HUBS[@]}"; do
       cache_path="${BEE_HUBS_CACHE_PATH}/$(bee::to_cache_path "${url}")"
+      # shellcheck disable=SC2034
       while read -r plugin_name plugin_version spec_path is_local; do
         found=1
         spec_path="${spec_path}/${plugin_version}/plugin.json"
