@@ -19,7 +19,7 @@ main() {
   pushd "${path}" >/dev/null || exit 1
     local file pattern
     local -i ignore=0
-    while read -r file; do
+    while IFS= read -r -d '' file; do
       ignore=0
       for pattern in "${exclude[@]}"; do
         if [[ "${file}" =~ ${pattern} ]]; then
@@ -32,7 +32,7 @@ main() {
         echo "${file_hash}" >&2
         hashes+=("${file_hash%% *}")
       fi
-    done < <(find . -type f | LC_ALL=C sort)
+    done < <(find . -type f -print0 | LC_ALL=C sort -z)
   popd >/dev/null || exit 1
 
   all="$(echo "${hashes[*]}" | LC_ALL=C sort | os_sha256sum)"
