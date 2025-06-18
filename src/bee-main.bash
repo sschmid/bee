@@ -21,11 +21,11 @@ fi
 
 bee::to_cache_path() {
   case "$1" in
-    https://*) echo "$(dirname "${1#https://}")/$(basename "$1" .git)" ;;
-    git://*) echo "$(dirname "${1#git://}")/$(basename "$1" .git)" ;;
-    git@*) local path="${1#git@}"; echo "$(dirname "${path/://}")/$(basename "$1" .git)" ;;
-    ssh://*) local path="${1#ssh://}"; echo "$(dirname "${path#git@}")/$(basename "$1" .git)" ;;
-    file://*) basename "$1" ;;
+    https://*) echo "$(dirname "${1#https://}")/$(basename -- "$1" .git)" ;;
+    git://*) echo "$(dirname "${1#git://}")/$(basename -- "$1" .git)" ;;
+    git@*) local path="${1#git@}"; echo "$(dirname "${path/://}")/$(basename -- "$1" .git)" ;;
+    ssh://*) local path="${1#ssh://}"; echo "$(dirname "${path#git@}")/$(basename -- "$1" .git)" ;;
+    file://*) basename -- "$1" ;;
     *) bee::log_warning "Unsupported url: $1" ;;
   esac
 }
@@ -120,7 +120,7 @@ bee::resolve() {
     echo -e "${plugin_name}\tlocal\t${path}\t1"
   else
     if [[ "${plugin_name}" == "${plugin_version}" && -d "${path}" ]]; then
-      plugin_version="$(basename "$(find "${path}" -maxdepth 1 -mindepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
+      plugin_version="$(basename -- "$(find "${path}" -maxdepth 1 -mindepth 1 -type d | LC_ALL=C sort -rV | head -n 1)")"
     fi
     [[ ! -f "${path}/${plugin_version}/${file}" ]] || echo -e "${plugin_name}\t${plugin_version}\t${path}\t0"
   fi
@@ -516,7 +516,7 @@ bee::comp_plugins() {
   # shellcheck disable=SC2015
   for plugins_path in "${BEE_PLUGINS_PATHS[@]}"; do
     if [[ -d "${plugins_path}" ]]; then
-      find "${plugins_path}" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;
+      find "${plugins_path}" -maxdepth 1 -mindepth 1 -type d -exec basename -- {} \;
     fi
   done
 }

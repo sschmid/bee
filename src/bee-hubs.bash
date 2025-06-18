@@ -44,7 +44,7 @@ main() {
               mapfile -t versions < <(find "${cache_path}/${plugin_name}" -maxdepth 1 -mindepth 1 -type d | LC_ALL=C sort -V)
               m=${#versions[@]}
               for (( j = 0; j < m; j++ )); do
-                plugin_version="$(basename "${versions[j]}")"
+                plugin_version="$(basename -- "${versions[j]}")"
                 (( i == n - 1 )) && indent="    " || indent="│    "
                 (( j == m - 1 )) && bullet="└── " || bullet="├── "
                 echo "${indent}${bullet}${plugin_version}"

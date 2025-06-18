@@ -54,10 +54,10 @@ main() {
   spec_path="$1"
 
   plugin_name="$(jq -rc --arg key "name" '.[$key]' "${spec_path}")"
-  expected="$(basename "$(dirname "$(dirname "${spec_path}")")")"
+  expected="$(basename -- "$(dirname "$(dirname "${spec_path}")")")"
   bee::lint::assert_equal "name" "${plugin_name}" "${expected}"
 
-  expected="$(basename "$(dirname "${spec_path}")")"
+  expected="$(basename -- "$(dirname "${spec_path}")")"
   bee::lint::assert_key_equals "version" "${expected}"
 
   bee::lint::assert_key_exists "license"
@@ -98,7 +98,7 @@ main() {
       version_file="version.txt"
       if [[ -f "${version_file}" ]]; then
         actual="$(cat "${version_file}")"
-        expected="$(basename "$(dirname "${spec_path}")")"
+        expected="$(basename -- "$(dirname "${spec_path}")")"
         bee::lint::assert_equal "${key}" "${actual}" "${expected}"
       else
         version_file="null"

@@ -11,7 +11,7 @@ main() {
   fi
 
   cat << EOF >"${beefile}"
-BEE_PROJECT="$(basename "${PWD}")"
+BEE_PROJECT="$(basename -- "${PWD}")"
 BEE_VERSION=$(cat "${BEE_HOME}/version.txt")
 
 # Which plugins would you like to load?
