@@ -1,13 +1,5 @@
 main() {
   cat << EOF
-
-██████╗ ███████╗███████╗
-██╔══██╗██╔════╝██╔════╝
-██████╔╝█████╗  █████╗
-██╔══██╗██╔══╝  ██╔══╝
-██████╔╝███████╗███████╗
-╚═════╝ ╚══════╝╚══════╝
-
 ${BEE_ICON} bee $(cat "${BEE_HOME}/version.txt") - plugin-based bash automation
 
 usage: bee [--help]
@@ -32,7 +24,6 @@ usage: bee [--help]
   update                                  update bee to the latest version
   version [--latest] [--cached]           print (--latest) version (--cached locally)
   wiki                                    open wiki
-
 EOF
 }
 
