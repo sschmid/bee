@@ -264,7 +264,7 @@ EOF
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
-  _setup_beefile 'BEE_PLUGINS=(testplugindepsdep testplugin)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugindepsdep testplugin)'
   bee pull
   run bee install
   assert_success

@@ -38,7 +38,7 @@ EOF
 }
 
 @test "copies plugin resources of mapped plugin version" {
-  _setup_beefile 'BEE_PLUGINS=(testplugin:1.6.0)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugin:1.6.0)'
   run bee res testplugin
   assert_success
   assert_output "Copying resources into .bee/testplugin"

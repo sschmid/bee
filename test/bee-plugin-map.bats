@@ -101,28 +101,28 @@ EOF
 }
 
 @test "runs plugin version specified in Beefile" {
-  _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugin:1.0.0)'
   run bee --quiet testplugin
   assert_success
   assert_output "testplugin 1.0.0 help"
 }
 
 @test "runs plugin version specified in dependencies" {
-  _setup_beefile 'BEE_PLUGINS=(testplugindeps)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugindeps)'
   run bee --quiet testplugin
   assert_success
   assert_output "testplugin 1.0.0 help"
 }
 
 @test "runs mapped plugin version" {
-  _setup_beefile 'BEE_PLUGINS=(testplugin testplugin:1.0.0)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugin testplugin:1.0.0)'
   run bee --quiet testplugin
   assert_success
   assert_output "testplugin 1.0.0 help"
 }
 
 @test "doesn't keep unmapped sourced plugins" {
-  _setup_beefile 'BEE_PLUGINS=(testplugindepslatest testplugindeps)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugindepslatest testplugindeps)'
   run -127 bee --quiet testplugin comp
   assert_failure
   assert_output --partial "testplugin::comp: command not found"

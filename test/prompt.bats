@@ -14,7 +14,6 @@ setup() {
 @test "prints bee version" {
   # shellcheck disable=SC2016
   _export_beerc_with "BEE_LATEST_VERSION_PATH='file://${PROJECT_ROOT}/version.txt'"
-  _setup_beefile
   run bee prompt
   assert_success
   assert_output "${BEE_ICON} $(cat "${PROJECT_ROOT}/version.txt")"

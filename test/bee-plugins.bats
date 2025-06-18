@@ -279,7 +279,7 @@ EOF
 }
 
 @test "completes mapped plugin version" {
-  _setup_beefile 'BEE_PLUGINS=(testplugin:1.0.0)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugin:1.0.0)'
   local expected=(greet help)
   assert_comp "bee testplugin " "${expected[*]}"
 }

@@ -23,7 +23,7 @@ _common_setup() {
 
   export BEE_OSTYPE="generic"
 
-  _setup_beefile :
+  _create_beefile_with :
 }
 
 _export_beerc() {
@@ -47,7 +47,7 @@ _source_beerc() {
   source "${BEE_RC}"
 }
 
-_setup_beefile() {
+_create_beefile_with() {
   echo "$@" >"${BATS_TEST_TMPDIR}/Beefile"
   export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }

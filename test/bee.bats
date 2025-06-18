@@ -37,7 +37,7 @@ assert_bee_system_home() {
 }
 
 @test "sources BEE_FILE when specified" {
-  _setup_beefile "echo '# test Beefile sourced'"
+  _create_beefile_with "echo '# test Beefile sourced'"
   run bee :
   assert_success
   assert_output "# test Beefile sourced"
@@ -62,14 +62,14 @@ EOF
 }
 
 @test "can overwrite BEE_RESOURCES in Beefile" {
-  _setup_beefile "BEE_RESOURCES=test"
+  _create_beefile_with "BEE_RESOURCES=test"
   run bee env BEE_RESOURCES
   assert_success
   assert_output "test"
 }
 
 @test "installs specified bee version" {
-  _setup_beefile "BEE_VERSION=1.0.0"
+  _create_beefile_with "BEE_VERSION=1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src/os"
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
     echo "echo '# test bee-main.bash 1.0.0 sourced'" >src/bee-main.bash
@@ -85,7 +85,7 @@ EOF
 }
 
 @test "applies bee 0.x migration" {
-  _setup_beefile "BEE_VERSION=0.41.0"
+  _create_beefile_with "BEE_VERSION=0.41.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src"
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
     echo "echo '# test bee 0.41.0 sourced'" >src/bee
@@ -132,7 +132,7 @@ EOF
 
 @test "completes available functions" {
   _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  _setup_beefile "test::func() { :; }"
+  _create_beefile_with "test::func() { :; }"
   local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res test::func update version wiki)
   assert_comp "bee " "${expected[*]}"
 }

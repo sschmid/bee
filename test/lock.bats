@@ -20,7 +20,7 @@ setup() {
 @test "creates Beefile.lock " {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
-  _setup_beefile 'BEE_PLUGINS=(testplugin)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugin)'
   bee pull
   run bee install
   cat << EOF | assert_output -
@@ -50,7 +50,7 @@ EOF
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
-  _setup_beefile 'BEE_PLUGINS=(testplugindepsdep testplugindeps)'
+  _create_beefile_with 'BEE_PLUGINS=(testplugindepsdep testplugindeps)'
   bee pull
   run bee install
   run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
@@ -70,7 +70,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
-  _setup_beefile 'BEE_PLUGINS=(localplugin)'
+  _create_beefile_with 'BEE_PLUGINS=(localplugin)'
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   bee pull
@@ -87,7 +87,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
-  _setup_beefile 'BEE_PLUGINS=(localplugin:local)'
+  _create_beefile_with 'BEE_PLUGINS=(localplugin:local)'
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   bee pull
@@ -103,7 +103,7 @@ EOF
 @test "doesn't create lock file when installing manually " {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
-  _setup_beefile
+  _create_beefile_with
   bee pull
   bee install testplugin
   run find "${BATS_TEST_TMPDIR}" -name "*.lock"
@@ -116,7 +116,7 @@ EOF
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
-  _setup_beefile
+  _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
 │   ├── testplugindeps:1.0.0
@@ -146,7 +146,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   _setup_generic_plugin_repo othertestplugin
-  _setup_beefile
+  _create_beefile_with
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   export TEST_PLUGIN_QUIET=1
@@ -171,7 +171,7 @@ EOF
   _setup_generic_plugin_repo othertestplugin
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
-  _setup_beefile
+  _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
 │   ├── testplugindeps:1.0.0
