@@ -1,6 +1,7 @@
 setup() {
-  load "test-helper.bash"
-  load "test-helper-hub.bash"
+  load 'test-helper'
+  load 'test-helper-hub'
+  _common_setup
   _set_beerc
   export TEST_BEE_PLUGINS_NEED_INSTALL=1
   _source_beerc

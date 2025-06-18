@@ -1,6 +1,7 @@
 setup() {
-  load "test-helper.bash"
-  load "test-helper-hub.bash"
+  load 'test-helper'
+  load 'test-helper-hub'
+  _common_setup
   _set_beerc
   _source_beerc
   BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"

@@ -1,6 +1,7 @@
 # shellcheck disable=SC2030,SC2031
 setup() {
-  load "test-helper.bash"
+  load 'test-helper'
+  _common_setup
 }
 
 @test "logs env var" {

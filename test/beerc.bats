@@ -1,5 +1,6 @@
 setup() {
-  load 'test-helper.bash'
+  load 'test-helper'
+ _common_setup
 }
 
 @test "loads beerc when specified" {

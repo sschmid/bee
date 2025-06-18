@@ -1,6 +1,7 @@
 setup() {
-  load "test-helper.bash"
-  load "test-helper-hub.bash"
+  load 'test-helper'
+  load 'test-helper-hub'
+  _common_setup
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
   _set_beerc
   _source_beerc

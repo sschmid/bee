@@ -1,27 +1,28 @@
-load 'test_helper/bats-support/load.bash'
-load 'test_helper/bats-assert/load.bash'
-load 'test_helper/bats-file/load.bash'
+_common_setup() {
+  load 'test_helper/bats-support/load.bash'
+  load 'test_helper/bats-assert/load.bash'
+  load 'test_helper/bats-file/load.bash'
 
-bats_require_minimum_version 1.5.0
+  bats_require_minimum_version 1.5.0
 
-export BATS_TEST_DIRNAME
-PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." >/dev/null 2>&1 && pwd)"
+  export BATS_TEST_DIRNAME
+  PROJECT_ROOT="$(cd "${BATS_TEST_DIRNAME}/.." &>/dev/null && pwd)"
+  PATH="${PROJECT_ROOT}/src:${PATH}"
 
-PATH="${PROJECT_ROOT}/src:${PATH}"
+  export BEE_COLOR_SUCCESS="#S"
+  export BEE_COLOR_WARN="#W"
+  export BEE_COLOR_FAIL="#E"
+  export BEE_COLOR_RESET="#"
+  export BEE_LINE_RESET="#"
+  export BEE_CHECK_SUCCESS="BEE_CHECK_SUCCESS"
+  export BEE_CHECK_FAIL="BEE_CHECK_FAIL"
+  export BEE_RESULT="BEE_RESULT"
+  export BEE_ICON="BEE_ICON"
+  export BEE_WARNING="BEE_WARNING"
+  export BEE_ERROR="BEE_ERROR"
 
-export BEE_COLOR_SUCCESS="#S"
-export BEE_COLOR_WARN="#W"
-export BEE_COLOR_FAIL="#E"
-export BEE_COLOR_RESET="#"
-export BEE_LINE_RESET="#"
-export BEE_CHECK_SUCCESS="BEE_CHECK_SUCCESS"
-export BEE_CHECK_FAIL="BEE_CHECK_FAIL"
-export BEE_RESULT="BEE_RESULT"
-export BEE_ICON="BEE_ICON"
-export BEE_WARNING="BEE_WARNING"
-export BEE_ERROR="BEE_ERROR"
-
-export BEE_OSTYPE="generic"
+  export BEE_OSTYPE="generic"
+}
 
 _set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
 _set_beerc_with() {

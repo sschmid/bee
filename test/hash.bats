@@ -1,6 +1,7 @@
 # shellcheck disable=SC2154
 setup() {
-  load "test-helper.bash"
+  load 'test-helper'
+  _common_setup
 }
 
 @test "shows help when no args" {

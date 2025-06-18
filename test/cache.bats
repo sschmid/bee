@@ -1,5 +1,6 @@
 setup() {
-  load "test-helper.bash"
+  load 'test-helper'
+  _common_setup
   _set_beerc
   _source_beerc
 }

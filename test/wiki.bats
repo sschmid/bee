@@ -1,5 +1,6 @@
 setup() {
-  load "test-helper.bash"
+  load 'test-helper'
+  _common_setup
   export BEE_WIKI="test wiki"
 }
 
