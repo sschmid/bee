@@ -4,6 +4,15 @@ setup() {
   _common_setup
 }
 
+assert_hash() {
+  run --separate-stderr bee hash "$1"
+  assert_success
+  assert_equal "${output}" "$2"
+  assert_equal "${stderr}" "$1
+$3
+$2  -"
+}
+
 @test "shows help when no args" {
   run bee hash
   assert_failure
@@ -12,76 +21,57 @@ setup() {
 
 @test "hashes files in folder" {
   mkdir -p "${BATS_TEST_TMPDIR}/test"
-  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file1"
-  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file2"
-  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file3"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file 2"
+  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file 3"
 
-  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
-  assert_success
-  assert_equal "${output}" "058cb1c617e7d34818519907671d341bc15bbb24ecd8eee656b34307d3f27772"
-  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file1
-ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file2
-f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file3
-058cb1c617e7d34818519907671d341bc15bbb24ecd8eee656b34307d3f27772  -"
+  assert_hash "${BATS_TEST_TMPDIR}/test" "31bcb3fe3b26a09a4f8deab60dd8a995b7f0cabaa50681aa87d7d0586975fc25" \
+"3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file 1
+ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file 2
+f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file 3"
 }
 
 @test "includes file names in hash" {
   # file content is the same as in previous test, but file names are different
   mkdir -p "${BATS_TEST_TMPDIR}/test"
-  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file1X"
-  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file2X"
-  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file3X"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file 1 X"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file 2 X"
+  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file 3 X"
 
-  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
-  assert_success
-  assert_equal "${output}" "bb09bab532739b138613f8036c2aab483dd3a984a7907c3a7840af4a65bf3b2b"
-  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file1X
-ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file2X
-f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file3X
-bb09bab532739b138613f8036c2aab483dd3a984a7907c3a7840af4a65bf3b2b  -"
+  assert_hash "${BATS_TEST_TMPDIR}/test" "b157413796c74b113cd051f71cb079105ed92411d2b22ba571ba9acf3be08661" \
+"3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file 1 X
+ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file 2 X
+f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file 3 X"
 }
 
 @test "ignores .git and .DS_Store by default" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
-  touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" >"${BATS_TEST_TMPDIR}/test/file 1"
-  echo "test2" >"${BATS_TEST_TMPDIR}/test/file 2"
+  touch "${BATS_TEST_TMPDIR}/test/.git/ignore"
+  touch "${BATS_TEST_TMPDIR}/test/.DS_Store"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file 2"
 
-  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
-  assert_success
-  assert_equal "${output}" "555791b998702fc1e173a90a37d83067f0fade68eaa643938331406c1c3af997"
-  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-634b027b1b69e1242d40d53e312b3b4ac7710f55be81f289b549446ef6778bee  ./file 1
-7d6fd7774f0d87624da6dcf16d0d3d104c3191e771fbe2f39c86aed4b2bf1a0f  ./file 2
-555791b998702fc1e173a90a37d83067f0fade68eaa643938331406c1c3af997  -"
+  assert_hash "${BATS_TEST_TMPDIR}/test" "3e3fc366c4186b90bbe40ad754d158ed27d5a0a94a207bc83ec0ad5b7a10f427" \
+"3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file 1
+ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file 2"
 }
 
-@test "ignores custom patterns" {
+@test "ignores additional custom patterns" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" >"${BATS_TEST_TMPDIR}/test/file 1"
-  echo "test2" >"${BATS_TEST_TMPDIR}/test/file 2"
-  echo "test3" >"${BATS_TEST_TMPDIR}/test/file 3"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file 2"
+  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file 3"
   export BEE_HUB_HASH_EXCLUDE="file 1,file 2"
 
-  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
-  assert_success
-  assert_equal "${output}" "caafef22315e281f6516ab7c0703371154a01e71f75a3b724a36360a1dfce2a0"
-  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
-ab03c34f1ece08211fe2a8039fd6424199b3f5d7b55ff13b1134b364776c45c5  ./file 3
-caafef22315e281f6516ab7c0703371154a01e71f75a3b724a36360a1dfce2a0  -"
+  assert_hash "${BATS_TEST_TMPDIR}/test" "9d245100fd93f0b9e5dde8b380feb70996fbc63e2f508f570db9f70a6deeac65" \
+"f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file 3"
 }
 
 @test "hashes plugin folder" {
-  run --separate-stderr bee hash "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0"
-  assert_success
-  assert_equal "${output}" "9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493"
-  assert_equal "${stderr}" "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0
-3a427a45a5dd0b6ae06b4dd1937bb357971ffe18ccbfc81f0c49eb55ae27458e  ./LICENSE.txt
+  assert_hash "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0" "9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493" \
+"3a427a45a5dd0b6ae06b4dd1937bb357971ffe18ccbfc81f0c49eb55ae27458e  ./LICENSE.txt
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./res/.gitkeep
 cd0637bc900b2177b2f5f4b15b9078734a5ef512d02fe7eed8f47831751f52a1  ./testplugin.bash
-c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624  ./version.txt
-9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493  -"
+c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624  ./version.txt"
 }
