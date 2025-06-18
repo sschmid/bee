@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
   _common_setup
-  local fixture="fixtures/plugins/testplugin/1.0.0/testplugin.bash"
+  local fixture="fixtures/plugins/plugin_1/1.0.0/plugin_1.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
@@ -10,7 +10,7 @@ setup() {
   unset TEST_PLUGIN_1_SOURCED
   run source "${TEST_FIXTURE_PATH}"
   assert_success
-  assert_output "# testplugin 1.0.0 sourced"
+  assert_output "# plugin_1 1.0.0 sourced"
 }
 
 @test "doesn't print message when TEST_PLUGIN_QUIET " {
@@ -28,31 +28,31 @@ setup() {
 }
 
 @test "prints message" {
-  run testplugin
+  run plugin_1
   assert_success
-  assert_output "hello from testplugin 1.0.0"
+  assert_output "hello from plugin_1 1.0.0"
 }
 
 @test "prints message with args" {
-  run testplugin test
+  run plugin_1 test
   assert_success
-  assert_output "hello from testplugin 1.0.0 - test"
+  assert_output "hello from plugin_1 1.0.0 - test"
 }
 
 @test "prints help" {
-  run testplugin::help
+  run plugin_1::help
   assert_success
-  assert_output "testplugin 1.0.0 help"
+  assert_output "plugin_1 1.0.0 help"
 }
 
 @test "greets" {
-  run testplugin::greet
+  run plugin_1::greet
   assert_success
-  assert_output "greeting from testplugin 1.0.0"
+  assert_output "greeting from plugin_1 1.0.0"
 }
 
 @test "greets with args" {
-  run testplugin::greet "test"
+  run plugin_1::greet "test"
   assert_success
-  assert_output "greeting test from testplugin 1.0.0"
+  assert_output "greeting test from plugin_1 1.0.0"
 }

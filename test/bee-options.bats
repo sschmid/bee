@@ -59,13 +59,13 @@ EOF
 }
 
 @test "runs multiple plugin commands" {
-  run bee --quiet --batch "testplugin:1.0.0 greet test1" "testplugin:2.0.0 greet test2"
+  run bee --quiet --batch "plugin_1:1.0.0 greet test1" "plugin_1:2.0.0 greet test2"
   assert_success
 cat << 'EOF' | assert_output -
-# testplugin 1.0.0 sourced
-greeting test1 from testplugin 1.0.0
-# testplugin 2.0.0 sourced
-greeting test2 from testplugin 2.0.0
+# plugin_1 1.0.0 sourced
+greeting test1 from plugin_1 1.0.0
+# plugin_1 2.0.0 sourced
+greeting test2 from plugin_1 2.0.0
 EOF
 }
 

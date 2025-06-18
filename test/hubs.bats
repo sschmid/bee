@@ -13,18 +13,18 @@ setup() {
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
-├── othertestplugin
-├── testplugin
-├── testplugindeps
-├── testplugindepsdep
-└── testpluginmissingdep
+├── plugin_1
+├── plugin_2
+├── plugin_with_deps
+├── plugin_with_deps_on_deps
+└── plugin_with_missing_deps
 
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── othertestplugin
-├── testplugin
-├── testplugindeps
-├── testplugindepsdep
-└── testpluginmissingdep
+├── plugin_1
+├── plugin_2
+├── plugin_with_deps
+├── plugin_with_deps_on_deps
+└── plugin_with_missing_deps
 EOF
 }
 
@@ -37,11 +37,11 @@ EOF
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── othertestplugin
-├── testplugin
-├── testplugindeps
-├── testplugindepsdep
-└── testpluginmissingdep
+├── plugin_1
+├── plugin_2
+├── plugin_with_deps
+├── plugin_with_deps_on_deps
+└── plugin_with_missing_deps
 EOF
 }
 
@@ -61,16 +61,16 @@ EOF
   run bee hubs --list
   assert_success
   cat << EOF | assert_output -
-othertestplugin
-testplugin
-testplugindeps
-testplugindepsdep
-testpluginmissingdep
-othertestplugin
-testplugin
-testplugindeps
-testplugindepsdep
-testpluginmissingdep
+plugin_1
+plugin_2
+plugin_with_deps
+plugin_with_deps_on_deps
+plugin_with_missing_deps
+plugin_1
+plugin_2
+plugin_with_deps
+plugin_with_deps_on_deps
+plugin_with_missing_deps
 EOF
 }
 
@@ -83,33 +83,33 @@ EOF
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
-├── othertestplugin
-│    └── 1.0.0
-├── testplugin
+├── plugin_1
 │    ├── 0.1.0
 │    ├── 0.2.0
 │    ├── 1.0.0
 │    └── 2.0.0
-├── testplugindeps
+├── plugin_2
 │    └── 1.0.0
-├── testplugindepsdep
+├── plugin_with_deps
 │    └── 1.0.0
-└── testpluginmissingdep
+├── plugin_with_deps_on_deps
+│    └── 1.0.0
+└── plugin_with_missing_deps
     └── 1.0.0
 
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── othertestplugin
-│    └── 1.0.0
-├── testplugin
+├── plugin_1
 │    ├── 0.1.0
 │    ├── 0.2.0
 │    ├── 1.0.0
 │    └── 2.0.0
-├── testplugindeps
+├── plugin_2
 │    └── 1.0.0
-├── testplugindepsdep
+├── plugin_with_deps
 │    └── 1.0.0
-└── testpluginmissingdep
+├── plugin_with_deps_on_deps
+│    └── 1.0.0
+└── plugin_with_missing_deps
     └── 1.0.0
 EOF
 }

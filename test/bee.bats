@@ -132,8 +132,8 @@ EOF
   local expected=(
     --batch --help --quiet --verbose
     cache env hash hubs info install job lint new plugins pull res update version wiki
-    testplugin testplugindeps testplugindepsdep testplugindepslatest testpluginmissingdep othertestplugin
-    customtestplugin localplugin
+    plugin_1 plugin_with_deps plugin_with_deps_on_deps testplugindepslatest plugin_with_missing_deps plugin_2
+    custom_plugin local_plugin
   )
   assert_comp "bee " "${expected[*]}"
 }

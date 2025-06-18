@@ -8,122 +8,122 @@ setup() {
 }
 
 @test "maps latest version" {
-  run bee bee::map_plugins testplugin
+  run bee bee::map_plugins plugin_1
   assert_success
-  assert_output "testplugin:2.0.0"
+  assert_output "plugin_1:2.0.0"
 }
 
 @test "maps specified version" {
-  run bee bee::map_plugins testplugin:1.0.0
+  run bee bee::map_plugins plugin_1:1.0.0
   assert_success
-  assert_output "testplugin:1.0.0"
+  assert_output "plugin_1:1.0.0"
 }
 
 @test "ignores unknown plugin" {
-  run bee bee::map_plugins unknown testplugin
+  run bee bee::map_plugins unknown plugin_1
   assert_success
-  assert_output "testplugin:2.0.0"
+  assert_output "plugin_1:2.0.0"
 }
 
 @test "maps multiple plugins" {
-  run bee bee::map_plugins testplugin othertestplugin
+  run bee bee::map_plugins plugin_1 plugin_2
   assert_success
   cat << EOF | assert_output -
-testplugin:2.0.0
-othertestplugin:1.0.0
+plugin_1:2.0.0
+plugin_2:1.0.0
 EOF
 }
 
 @test "ignores duplicates with explicit version" {
-  run bee bee::map_plugins testplugin:1.0.0 testplugin:1.0.0
+  run bee bee::map_plugins plugin_1:1.0.0 plugin_1:1.0.0
   assert_success
   cat << EOF | assert_output -
-testplugin:1.0.0
+plugin_1:1.0.0
 EOF
 }
 
 @test "ignores duplicates without version" {
-  run bee bee::map_plugins testplugin testplugin
+  run bee bee::map_plugins plugin_1 plugin_1
   assert_success
   cat << EOF | assert_output -
-testplugin:2.0.0
+plugin_1:2.0.0
 EOF
 }
 
 @test "maps version for plugin name based on specified version" {
-  run bee bee::map_plugins testplugin:1.0.0 testplugin
+  run bee bee::map_plugins plugin_1:1.0.0 plugin_1
   assert_success
   cat << EOF | assert_output -
-testplugin:1.0.0
+plugin_1:1.0.0
 EOF
 }
 
 @test "doesn't map local plugin, but dependencies " {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  run bee bee::map_plugins localplugin
+  run bee bee::map_plugins local_plugin
   assert_success
   cat << EOF | assert_output -
-testplugin:1.0.0
-othertestplugin:1.0.0
+plugin_1:1.0.0
+plugin_2:1.0.0
 EOF
 }
 
 @test "detects version conflict" {
-  run bee bee::map_plugins testplugin:1.0.0 testplugin:2.0.0
+  run bee bee::map_plugins plugin_1:1.0.0 plugin_1:2.0.0
   assert_success
   cat << EOF | assert_output -
 ${BEE_WARNING} Version conflicts:
-testplugin:1.0.0 <-> testplugin:2.0.0
-testplugin:2.0.0
+plugin_1:1.0.0 <-> plugin_1:2.0.0
+plugin_1:2.0.0
 EOF
 }
 
 @test "resolves plugins dependencies recursively" {
-  run bee bee::map_plugins testplugindepsdep testplugin
+  run bee bee::map_plugins plugin_with_deps_on_deps plugin_1
   assert_success
   cat << EOF | assert_output -
-testplugindepsdep:1.0.0
-testplugindeps:1.0.0
-testplugin:1.0.0
-othertestplugin:1.0.0
+plugin_with_deps_on_deps:1.0.0
+plugin_with_deps:1.0.0
+plugin_1:1.0.0
+plugin_2:1.0.0
 EOF
 }
 
 @test "resolves plugins version specified in dependencies" {
-  run bee bee::map_plugins testplugin testplugindeps
+  run bee bee::map_plugins plugin_1 plugin_with_deps
   assert_success
   cat << EOF | assert_output -
-testplugindeps:1.0.0
-testplugin:1.0.0
-othertestplugin:1.0.0
+plugin_with_deps:1.0.0
+plugin_1:1.0.0
+plugin_2:1.0.0
 EOF
 }
 
 @test "runs plugin version specified in Beefile" {
-  _create_beefile_with 'BEE_PLUGINS=(testplugin:1.0.0)'
-  run bee --quiet testplugin
+  _create_beefile_with 'BEE_PLUGINS=(plugin_1:1.0.0)'
+  run bee --quiet plugin_1
   assert_success
-  assert_output "testplugin 1.0.0 help"
+  assert_output "plugin_1 1.0.0 help"
 }
 
 @test "runs plugin version specified in dependencies" {
-  _create_beefile_with 'BEE_PLUGINS=(testplugindeps)'
-  run bee --quiet testplugin
+  _create_beefile_with 'BEE_PLUGINS=(plugin_with_deps)'
+  run bee --quiet plugin_1
   assert_success
-  assert_output "testplugin 1.0.0 help"
+  assert_output "plugin_1 1.0.0 help"
 }
 
 @test "runs mapped plugin version" {
-  _create_beefile_with 'BEE_PLUGINS=(testplugin testplugin:1.0.0)'
-  run bee --quiet testplugin
+  _create_beefile_with 'BEE_PLUGINS=(plugin_1 plugin_1:1.0.0)'
+  run bee --quiet plugin_1
   assert_success
-  assert_output "testplugin 1.0.0 help"
+  assert_output "plugin_1 1.0.0 help"
 }
 
 @test "doesn't keep unmapped sourced plugins" {
-  _create_beefile_with 'BEE_PLUGINS=(testplugindepslatest testplugindeps)'
-  run -127 bee --quiet testplugin comp
+  _create_beefile_with 'BEE_PLUGINS=(testplugindepslatest plugin_with_deps)'
+  run -127 bee --quiet plugin_1 comp
   assert_failure
-  assert_output --partial "testplugin::comp: command not found"
+  assert_output --partial "plugin_1::comp: command not found"
 }

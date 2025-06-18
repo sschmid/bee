@@ -1,0 +1,13 @@
+{
+  "name": "plugin_1",
+  "version": "2.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee plugin_1",
+  "git": "file://$HOME/plugins/plugin_1",
+  "tag": "v2.0.0",
+  "sha256": "ab4b5200a5c2308db63a4306d335d41afe6d447fa2c11150a163fd01c833c3d4"
+}

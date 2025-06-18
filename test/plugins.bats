@@ -12,42 +12,42 @@ setup() {
 }
 
 @test "lists enabled plugins without version" {
-  _create_beefile_with "BEE_PLUGINS=(testplugin testplugindeps)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1 plugin_with_deps)"
   run bee plugins
   assert_success
   cat << 'EOF' | assert_output -
-testplugin
-testplugindeps
+plugin_1
+plugin_with_deps
 EOF
 
-  _create_beefile_with "BEE_PLUGINS=(testplugin:1.0.0 testplugindeps:1.0.0)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1:1.0.0 plugin_with_deps:1.0.0)"
   run bee plugins
   assert_success
   cat << 'EOF' | assert_output -
-testplugin
-testplugindeps
+plugin_1
+plugin_with_deps
 EOF
 }
 
 @test "lists enabled plugins from all plugin paths" {
-  _create_beefile_with "BEE_PLUGINS=(testplugin customtestplugin)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1 custom_plugin)"
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   assert_success
   cat << 'EOF' | assert_output -
-customtestplugin
-testplugin
+custom_plugin
+plugin_1
 EOF
 }
 
 @test "lists local plugins" {
-  _create_beefile_with "BEE_PLUGINS=(localplugin)"
+  _create_beefile_with "BEE_PLUGINS=(local_plugin)"
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins
   assert_success
-  assert_output "localplugin"
+  assert_output "local_plugin"
 }
 
 @test "lists nothing when no Beefile" {
@@ -67,31 +67,31 @@ EOF
 }
 
 @test "lists enabled plugins with version" {
-  _create_beefile_with "BEE_PLUGINS=(testplugin testplugindeps)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1 plugin_with_deps)"
   run bee plugins --version
   assert_success
   cat << 'EOF' | assert_output -
-testplugin:1.0.0
-testplugindeps:1.0.0
+plugin_1:1.0.0
+plugin_with_deps:1.0.0
 EOF
 
-  _create_beefile_with "BEE_PLUGINS=(testplugin:1.0.0 testplugindeps:1.0.0)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1:1.0.0 plugin_with_deps:1.0.0)"
   run bee plugins --version
   assert_success
   cat << 'EOF' | assert_output -
-testplugin:1.0.0
-testplugindeps:1.0.0
+plugin_1:1.0.0
+plugin_with_deps:1.0.0
 EOF
 }
 
 @test "lists local plugins with version" {
-  _create_beefile_with "BEE_PLUGINS=(localplugin)"
+  _create_beefile_with "BEE_PLUGINS=(local_plugin)"
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins --version
   assert_success
   cat << 'EOF' | assert_output -
-localplugin:local
+local_plugin:local
 EOF
 }
 
@@ -111,25 +111,25 @@ EOF
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   run bee plugins --all
   assert_line "#E${BEE_CHECK_FAIL} unknown#"
-  assert_line "othertestplugin"
-  assert_line "testplugin"
-  assert_line "testplugindeps"
-  assert_line "testplugindepsdep"
-  assert_line "testpluginmissingdep"
-  assert_line "customtestplugin"
+  assert_line "plugin_1"
+  assert_line "plugin_2"
+  assert_line "plugin_with_deps"
+  assert_line "plugin_with_deps_on_deps"
+  assert_line "plugin_with_missing_deps"
+  assert_line "custom_plugin"
 }
 
 @test "lists outdated" {
-  _create_beefile_with "BEE_PLUGINS=(testplugin:1.0.0 othertestplugin:1.0.0)"
+  _create_beefile_with "BEE_PLUGINS=(plugin_1:1.0.0 plugin_2:1.0.0)"
   run bee plugins --outdated
   assert_success
-  assert_output "testplugin:1.0.0 ${BEE_RESULT} testplugin:2.0.0"
+  assert_output "plugin_1:1.0.0 ${BEE_RESULT} plugin_1:2.0.0"
 }
 
 @test "compares lock file against installed plugins and fails when missing plugins" {
   cat << 'EOF' >"${BEE_FILE}.lock"
 ├── unknown2:9.0.0
-├── testplugin:1.0.0
+├── plugin_1:1.0.0
 └── unknown1:9.0.0
 EOF
 
@@ -143,8 +143,8 @@ EOF
 
 @test "compares lock file against installed plugins" {
   cat << 'EOF' >"${BEE_FILE}.lock"
-├── testplugin:2.0.0
-└── testplugin:1.0.0
+├── plugin_1:2.0.0
+└── plugin_1:1.0.0
 EOF
 
   run bee plugins --lock

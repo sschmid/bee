@@ -42,36 +42,36 @@ export -f _test_exit
 }
 
 @test "runs plugin in plugin mode" {
-  run bee testplugin
+  run bee plugin_1
   assert_success
   cat << EOF | assert_output -
-# testplugin 2.0.0 sourced
-testplugin 2.0.0 help
+# plugin_1 2.0.0 sourced
+plugin_1 2.0.0 help
 ${BEE_ICON} bzzzz (0 seconds)
 EOF
 }
 
 @test "fails in plugin mode" {
-  run -127 bee testplugin not_a_command
+  run -127 bee plugin_1 not_a_command
   assert_failure
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --partial --index 1 "testplugin::not_a_command: command not found"
+  assert_line --index 0 "# plugin_1 2.0.0 sourced"
+  assert_line --partial --index 1 "plugin_1::not_a_command: command not found"
   assert_line --partial --index 2 "${BEE_ERROR} bzzzz 127"
 }
 
 @test "runs quiet in plugin mode" {
-  run bee --quiet testplugin
+  run bee --quiet plugin_1
   assert_success
   cat << 'EOF' | assert_output -
-# testplugin 2.0.0 sourced
-testplugin 2.0.0 help
+# plugin_1 2.0.0 sourced
+plugin_1 2.0.0 help
 EOF
 }
 
 @test "fails quiet in plugin mode" {
-  run -127 bee --quiet testplugin not_a_command
+  run -127 bee --quiet plugin_1 not_a_command
   assert_failure
-  assert_line --index 0 "# testplugin 2.0.0 sourced"
-  assert_line --partial --index 1 "testplugin::not_a_command: command not found"
+  assert_line --index 0 "# plugin_1 2.0.0 sourced"
+  assert_line --partial --index 1 "plugin_1::not_a_command: command not found"
   refute_output --partial "bzzzz"
 }

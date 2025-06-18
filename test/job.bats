@@ -105,11 +105,11 @@ EOF
 
 @test "runs plugin as job" {
   _prepare_job_logs
-  run bee job --logfile testjob testplugin greet test
+  run bee job --logfile testjob plugin_1 greet test
   run cat "${BEE_RESOURCES}/logs/"*
   cat << 'EOF' | assert_output -
-# testplugin 2.0.0 sourced
-greeting test from testplugin 2.0.0
+# plugin_1 2.0.0 sourced
+greeting test from plugin_1 2.0.0
 EOF
 }
 

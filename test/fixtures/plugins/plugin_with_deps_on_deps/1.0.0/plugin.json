@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "plugin_with_deps:1.0.0",
+    "plugin_1:1.0.0"
+  ]
+}

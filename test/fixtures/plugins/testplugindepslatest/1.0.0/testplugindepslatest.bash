@@ -13,6 +13,6 @@ testplugindepslatest() {
 
 testplugindepslatest::greet() {
   echo "greeting from testplugindepslatest 1.0.0"
-  testplugin::greet "$@"
-  othertestplugin::greet "$@"
+  plugin_1::greet "$@"
+  plugin_2::greet "$@"
 }

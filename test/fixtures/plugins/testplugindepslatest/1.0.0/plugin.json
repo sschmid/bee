@@ -1,6 +1,6 @@
 {
   "dependencies": [
-    "testplugin",
-    "othertestplugin"
+    "plugin_1",
+    "plugin_2"
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "name": "plugin_with_deps",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee plugin_1",
+  "git": "file://$HOME/plugins/plugin_with_deps",
+  "tag": "v1.0.0",
+  "sha256": "87f527c907a1f7476e4d4c4f32d45a2195090449a024fd263289fa7c784172dc",
+  "dependencies": [
+    "plugin_1:1.0.0",
+    "plugin_2:1.0.0"
+  ]
+}

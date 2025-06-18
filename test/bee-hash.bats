@@ -69,9 +69,9 @@ ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file 2"
 }
 
 @test "hashes plugin folder" {
-  assert_hash "${BATS_TEST_DIRNAME}/fixtures/plugins/testplugin/2.0.0" "9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493" \
+  assert_hash "${BATS_TEST_DIRNAME}/fixtures/plugins/plugin_1/2.0.0" "ab4b5200a5c2308db63a4306d335d41afe6d447fa2c11150a163fd01c833c3d4" \
 "3a427a45a5dd0b6ae06b4dd1937bb357971ffe18ccbfc81f0c49eb55ae27458e  ./LICENSE.txt
+948ff7047eec3890a4dc593e153b8cf383bc817ca007a8c2b3a0ac832240f3bf  ./plugin_1.bash
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./res/.gitkeep
-cd0637bc900b2177b2f5f4b15b9078734a5ef512d02fe7eed8f47831751f52a1  ./testplugin.bash
 c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624  ./version.txt"
 }

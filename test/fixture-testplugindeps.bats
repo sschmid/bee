@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
   _common_setup
-  local fixture="fixtures/plugins/testplugindeps/1.0.0/testplugindeps.bash"
+  local fixture="fixtures/plugins/plugin_with_deps/1.0.0/plugin_with_deps.bash"
   load "${fixture}"
   TEST_FIXTURE_PATH="${BATS_TEST_DIRNAME}/${fixture}"
 }
@@ -9,7 +9,7 @@ setup() {
 @test "prints message when sourced" {
   run source "${TEST_FIXTURE_PATH}"
   assert_success
-  assert_output "# testplugindeps 1.0.0 sourced"
+  assert_output "# plugin_with_deps 1.0.0 sourced"
 }
 
 @test "doesn't print message when TEST_PLUGIN_QUIET " {
@@ -20,21 +20,21 @@ setup() {
 }
 
 @test "prints message" {
-  run testplugindeps
+  run plugin_with_deps
   assert_success
-  assert_output "hello from testplugindeps 1.0.0"
+  assert_output "hello from plugin_with_deps 1.0.0"
 }
 
 @test "prints message with args" {
-  run testplugindeps test
+  run plugin_with_deps test
   assert_success
-  assert_output "hello from testplugindeps 1.0.0 - test"
+  assert_output "hello from plugin_with_deps 1.0.0 - test"
 }
 
 @test "fails to call deps" {
-  run -127 testplugindeps::greet
+  run -127 plugin_with_deps::greet
   assert_failure
-  assert_output --partial "greeting from testplugindeps 1.0.0"
-  assert_output --partial "testplugin::greet: command not found"
-  assert_output --partial "othertestplugin::greet: command not found"
+  assert_output --partial "greeting from plugin_with_deps 1.0.0"
+  assert_output --partial "plugin_1::greet: command not found"
+  assert_output --partial "plugin_2::greet: command not found"
 }

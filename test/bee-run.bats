@@ -24,32 +24,32 @@ setup() {
 }
 
 @test "runs bee plugin" {
-  run bee --quiet testplugin
+  run bee --quiet plugin_1
   assert_success
-  assert_output "testplugin 2.0.0 help"
+  assert_output "plugin_1 2.0.0 help"
 }
 
 @test "runs bee plugin with args" {
-  run bee --quiet testplugin greet test
+  run bee --quiet plugin_1 greet test
   assert_success
   cat << EOF | assert_output -
-bee-secrets testplugin greet test
-greeting test from testplugin 2.0.0
+bee-secrets plugin_1 greet test
+greeting test from plugin_1 2.0.0
 EOF
 
 }
 
 @test "runs bee plugin with exact version" {
-  run bee --quiet testplugin:1.0.0
+  run bee --quiet plugin_1:1.0.0
   assert_success
-  assert_output "testplugin 1.0.0 help"
+  assert_output "plugin_1 1.0.0 help"
 }
 
 @test "runs bee plugin with exact version with args" {
-  run bee --quiet testplugin:1.0.0 greet test
+  run bee --quiet plugin_1:1.0.0 greet test
   assert_success
   cat << EOF | assert_output -
-bee-secrets testplugin greet test
-greeting test from testplugin 1.0.0
+bee-secrets plugin_1 greet test
+greeting test from plugin_1 1.0.0
 EOF
 }

@@ -140,9 +140,9 @@ _update_generic_plugin_repo() {
   _create_generic_plugin_repo "${plugin_name}" "${version}"
 }
 
-_setup_testplugin_repo() {
-  _create_generic_plugin_repo testplugin
-  _update_generic_plugin_repo testplugin
+_create_plugin_repo() {
+  _create_generic_plugin_repo plugin_1
+  _update_generic_plugin_repo plugin_1
 }
 
 __prepare_hub_creation() {

@@ -1,11 +1,11 @@
 setup() {
   load 'test-helper'
   _common_setup
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/2.0.0"
   _export_beerc
   _source_beerc
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _setup_testplugin_repo
+  _create_plugin_repo
 }
 
 assert_lint_error() {
@@ -21,13 +21,13 @@ assert_lint_error_with_version() {
 
 assert_lint_error_without() {
   _spec
-  sed -i -e "/\"$1\":/d" "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  sed -i -e "/\"$1\":/d" "${BATS_TEST_TMPDIR}/plugin_1/2.0.0/plugin.json"
   assert_lint_error --regexp "$2"
 }
 
 assert_lint_error_replace() {
   _spec
-  sed -i -e "s/\"$1\":.*/\"$1\": $2,/g" "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  sed -i -e "s/\"$1\":.*/\"$1\": $2,/g" "${BATS_TEST_TMPDIR}/plugin_1/2.0.0/plugin.json"
   assert_lint_error --regexp "$3"
 }
 
@@ -40,22 +40,22 @@ assert_lint_success() {
 _create_bee_hub_repo_version() {
   rm -rf "${BATS_TEST_TMPDIR}/plugins"
   local version="$1"
-  _create_generic_plugin_repo testplugin "${version}"
-  _update_generic_plugin_repo testplugin
+  _create_generic_plugin_repo plugin_1 "${version}"
+  _update_generic_plugin_repo plugin_1
 }
 
 _spec() {
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/2.0.0/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "2.0.0",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v2.0.0",
-  "sha256": "9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493",
+  "sha256": "ab4b5200a5c2308db63a4306d335d41afe6d447fa2c11150a163fd01c833c3d4",
   "unknown": "null"
 }
 EOF
@@ -63,7 +63,7 @@ EOF
 
 _lint() {
   local version="$1"
-  run bee lint "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  run bee lint "${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 }
 
 @test "shows help when no args" {
@@ -73,7 +73,7 @@ _lint() {
 }
 
 @test "lints missing name" {
-  assert_lint_error_without "name" 'name.*testplugin'
+  assert_lint_error_without "name" 'name.*plugin_1'
 }
 
 @test "lints missing version" {
@@ -114,7 +114,7 @@ _lint() {
 }
 
 @test "lints name is not plugin folder name" {
-  assert_lint_error_replace "name" '"xxx"' 'name.*xxx.*testplugin'
+  assert_lint_error_replace "name" '"xxx"' 'name.*xxx.*plugin_1'
 }
 
 @test "lints version is parent folder name" {
@@ -123,16 +123,16 @@ _lint() {
 
 @test "lints missing version file" {
   local version="1.0.0"
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/${version}"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v${version}",
   "sha256": "bef36a8260e6784bf8fb4ca93ff8ce5f6c07f0e7a326f1cbf41e1f64c1aa3d4d"
 }
@@ -143,16 +143,16 @@ EOF
 
 @test "lints incorrect version file" {
   local version="1.1.0"
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/${version}"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v${version}",
   "sha256": "1c5e5a79a93b5272c5a3b342426de8b0bc6a5474bd5fa75372eba4feb69e826e"
 }
@@ -164,16 +164,16 @@ EOF
 
 @test "lints missing license file" {
   local version="1.2.0"
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/${version}"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v${version}",
   "sha256": "e7e869e984fb70a260f9bfa97f427de93bc75daf25e9b393879625d624b61ef0"
 }
@@ -184,14 +184,14 @@ EOF
 }
 
 @test "lints incorrect git" {
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/2.0.0/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "2.0.0",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
+  "info": "bee plugin_1",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/unknown",
   "tag": "v2.0.0",
   "sha256": "5ebab3a1c8be86a86145ecb7edcfa567e4c0a24066953e321debd8ea23ffd472"
@@ -206,21 +206,21 @@ EOF
 }
 
 @test "lints incorrect sha256" {
-  assert_lint_error_replace "sha256" '"xxx"' 'sha256.*xxx.*9aed223c2f9b0640033ef6340aa915dba228aeea1836e4a023274441d036d493'
+  assert_lint_error_replace "sha256" '"xxx"' 'sha256.*xxx.*ab4b5200a5c2308db63a4306d335d41afe6d447fa2c11150a163fd01c833c3d4'
 }
 
 @test "lints missing plugin bash file" {
   local version="1.3.0"
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/${version}"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "${version}",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v${version}",
   "sha256": "3af4ae44b0069f8cac7ccbc41b0adacdfb74f5767eb7882d20379d57e9e94e24"
 }
@@ -232,16 +232,16 @@ EOF
 
 @test "lints incorrect dependencies" {
   local version="1.4.0"
-  mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  mkdir -p "${BATS_TEST_TMPDIR}/plugin_1/${version}"
+  cat << EOF >"${BATS_TEST_TMPDIR}/plugin_1/${version}/plugin.json"
 {
-  "name": "testplugin",
+  "name": "plugin_1",
   "version": "1.4.0",
   "license": "MIT",
   "homepage": "https://github.com/sschmid/bee",
   "authors": ["sschmid"],
-  "info": "bee testplugin",
-  "git": "file://${BATS_TEST_TMPDIR}/plugins/testplugin",
+  "info": "bee plugin_1",
+  "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v1.4.0",
   "sha256": "71b5b50ae3ea86bdecc49f45c5ab9306f8568328819482d8ef882021cce4fab0",
   "dependencies": ["testdep:1.0.0", "othertestdep:2.0.0"]
