@@ -4,8 +4,8 @@ BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion.txt"
 declare -ig BEE_LATEST_VERSION_CACHE_EXPIRE=1
 declare -ig BEE_HUB_PULL_COOLDOWN=999
 BEE_HUBS=(
-  "file://${BATS_TEST_TMPDIR}/testhub"
-  "file://${BATS_TEST_TMPDIR}/othertesthub"
+  "file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}"
+  "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}"
 )
 BEE_CACHE_PATH="${BATS_TEST_TMPDIR}/cache"
 

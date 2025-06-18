@@ -23,6 +23,9 @@ _common_setup() {
 
   export BEE_OSTYPE="generic"
 
+  export TEST_HUB_1="test_hub_1"
+  export TEST_HUB_2="test_hub_2"
+
   _create_beefile_with :
 }
 
@@ -89,33 +92,35 @@ assert_comp() {
 # Hubs
 ################################################################################
 _create_bee_hub_repo() {
-  __prepare_hub_creation "$@"
+  local hub="$1"
+  __prepare_hub_creation "${hub}"
     cp -r "${BATS_TEST_DIRNAME}/fixtures/hub/" .
     local file
     while IFS= read -r -d '' file; do
       sed -i '' -e "s;\$HOME;${BATS_TEST_TMPDIR};" -- "${file}"
     done < <(find . -type f -name "plugin.json" -print0)
-  __finish_hub_creation
+  __finish_hub_creation "Initial commit"
 }
 
 _create_empty_bee_hub_repo() {
-  __prepare_hub_creation "$@"
+  local hub="$1"
+  __prepare_hub_creation "${hub}"
     echo "empty" >empty.txt
-  __finish_hub_creation
+  __finish_hub_creation "Initial commit"
 }
 
 _create_mock_bee_hub_repo() {
-  __prepare_hub_creation "$@"
-    local name="$1" plugin="$2" version="${3:-"1.0.0"}" commit_message="${4:-"Initial commit"}"
+  local hub="$1" plugin="$2" version="${3:-"1.0.0"}" commit_message="${4:-"Initial commit"}"
+  __prepare_hub_creation "${hub}"
     mkdir -p "${plugin}/${version}"
     touch "${plugin}/${version}/plugin.json"
   __finish_hub_creation "${commit_message}"
 }
 
 _update_mock_bee_hub_repo() {
-  local name="$1" plugin="$2" version="${3:-"2.0.0"}"
+  local hub="$1" plugin="$2" version="${3:-"2.0.0"}"
   local commit_message="${4:-"Release ${version}"}"
-  _create_mock_bee_hub_repo "${name}" "${plugin}" "${version}" "${commit_message}"
+  _create_mock_bee_hub_repo "${hub}" "${plugin}" "${version}" "${commit_message}"
 }
 
 _create_generic_plugin_repo() {
@@ -131,7 +136,8 @@ _create_generic_plugin_repo() {
 }
 
 _update_generic_plugin_repo() {
-  _create_generic_plugin_repo "$1" "${2:-"2.0.0"}"
+  local plugin_name="$1" version="${2:-"2.0.0"}"
+  _create_generic_plugin_repo "${plugin_name}" "${version}"
 }
 
 _setup_testplugin_repo() {
@@ -140,14 +146,15 @@ _setup_testplugin_repo() {
 }
 
 __prepare_hub_creation() {
-  local name="${1:-"testhub"}"
-  mkdir -p "${BATS_TEST_TMPDIR}/${name}"
-  pushd "${BATS_TEST_TMPDIR}/${name}" >/dev/null || exit 1
+  local hub="$1"
+  mkdir -p "${BATS_TEST_TMPDIR}/${hub}"
+  pushd "${BATS_TEST_TMPDIR}/${hub}" >/dev/null || exit 1
 }
 
 __finish_hub_creation() {
+  local commit_message="$1"
   git init
   git add .
-  _git_commit -m "${1:-"Initial commit"}"
+  _git_commit -m "${commit_message}"
   popd >/dev/null || exit 1
 }

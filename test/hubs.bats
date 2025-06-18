@@ -5,21 +5,21 @@ setup() {
 }
 
 @test "lists all hub urls with their plugins" {
-  _create_bee_hub_repo
-  _create_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo "${TEST_HUB_1}"
+  _create_bee_hub_repo "${TEST_HUB_2}"
   bee pull
   run bee hubs
   assert_success
 
   cat << EOF | assert_output -
-file://${BATS_TEST_TMPDIR}/testhub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
 ├── othertestplugin
 ├── testplugin
 ├── testplugindeps
 ├── testplugindepsdep
 └── testpluginmissingdep
 
-file://${BATS_TEST_TMPDIR}/othertesthub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 ├── othertestplugin
 ├── testplugin
 ├── testplugindeps
@@ -29,14 +29,14 @@ EOF
 }
 
 @test "lists specified hub urls with their plugins" {
-  _create_bee_hub_repo
-  _create_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo "${TEST_HUB_1}"
+  _create_bee_hub_repo "${TEST_HUB_2}"
   bee pull
-  run bee hubs "file://${BATS_TEST_TMPDIR}/othertesthub"
+  run bee hubs "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}"
   assert_success
 
   cat << EOF | assert_output -
-file://${BATS_TEST_TMPDIR}/othertesthub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 ├── othertestplugin
 ├── testplugin
 ├── testplugindeps
@@ -49,14 +49,14 @@ EOF
   run bee hubs
   assert_success
   cat << EOF | assert_output -
-file://${BATS_TEST_TMPDIR}/testhub
-file://${BATS_TEST_TMPDIR}/othertesthub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 EOF
 }
 
 @test "lists hub urls as list" {
-  _create_bee_hub_repo
-  _create_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo "${TEST_HUB_1}"
+  _create_bee_hub_repo "${TEST_HUB_2}"
   bee pull
   run bee hubs --list
   assert_success
@@ -75,14 +75,14 @@ EOF
 }
 
 @test "lists hub urls with their plugins and all versions" {
-  _create_bee_hub_repo
-  _create_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo "${TEST_HUB_1}"
+  _create_bee_hub_repo "${TEST_HUB_2}"
   bee pull
   run bee hubs --all
   assert_success
 
   cat << EOF | assert_output -
-file://${BATS_TEST_TMPDIR}/testhub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
 ├── othertestplugin
 │    └── 1.0.0
 ├── testplugin
@@ -97,7 +97,7 @@ file://${BATS_TEST_TMPDIR}/testhub
 └── testpluginmissingdep
     └── 1.0.0
 
-file://${BATS_TEST_TMPDIR}/othertesthub
+file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 ├── othertestplugin
 │    └── 1.0.0
 ├── testplugin
@@ -115,21 +115,21 @@ EOF
 }
 
 @test "completes bee hubs with options and hub urls" {
-  local expected=(--all --list "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  local expected=(--all --list "file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}" "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}")
   assert_comp "bee hubs " "${expected[*]}"
 }
 
 @test "completes bee hubs with multiple hub urls" {
-  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  local expected=("file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}" "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}")
   assert_comp "bee hubs myurl " "${expected[*]}"
 }
 
 @test "completes bee hubs --list with hub urls" {
-  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  local expected=("file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}" "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}")
   assert_comp "bee hubs --list " "${expected[*]}"
 }
 
 @test "completes bee hubs --list with multiple hub urls" {
-  local expected=("file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/othertesthub")
+  local expected=("file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}" "file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}")
   assert_comp "bee hubs --list myurl " "${expected[*]}"
 }

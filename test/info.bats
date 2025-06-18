@@ -11,11 +11,11 @@ setup() {
 }
 
 @test "prints plugin info" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
   run bee info testplugin:1.0.0
   assert_success
-  assert_output --partial "${BATS_TEST_TMPDIR}/cache/hubs/testhub/testplugin/1.0.0/plugin.json"
+  assert_output --partial "${BATS_TEST_TMPDIR}/cache/hubs/${TEST_HUB_1}/testplugin/1.0.0/plugin.json"
   assert_output --partial '"name": "testplugin"'
   assert_output --partial '"version": "1.0.0"'
 }
@@ -52,7 +52,7 @@ EOF
 }
 
 @test "prints plugin info when parsing error" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
   run bee info testplugin:0.2.0
   assert_success
@@ -62,7 +62,7 @@ EOF
 }
 
 @test "completes bee info with plugin" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testplugindepslatest testpluginmissingdep)
   assert_comp "bee info " "${expected[*]}"
@@ -71,14 +71,14 @@ EOF
 @test "completes bee info with local plugin" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testplugindepslatest testpluginmissingdep customtestplugin localplugin)
   assert_comp "bee info " "${expected[*]}"
 }
 
 @test "no completion after plugin" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
   assert_comp "bee info testplugin "
 }

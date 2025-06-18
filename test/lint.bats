@@ -4,7 +4,7 @@ setup() {
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
   _export_beerc
   _source_beerc
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
 }
 

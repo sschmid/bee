@@ -7,7 +7,7 @@ setup() {
 @test "doesn't create lock file when no Beefile " {
   _unset_beefile
   cd "${BATS_TEST_TMPDIR}"
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   bee pull
   run bee install
@@ -17,20 +17,20 @@ setup() {
 }
 
 @test "creates Beefile.lock " {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_beefile_with 'BEE_PLUGINS=(testplugin)'
   bee pull
   run bee install
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile
-└── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+└── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 EOF
   assert_file_exist "${BATS_TEST_TMPDIR}/Beefile.lock"
 }
 
 @test "creates custom lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   echo 'BEE_PLUGINS=(testplugin)' >"${BATS_TEST_TMPDIR}/test"
   export BEE_FILE="${BATS_TEST_TMPDIR}/test"
@@ -38,13 +38,13 @@ EOF
   run bee install
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/test
-└── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+└── #S${BEE_CHECK_SUCCESS} testplugin:2.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 EOF
   assert_file_exist "${BATS_TEST_TMPDIR}/test.lock"
 }
 
 @test "writes plugins with version to lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_generic_plugin_repo testplugindeps
@@ -66,7 +66,7 @@ EOF
 }
 
 @test "writes local plugins to lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_beefile_with 'BEE_PLUGINS=(localplugin)'
@@ -83,7 +83,7 @@ EOF
 }
 
 @test "writes explicit local plugins to lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_beefile_with 'BEE_PLUGINS=(localplugin:local)'
@@ -100,7 +100,7 @@ EOF
 }
 
 @test "doesn't create lock file when installing manually " {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_beefile_with
   bee pull
@@ -110,7 +110,7 @@ EOF
 }
 
 @test "installs plugins from lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_generic_plugin_repo testplugindeps
@@ -130,19 +130,19 @@ EOF
   run bee install
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
-├── #S${BEE_CHECK_SUCCESS} testplugindepsdep:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-│   ├── #S${BEE_CHECK_SUCCESS} testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-│   │   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-│   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-│   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-└── testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-    ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
-    └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)
+├── #S${BEE_CHECK_SUCCESS} testplugindepsdep:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+│   ├── #S${BEE_CHECK_SUCCESS} testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+│   │   ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+│   │   └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+│   └── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
+└── testplugindeps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
+    ├── testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
+    └── othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
 EOF
 }
 
 @test "skips local plugins from lock file" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_beefile_with
@@ -159,13 +159,13 @@ EOF
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
 └── localplugin:local (${BATS_TEST_DIRNAME}/fixtures/custom_plugins/localplugin/localplugin.bash)
-    ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
-    └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/testhub)#
+    ├── #S${BEE_CHECK_SUCCESS} testplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    └── #S${BEE_CHECK_SUCCESS} othertestplugin:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 EOF
 }
 
 @test "doesn't modify lock file when installing" {
-  _create_bee_hub_repo
+  _create_bee_hub_repo "${TEST_HUB_1}"
   _setup_testplugin_repo
   _create_generic_plugin_repo othertestplugin
   _create_generic_plugin_repo testplugindeps
