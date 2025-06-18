@@ -80,7 +80,8 @@ main() {
     case "$1" in
       --logfile) job_log_to_file=1; shift ;;
       --time) job_show_time=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 

@@ -104,7 +104,8 @@ main() {
   while (( $# )); do
     case "$1" in
       --force) force=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 

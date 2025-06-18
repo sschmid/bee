@@ -9,7 +9,8 @@ main() {
     case "$1" in
       --all) show_all=1; shift ;;
       --list) list=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 

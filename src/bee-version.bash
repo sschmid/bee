@@ -9,7 +9,8 @@ main() {
     case "$1" in
       --latest) latest=1; shift ;;
       --cached) cached=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 

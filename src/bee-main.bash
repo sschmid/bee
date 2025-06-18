@@ -42,7 +42,8 @@ bee::plugins::comp() {
       --lock) comps=("${comps[@]/--lock/}"); shift ;;
       --outdated) comps=("${comps[@]/--outdated/}"); shift ;;
       --version) comps=("${comps[@]/--version/}"); shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
   compgen -W "${comps[*]}" -- "${1:-}"
@@ -59,7 +60,8 @@ bee::plugins() {
       --lock) show_lock=1; shift ;;
       --outdated) show_outdated=1; shift ;;
       --version) show_version=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 
@@ -339,7 +341,8 @@ bee::pull() {
   while (( $# )); do
     case "$1" in
       --force) force=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 
@@ -585,7 +588,8 @@ bee::batch() {
   while (( $# )); do
     case "$1" in
       --allow-fail) allow_fail=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 
@@ -638,7 +642,8 @@ bee::main() {
       --verbose)
         # shellcheck disable=SC2034
         BEE_VERBOSE=1; shift ;;
-      --) shift; break ;; *) break ;;
+      --) shift; break ;;
+      *) break ;;
     esac
   done
 
