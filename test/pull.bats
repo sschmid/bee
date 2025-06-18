@@ -68,7 +68,7 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "pulls test hub" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   # shellcheck disable=SC2016
   _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
   run bee pull

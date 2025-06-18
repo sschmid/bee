@@ -46,14 +46,14 @@ EOF
 }
 
 @test "completes bee res with plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee res " "${expected[*]}"
 }
 
 @test "completes bee res with multiple plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee res myplugin " "${expected[*]}"

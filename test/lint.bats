@@ -5,7 +5,7 @@ setup() {
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
   _export_beerc
   _source_beerc
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
 }
 
@@ -38,10 +38,10 @@ assert_lint_success() {
   assert_output "$@"
 }
 
-_setup_test_bee_hub_repo_version() {
+_create_bee_hub_repo_version() {
   rm -rf "${BATS_TEST_TMPDIR}/plugins"
   local version="$1"
-  _setup_generic_plugin_repo testplugin "${version}"
+  _create_generic_plugin_repo testplugin "${version}"
   _update_generic_plugin_repo testplugin
 }
 
@@ -159,7 +159,7 @@ EOF
 }
 EOF
 
-  _setup_test_bee_hub_repo_version "${version}"
+  _create_bee_hub_repo_version "${version}"
   assert_lint_error_with_version "${version}" --regexp 'version.*x.x.x.*1.1.0'
 }
 
@@ -180,7 +180,7 @@ EOF
 }
 EOF
 
-  _setup_test_bee_hub_repo_version "${version}"
+  _create_bee_hub_repo_version "${version}"
   assert_lint_error_with_version "${version}" --regexp 'license file.*null.*required'
 }
 
@@ -227,7 +227,7 @@ EOF
 }
 EOF
 
-  _setup_test_bee_hub_repo_version "${version}"
+  _create_bee_hub_repo_version "${version}"
   assert_lint_error_with_version "${version}" --regexp 'plugin file.*null.*required'
 }
 
@@ -249,7 +249,7 @@ EOF
 }
 EOF
 
-  _setup_test_bee_hub_repo_version "${version}"
+  _create_bee_hub_repo_version "${version}"
   assert_lint_error_with_version "${version}" --regexp 'dependencies.*testdep:1.2.3 othertestdep:1.2.3'
 }
 

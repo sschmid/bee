@@ -12,7 +12,7 @@ setup() {
 }
 
 @test "prints plugin info" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   run bee info testplugin:1.0.0
   assert_success
@@ -53,7 +53,7 @@ EOF
 }
 
 @test "prints plugin info when parsing error" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   run bee info testplugin:0.2.0
   assert_success
@@ -63,7 +63,7 @@ EOF
 }
 
 @test "completes bee info with plugin" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testplugindepslatest testpluginmissingdep)
   assert_comp "bee info " "${expected[*]}"
@@ -72,14 +72,14 @@ EOF
 @test "completes bee info with local plugin" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testplugindepslatest testpluginmissingdep customtestplugin localplugin)
   assert_comp "bee info " "${expected[*]}"
 }
 
 @test "no completion after plugin" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   assert_comp "bee info testplugin "
 }

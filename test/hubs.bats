@@ -6,8 +6,8 @@ setup() {
 }
 
 @test "lists all hub urls with their plugins" {
-  _setup_test_bee_hub_repo
-  _setup_test_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo
+  _create_bee_hub_repo "othertesthub"
   bee pull
   run bee hubs
   assert_success
@@ -30,8 +30,8 @@ EOF
 }
 
 @test "lists specified hub urls with their plugins" {
-  _setup_test_bee_hub_repo
-  _setup_test_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo
+  _create_bee_hub_repo "othertesthub"
   bee pull
   run bee hubs "file://${BATS_TEST_TMPDIR}/othertesthub"
   assert_success
@@ -56,8 +56,8 @@ EOF
 }
 
 @test "lists hub urls as list" {
-  _setup_test_bee_hub_repo
-  _setup_test_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo
+  _create_bee_hub_repo "othertesthub"
   bee pull
   run bee hubs --list
   assert_success
@@ -76,8 +76,8 @@ EOF
 }
 
 @test "lists hub urls with their plugins and all versions" {
-  _setup_test_bee_hub_repo
-  _setup_test_bee_hub_repo "othertesthub"
+  _create_bee_hub_repo
+  _create_bee_hub_repo "othertesthub"
   bee pull
   run bee hubs --all
   assert_success

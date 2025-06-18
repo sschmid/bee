@@ -20,7 +20,7 @@ EOF
 }
 
 @test "pulls before installing" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   # shellcheck disable=SC2016
   _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
@@ -31,8 +31,8 @@ EOF
 }
 
 @test "finds plugin in correct hub" {
-  _setup_empty_bee_hub_repo "empty"
-  _setup_test_bee_hub_repo
+  _create_empty_bee_hub_repo "empty"
+  _create_bee_hub_repo
   _setup_testplugin_repo
   # shellcheck disable=SC2016
   _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/empty" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/unknown")'
@@ -47,7 +47,7 @@ EOF
 }
 
 @test "installs latest plugin version" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   run bee install testplugin
@@ -60,7 +60,7 @@ EOF
 }
 
 @test "installs specified plugin version" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   run bee install testplugin:1.0.0
@@ -73,7 +73,7 @@ EOF
 }
 
 @test "doesn't install unknown plugin version" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   run bee install testplugin:9.0.0
@@ -87,7 +87,7 @@ EOF
 }
 
 @test "installs multiple plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   run bee install testplugin:1.0.0 testplugin:2.0.0
@@ -102,10 +102,10 @@ EOF
 }
 
 @test "installs plugins with dependencies" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
   bee pull
   run bee install testplugindeps
   assert_success
@@ -121,7 +121,7 @@ EOF
 }
 
 @test "skips installing already installed plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   bee install testplugin
@@ -135,11 +135,11 @@ EOF
 }
 
 @test "installs plugins with dependencies recursively" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
   bee pull
   run bee install testplugindepsdep testplugin:1.0.0
   assert_success
@@ -161,9 +161,9 @@ EOF
 @test "installs local plugins with dependencies recursively" {
   # shellcheck disable=SC2030,SC2031
   export TEST_PLUGIN_QUIET=1
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo othertestplugin
   bee pull
   run bee install localplugin
   assert_success
@@ -179,9 +179,9 @@ EOF
 @test "installs local plugins with local tag with dependencies recursively" {
   # shellcheck disable=SC2030,SC2031
   export TEST_PLUGIN_QUIET=1
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo othertestplugin
   bee pull
   run bee install localplugin:local
   assert_success
@@ -195,12 +195,12 @@ EOF
 }
 
 @test "fails late when plugins are missing" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
-  _setup_generic_plugin_repo testpluginmissingdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo testpluginmissingdep
   bee pull
   run bee install testpluginmissingdep
   assert_failure
@@ -225,8 +225,8 @@ EOF
 }
 
 @test "deletes newly installed plugin when hash doesn't match" {
-  _setup_test_bee_hub_repo
-  _setup_generic_plugin_repo testplugin 0.1.0
+  _create_bee_hub_repo
+  _create_generic_plugin_repo testplugin 0.1.0
   bee pull
   run bee install testplugin:0.1.0
   assert_success
@@ -236,8 +236,8 @@ EOF
 }
 
 @test "forces install plugin with wrong hash" {
-  _setup_test_bee_hub_repo
-  _setup_generic_plugin_repo testplugin 0.1.0
+  _create_bee_hub_repo
+  _create_generic_plugin_repo testplugin 0.1.0
   bee pull
   run bee install --force testplugin:0.1.0
   assert_success
@@ -247,8 +247,8 @@ EOF
 }
 
 @test "deletes already installed plugin when hash doesn't match" {
-  _setup_test_bee_hub_repo
-  _setup_generic_plugin_repo testplugin 0.1.0
+  _create_bee_hub_repo
+  _create_generic_plugin_repo testplugin 0.1.0
   bee pull
   bee install testplugin:0.1.0
   run bee install testplugin:0.1.0
@@ -259,11 +259,11 @@ EOF
 }
 
 @test "installs plugins from Beefile" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
   _create_beefile_with 'BEE_PLUGINS=(testplugindepsdep testplugin)'
   bee pull
   run bee install
@@ -284,14 +284,14 @@ EOF
 }
 
 @test "completes bee install with options and plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(--force othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee install " "${expected[*]}"
 }
 
 @test "completes bee install with multiple plugins" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   bee pull
   local expected=(othertestplugin testplugin testplugindeps testplugindepsdep testpluginmissingdep)
   assert_comp "bee install myplugin " "${expected[*]}"

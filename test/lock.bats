@@ -8,7 +8,7 @@ setup() {
 @test "doesn't create lock file when no Beefile " {
   _unset_beefile
   cd "${BATS_TEST_TMPDIR}"
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   bee pull
   run bee install
@@ -18,7 +18,7 @@ setup() {
 }
 
 @test "creates Beefile.lock " {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   _create_beefile_with 'BEE_PLUGINS=(testplugin)'
   bee pull
@@ -31,7 +31,7 @@ EOF
 }
 
 @test "creates custom lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   echo 'BEE_PLUGINS=(testplugin)' >"${BATS_TEST_TMPDIR}/test"
   export BEE_FILE="${BATS_TEST_TMPDIR}/test"
@@ -45,11 +45,11 @@ EOF
 }
 
 @test "writes plugins with version to lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
   _create_beefile_with 'BEE_PLUGINS=(testplugindepsdep testplugindeps)'
   bee pull
   run bee install
@@ -67,9 +67,9 @@ EOF
 }
 
 @test "writes local plugins to lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo othertestplugin
   _create_beefile_with 'BEE_PLUGINS=(localplugin)'
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
@@ -84,9 +84,9 @@ EOF
 }
 
 @test "writes explicit local plugins to lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo othertestplugin
   _create_beefile_with 'BEE_PLUGINS=(localplugin:local)'
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
@@ -101,7 +101,7 @@ EOF
 }
 
 @test "doesn't create lock file when installing manually " {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
   _create_beefile_with
   bee pull
@@ -111,11 +111,11 @@ EOF
 }
 
 @test "installs plugins from lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
   _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
@@ -143,9 +143,9 @@ EOF
 }
 
 @test "skips local plugins from lock file" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo othertestplugin
   _create_beefile_with
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
@@ -166,11 +166,11 @@ EOF
 }
 
 @test "doesn't modify lock file when installing" {
-  _setup_test_bee_hub_repo
+  _create_bee_hub_repo
   _setup_testplugin_repo
-  _setup_generic_plugin_repo othertestplugin
-  _setup_generic_plugin_repo testplugindeps
-  _setup_generic_plugin_repo testplugindepsdep
+  _create_generic_plugin_repo othertestplugin
+  _create_generic_plugin_repo testplugindeps
+  _create_generic_plugin_repo testplugindepsdep
   _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
