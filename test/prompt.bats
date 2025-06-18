@@ -12,7 +12,7 @@ setup() {
 
 @test "prints bee version" {
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${PROJECT_ROOT}/version.txt"'
+  _set_beerc_with "BEE_LATEST_VERSION_PATH='file://${PROJECT_ROOT}/version.txt'"
   _setup_beefile
   run bee prompt
   assert_success
