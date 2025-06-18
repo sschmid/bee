@@ -33,7 +33,7 @@ job_spinner_frames=(
 )
 
 bee::job::spin() {
-  while true; do
+  while :; do
     for i in "${job_spinner_frames[@]}"; do
       echo -ne "${BEE_LINE_RESET}${job_title}$(bee::job::duration) ${i}"
       sleep ${job_spinner_interval}
