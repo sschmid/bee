@@ -57,3 +57,9 @@ setup() {
   mkdir -p "${BEE_CACHE_PATH}/test2"
   assert_comp "bee cache --clear test1 "
 }
+
+@test "no completion after invalid option" {
+  mkdir -p "${BEE_CACHE_PATH}/test1"
+  mkdir -p "${BEE_CACHE_PATH}/test2"
+  assert_comp "bee cache --xxx "
+}
