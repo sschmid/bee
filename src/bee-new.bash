@@ -10,7 +10,7 @@ main() {
     return 1
   fi
 
-  cat << EOF > "${beefile}"
+  cat << EOF >"${beefile}"
 BEE_PROJECT="$(basename "${PWD}")"
 BEE_VERSION=$(cat "${BEE_HOME}/version.txt")
 

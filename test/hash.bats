@@ -12,8 +12,8 @@ setup() {
 @test "ignores .git and .DS_Store by default" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" > "${BATS_TEST_TMPDIR}/test/file 1"
-  echo "test2" > "${BATS_TEST_TMPDIR}/test/file 2"
+  echo "test1" >"${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test2" >"${BATS_TEST_TMPDIR}/test/file 2"
 
   run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
   assert_success
@@ -27,9 +27,9 @@ a27685987e1e8bb3b81f9de9299ae1c93872680be504f28627ea7b5ef33eeeea  -"
 @test "ignores custom patterns" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
-  echo "test1" > "${BATS_TEST_TMPDIR}/test/file 1"
-  echo "test2" > "${BATS_TEST_TMPDIR}/test/file 2"
-  echo "test3" > "${BATS_TEST_TMPDIR}/test/file 3"
+  echo "test1" >"${BATS_TEST_TMPDIR}/test/file 1"
+  echo "test2" >"${BATS_TEST_TMPDIR}/test/file 2"
+  echo "test3" >"${BATS_TEST_TMPDIR}/test/file 3"
   export BEE_HUB_HASH_EXCLUDE="file 1,file 2"
 
   run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"

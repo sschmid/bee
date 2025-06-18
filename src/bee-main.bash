@@ -350,7 +350,7 @@ bee::pull() {
     pull=1
   else
     local -i now ts delta
-    [[ ! -f "${cache_file}" ]] && echo "0" > "${cache_file}"
+    [[ ! -f "${cache_file}" ]] && echo "0" >"${cache_file}"
     now=$(date +%s)
     ts="$(cat "${cache_file}")"
     delta=$(( now - ts ))
@@ -372,7 +372,7 @@ bee::pull() {
         fi
       fi
     done
-    date +%s > "${cache_file}"
+    date +%s >"${cache_file}"
   fi
 }
 

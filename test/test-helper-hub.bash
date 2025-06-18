@@ -14,7 +14,7 @@ _setup_test_bee_hub_repo() {
 _setup_empty_bee_hub_repo() {
   mkdir -p "${BATS_TEST_TMPDIR}/$1"
   pushd "${BATS_TEST_TMPDIR}/$1" >/dev/null || exit 1
-    echo "empty" > empty.txt
+    echo "empty" >empty.txt
     git init; git add . ; _git_commit -m "Initial commit"
   popd >/dev/null || exit 1
 }

@@ -126,7 +126,7 @@ EOF
 }
 
 @test "compares lock file against installed plugins and fails when missing plugins" {
-  cat << 'EOF' > "${BEE_FILE}.lock"
+  cat << 'EOF' >"${BEE_FILE}.lock"
 ├── unknown2:9.0.0
 ├── testplugin:1.0.0
 └── unknown1:9.0.0
@@ -141,7 +141,7 @@ EOF
 }
 
 @test "compares lock file against installed plugins" {
-  cat << 'EOF' > "${BEE_FILE}.lock"
+  cat << 'EOF' >"${BEE_FILE}.lock"
 ├── testplugin:2.0.0
 └── testplugin:1.0.0
 EOF

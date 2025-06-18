@@ -97,7 +97,7 @@ BEE_VERSION=0.41.0
 The new bee bash completion can be activated by adding this to your `~/.bashrc` or `~/.zshrc`
 
 ```bash
-echo "complete -C bee bee" >> ~/.bashrc
+echo "complete -C bee bee" >>~/.bashrc
 ```
 
 Consider removing the old one by deleting `bee-completion.bash`

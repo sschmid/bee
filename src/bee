@@ -86,7 +86,7 @@ while [[ -L "${BEE_SYSTEM_HOME}" ]]; do
 done
 BEE_SYSTEM_HOME="$(cd "$(dirname "${BEE_SYSTEM_HOME}")/.." && pwd)"
 
-[[ ! -f "${BEE_RC}" ]] && cat << 'EOF' > "${BEE_RC}"
+[[ ! -f "${BEE_RC}" ]] && cat << 'EOF' >"${BEE_RC}"
 BEE_HUBS=(https://github.com/sschmid/beehub.git)
 EOF
 source "${BEE_RC}"

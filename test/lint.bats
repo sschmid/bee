@@ -45,7 +45,7 @@ _setup_test_bee_hub_repo_version() {
 }
 
 _spec() {
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
 {
   "name": "testplugin",
   "version": "2.0.0",
@@ -124,7 +124,7 @@ _lint() {
 @test "lints missing version file" {
   local version="1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "${version}",
@@ -144,7 +144,7 @@ EOF
 @test "lints incorrect version file" {
   local version="1.1.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "${version}",
@@ -165,7 +165,7 @@ EOF
 @test "lints missing license file" {
   local version="1.2.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "${version}",
@@ -184,7 +184,7 @@ EOF
 }
 
 @test "lints incorrect git" {
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/2.0.0/plugin.json"
 {
   "name": "testplugin",
   "version": "2.0.0",
@@ -212,7 +212,7 @@ EOF
 @test "lints missing plugin bash file" {
   local version="1.3.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "${version}",
@@ -233,7 +233,7 @@ EOF
 @test "lints incorrect dependencies" {
   local version="1.4.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/${version}"
-  cat << EOF > "${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
+  cat << EOF >"${BATS_TEST_TMPDIR}/testplugin/${version}/plugin.json"
 {
   "name": "testplugin",
   "version": "1.4.0",

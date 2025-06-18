@@ -63,7 +63,7 @@ bee::job::duration() {
 bee::job::INT() {
   (( job_is_running )) || return 0
   bee::job::stop_spinner
-  echo "Aborted by $(whoami)$(bee::job::duration)" >> "${job_logfile}"
+  echo "Aborted by $(whoami)$(bee::job::duration)" >>"${job_logfile}"
 }
 
 bee::job::EXIT() {
@@ -115,7 +115,7 @@ main() {
       spinner_pid=$!
     fi
 
-    bee::main "$@" &> "${job_logfile}"
+    bee::main "$@" &>"${job_logfile}"
   fi
 
   # Finish job

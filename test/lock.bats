@@ -32,7 +32,7 @@ EOF
 @test "creates custom lock file" {
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
-  echo 'BEE_PLUGINS=(testplugin)' > "${BATS_TEST_TMPDIR}/test"
+  echo 'BEE_PLUGINS=(testplugin)' >"${BATS_TEST_TMPDIR}/test"
   export BEE_FILE="${BATS_TEST_TMPDIR}/test"
   bee pull
   run bee install
@@ -116,7 +116,7 @@ EOF
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
   _setup_beefile
-  cat << 'EOF' > "${BATS_TEST_TMPDIR}/Beefile.lock"
+  cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
 │   ├── testplugindeps:1.0.0
 │   │   ├── testplugin:1.0.0
@@ -149,7 +149,7 @@ EOF
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   export TEST_PLUGIN_QUIET=1
-  cat << 'EOF' > "${BATS_TEST_TMPDIR}/Beefile.lock"
+  cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 └── localplugin:local
     ├── testplugin:1.0.0
     └── othertestplugin:1.0.0
@@ -171,7 +171,7 @@ EOF
   _setup_generic_plugin_repo testplugindeps
   _setup_generic_plugin_repo testplugindepsdep
   _setup_beefile
-  cat << 'EOF' > "${BATS_TEST_TMPDIR}/Beefile.lock"
+  cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 ├── testplugindepsdep:1.0.0
 │   ├── testplugindeps:1.0.0
 │   │   ├── testplugin:1.0.0

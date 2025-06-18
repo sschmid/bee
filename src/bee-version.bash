@@ -33,7 +33,7 @@ main() {
       delta=$(( now - last_ts ))
       if (( delta > BEE_LATEST_VERSION_CACHE_EXPIRE )); then
         version="$(curl -fsSL "${BEE_LATEST_VERSION_PATH}")"
-        echo "${now},${version}" > "${cache_file}"
+        echo "${now},${version}" >"${cache_file}"
       fi
       echo "${version}"
     else

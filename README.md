@@ -52,7 +52,7 @@ bee automatically completes plugins and makes working with them fun and easy.
 Add auto-completion support for bee
 
 ```
-echo "complete -C bee bee" >> ~/.bashrc
+echo "complete -C bee bee" >>~/.bashrc
 ```
 
 If you use [zsh](https://ohmyz.sh/) add those lines to your `~/.zshrc`

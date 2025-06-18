@@ -29,7 +29,7 @@ _set_beerc_with() {
   cp "${BATS_TEST_DIRNAME}/fixtures/beerc.bash" "${BATS_TEST_TMPDIR}/beerc.bash"
   export BEE_RC="${BATS_TEST_TMPDIR}/beerc.bash"
   for arg in "$@"; do
-    echo "${arg}" >> "${BATS_TEST_TMPDIR}/beerc.bash"
+    echo "${arg}" >>"${BATS_TEST_TMPDIR}/beerc.bash"
   done
 }
 _set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
@@ -38,7 +38,7 @@ _set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.b
 _source_beerc() { source "${BEE_RC}"; }
 
 _setup_beefile() {
-  echo "$@" > "${BATS_TEST_TMPDIR}/Beefile"
+  echo "$@" >"${BATS_TEST_TMPDIR}/Beefile"
   export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }
 

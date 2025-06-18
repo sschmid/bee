@@ -45,7 +45,7 @@ assert_bee_system_home() {
 @test "sets and sources Beefile in working dir" {
   _unset_beefile
   cd "${BATS_TEST_TMPDIR}"
-  echo "echo '# test Beefile sourced'" > "Beefile"
+  echo "echo '# test Beefile sourced'" >"Beefile"
   run bee env BEE_FILE
   assert_success
   cat << 'EOF' | assert_output -
@@ -71,12 +71,12 @@ EOF
   _setup_beefile "BEE_VERSION=1.0.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src/os"
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
-    echo "echo '# test bee-main.bash 1.0.0 sourced'" > src/bee-main.bash
-    cat "${PROJECT_ROOT}/src/bee-main.bash" >> src/bee-main.bash
+    echo "echo '# test bee-main.bash 1.0.0 sourced'" >src/bee-main.bash
+    cat "${PROJECT_ROOT}/src/bee-main.bash" >>src/bee-main.bash
     cp -r "${PROJECT_ROOT}/src/os" src
     git init; git add . ; _git_commit -m "Initial commit"; git tag 1.0.0
-    echo "echo '# test bee-main.bash 1.1.0 sourced'" > src/bee-main.bash
-    cat "${PROJECT_ROOT}/src/bee-main.bash" >> src/bee-main.bash;
+    echo "echo '# test bee-main.bash 1.1.0 sourced'" >src/bee-main.bash
+    cat "${PROJECT_ROOT}/src/bee-main.bash" >>src/bee-main.bash;
     git add . ; _git_commit -m "Bump version"; git tag "1.1.0"
   popd >/dev/null || exit 1
   run bee :
@@ -87,7 +87,7 @@ EOF
   _setup_beefile "BEE_VERSION=0.41.0"
   mkdir -p "${BATS_TEST_TMPDIR}/testbee/src"
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
-    echo "echo '# test bee 0.41.0 sourced'" > src/bee
+    echo "echo '# test bee 0.41.0 sourced'" >src/bee
     chmod +x src/bee
     git init; git add . ; _git_commit -m "Initial commit"; git tag 0.41.0
   popd >/dev/null || exit 1
