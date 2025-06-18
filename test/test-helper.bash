@@ -65,17 +65,8 @@ assert_bee_help() {
   assert_output --partial "plugin-based bash automation"
 }
 
-assert_comp() {
-  _comp "$@"
-  if(( $# )); then
-    assert_equal "${actual[*]}" "${expected[*]}"
-  else
-    refute_output
-  fi
-}
-
 # shellcheck disable=SC2154,SC2207,SC2068,SC2206
-_comp() {
+assert_comp() {
   export COMP_LINE="$1"
   export COMP_POINT="${#COMP_LINE}"
   export TEST_PLUGIN_QUIET=1
@@ -85,5 +76,11 @@ _comp() {
   if [[ -v 2 ]]; then
     expected=($2)
     expected=($(for i in ${expected[@]}; do echo "$i"; done | LC_ALL=C sort))
+  fi
+
+  if(( $# )); then
+    assert_equal "${actual[*]}" "${expected[*]}"
+  else
+    refute_output
   fi
 }
