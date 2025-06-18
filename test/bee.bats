@@ -75,10 +75,15 @@ EOF
     echo "echo '# test bee-main.bash 1.0.0 sourced'" >src/bee-main.bash
     cat "${PROJECT_ROOT}/src/bee-main.bash" >>src/bee-main.bash
     cp -r "${PROJECT_ROOT}/src/os" src
-    git init; git add . ; _git_commit -m "Initial commit"; git tag 1.0.0
+    git init
+    git add .
+    _git_commit -m "Initial commit"
+    git tag 1.0.0
     echo "echo '# test bee-main.bash 1.1.0 sourced'" >src/bee-main.bash
     cat "${PROJECT_ROOT}/src/bee-main.bash" >>src/bee-main.bash;
-    git add . ; _git_commit -m "Bump version"; git tag "1.1.0"
+    git add .
+    _git_commit -m "Bump version"
+    git tag "1.1.0"
   popd >/dev/null || exit 1
   run bee :
   assert_output "# test bee-main.bash 1.0.0 sourced"
@@ -90,7 +95,10 @@ EOF
   pushd "${BATS_TEST_TMPDIR}/testbee" >/dev/null || exit 1
     echo "echo '# test bee 0.41.0 sourced'" >src/bee
     chmod +x src/bee
-    git init; git add . ; _git_commit -m "Initial commit"; git tag 0.41.0
+    git init
+    git add .
+    _git_commit -m "Initial commit"
+    git tag 0.41.0
   popd >/dev/null || exit 1
   run bee :
   assert_output "# test bee 0.41.0 sourced"

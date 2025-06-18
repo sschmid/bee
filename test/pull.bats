@@ -1,32 +1,14 @@
 setup() {
   load 'test-helper'
-  load 'test-helper-hub'
   _common_setup
   _export_beerc
   _source_beerc
   BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
 }
 
-_setup_mock_bee_hub_repo() {
-  local hub="$1" plugin="$2"
-  mkdir -p "${BATS_TEST_TMPDIR}/${hub}/${plugin}/1.0.0"
-  pushd "${BATS_TEST_TMPDIR}/${hub}" >/dev/null || exit 1
-    touch "${plugin}/1.0.0/plugin.json"
-    git init; git add . ; _git_commit -m "Initial commit"
-  popd >/dev/null || exit 1
-}
-
-_update_mock_bee_hub_repo() {
-  local hub="$1" plugin="$2" version="$3"
-  mkdir -p "${BATS_TEST_TMPDIR}/${hub}/${plugin}/${version}"
-  pushd "${BATS_TEST_TMPDIR}/${hub}" >/dev/null || exit 1
-    touch "${plugin}/${version}/plugin.json"; git add . ; _git_commit -m "Release ${version}"
-  popd >/dev/null || exit 1
-}
-
 @test "clones all registered hubs" {
-  _setup_mock_bee_hub_repo testhub testplugin
-  _setup_mock_bee_hub_repo othertesthub othertestplugin
+  _create_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo othertesthub othertestplugin
   run bee pull
   assert_success
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/plugin.json"
@@ -34,8 +16,8 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "clones specified hubs" {
-  _setup_mock_bee_hub_repo testhub testplugin
-  _setup_mock_bee_hub_repo othertesthub othertestplugin
+  _create_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo othertesthub othertestplugin
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"
   assert_success
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/plugin.json"
@@ -43,8 +25,8 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "ignores cloning unknown hubs" {
-  _setup_mock_bee_hub_repo testhub testplugin
-  _setup_mock_bee_hub_repo othertesthub othertestplugin
+  _create_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo othertesthub othertestplugin
   # shellcheck disable=SC2016
   _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub" "unknown" "file://${BATS_TEST_TMPDIR}/othertesthub")'
   run bee pull
@@ -56,7 +38,7 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "pulls existing hubs" {
-  _setup_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo testhub testplugin
   _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=-1'
   bee pull
   assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
@@ -81,15 +63,15 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "pull sets ts" {
-  _setup_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo testhub testplugin
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"
   assert_success
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/.bee_pull_cooldown"
 }
 
 @test "skips pull when within cooldown period" {
-  _setup_mock_bee_hub_repo testhub testplugin
-  _setup_mock_bee_hub_repo othertesthub othertestplugin
+  _create_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo othertesthub othertestplugin
   _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=1'
   bee pull "file://${BATS_TEST_TMPDIR}/testhub"
 
@@ -104,8 +86,8 @@ _update_mock_bee_hub_repo() {
 }
 
 @test "forces pull even when within cooldown period" {
-  _setup_mock_bee_hub_repo testhub testplugin
-  _setup_mock_bee_hub_repo othertesthub othertestplugin
+  _create_mock_bee_hub_repo testhub testplugin
+  _create_mock_bee_hub_repo othertesthub othertestplugin
   _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=999'
 
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"

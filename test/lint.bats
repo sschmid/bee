@@ -1,6 +1,5 @@
 setup() {
   load 'test-helper'
-  load 'test-helper-hub'
   _common_setup
   mkdir -p "${BATS_TEST_TMPDIR}/testplugin/2.0.0"
   _export_beerc
