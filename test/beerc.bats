@@ -4,7 +4,7 @@ setup() {
 }
 
 @test "loads beerc when specified" {
-  _set_beerc_fixture
+  _export_beerc_fixture
   run bee :
   assert_output "# test beerc sourced"
 }

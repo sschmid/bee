@@ -2,7 +2,7 @@ setup() {
   load 'test-helper'
   load 'test-helper-hub'
   _common_setup
-  _set_beerc
+  _export_beerc
 }
 
 @test "lists all hub urls with their plugins" {

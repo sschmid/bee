@@ -2,7 +2,7 @@ setup() {
   load 'test-helper'
   load 'test-helper-hub'
   _common_setup
-  _set_beerc
+  _export_beerc
   cd "${BATS_TEST_TMPDIR}" || exit
 }
 

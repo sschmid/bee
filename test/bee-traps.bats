@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
  _common_setup
-  _set_beerc
+  _export_beerc
 }
 
 _test_exit() { echo "test exit $*"; }

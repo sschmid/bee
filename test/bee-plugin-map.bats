@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
  _common_setup
-  _set_beerc
+  _export_beerc
   _source_beerc
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   export TEST_PLUGIN_QUIET=1

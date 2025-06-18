@@ -2,7 +2,7 @@ setup() {
   load 'test-helper'
   load 'test-helper-hub'
   _common_setup
-  _set_beerc
+  _export_beerc
   _source_beerc
   BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
 }
@@ -46,7 +46,7 @@ _update_mock_bee_hub_repo() {
   _setup_mock_bee_hub_repo testhub testplugin
   _setup_mock_bee_hub_repo othertesthub othertestplugin
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub" "unknown" "file://${BATS_TEST_TMPDIR}/othertesthub")'
+  _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub" "unknown" "file://${BATS_TEST_TMPDIR}/othertesthub")'
   run bee pull
   assert_success
   assert_output --partial "${BEE_WARNING} Unsupported url: unknown"
@@ -57,7 +57,7 @@ _update_mock_bee_hub_repo() {
 
 @test "pulls existing hubs" {
   _setup_mock_bee_hub_repo testhub testplugin
-  _set_beerc_with 'BEE_HUB_PULL_COOLDOWN=-1'
+  _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=-1'
   bee pull
   assert_file_not_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
 
@@ -70,7 +70,7 @@ _update_mock_bee_hub_repo() {
 @test "pulls test hub" {
   _setup_test_bee_hub_repo
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
+  _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
   run bee pull
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/1.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/testhub/testplugin/2.0.0/plugin.json"
@@ -90,7 +90,7 @@ _update_mock_bee_hub_repo() {
 @test "skips pull when within cooldown period" {
   _setup_mock_bee_hub_repo testhub testplugin
   _setup_mock_bee_hub_repo othertesthub othertestplugin
-  _set_beerc_with 'BEE_HUB_PULL_COOLDOWN=1'
+  _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=1'
   bee pull "file://${BATS_TEST_TMPDIR}/testhub"
 
   run bee pull "file://${BATS_TEST_TMPDIR}/othertesthub"
@@ -106,7 +106,7 @@ _update_mock_bee_hub_repo() {
 @test "forces pull even when within cooldown period" {
   _setup_mock_bee_hub_repo testhub testplugin
   _setup_mock_bee_hub_repo othertesthub othertestplugin
-  _set_beerc_with 'BEE_HUB_PULL_COOLDOWN=999'
+  _export_beerc_with 'BEE_HUB_PULL_COOLDOWN=999'
 
   run bee pull "file://${BATS_TEST_TMPDIR}/testhub"
   assert_success

@@ -2,7 +2,7 @@ setup() {
   load 'test-helper'
   load 'test-helper-hub'
   _common_setup
-  _set_beerc
+  _export_beerc
   export TEST_BEE_PLUGINS_NEED_INSTALL=1
   _source_beerc
 }
@@ -23,7 +23,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
+  _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/testhub")'
   run bee install testplugin
   assert_success
   BEE_HUBS_CACHE_PATH="${BEE_CACHE_PATH}/hubs"
@@ -35,7 +35,7 @@ EOF
   _setup_test_bee_hub_repo
   _setup_testplugin_repo
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/empty" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/unknown")'
+  _export_beerc_with 'BEE_HUBS=("file://${BATS_TEST_TMPDIR}/empty" "file://${BATS_TEST_TMPDIR}/testhub" "file://${BATS_TEST_TMPDIR}/unknown")'
   bee pull
   run bee install testplugin
   assert_success

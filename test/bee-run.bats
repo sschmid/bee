@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
  _common_setup
-  _set_beerc_with 'bee::secrets() { echo "bee-secrets $@"; }'
+  _export_beerc_with 'bee::secrets() { echo "bee-secrets $@"; }'
   export TEST_PLUGIN_QUIET=1
 }
 

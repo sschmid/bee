@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
  _common_setup
-  _set_beerc
+  _export_beerc
 }
 
 assert_bee_system_home() {
@@ -97,25 +97,25 @@ EOF
 }
 
 @test "completes bee with commands" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee " "${expected[*]}"
 }
 
 @test "completes bee options with commands" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--batch --help --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --quiet " "${expected[*]}"
 }
 
 @test "completes bee options with commands and removes already used options" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--batch --help cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --quiet --verbose " "${expected[*]}"
 }
 
 @test "no completion for bee --help" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   assert_comp "bee --help "
 }
 
@@ -131,7 +131,7 @@ EOF
 }
 
 @test "completes available functions" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   _setup_beefile "test::func() { :; }"
   local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res test::func update version wiki)
   assert_comp "bee " "${expected[*]}"

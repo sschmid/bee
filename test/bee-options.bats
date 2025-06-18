@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
  _common_setup
-  _set_beerc
+  _export_beerc
 }
 
 @test "prints bee help" {
@@ -86,13 +86,13 @@ EOF
 }
 
 @test "completes --batch with --allow-fail" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--allow-fail --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --batch " "${expected[*]}"
 }
 
 @test "completes --batch --allow-fail with commands" {
-  _set_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
+  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   local expected=(--help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
   assert_comp "bee --batch --allow-fail " "${expected[*]}"
 }

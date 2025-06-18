@@ -22,27 +22,35 @@ _common_setup() {
   export BEE_ERROR="BEE_ERROR"
 
   export BEE_OSTYPE="generic"
+
+  _setup_beefile :
 }
 
-_set_beerc() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/beerc.bash"; }
-_set_beerc_with() {
+_export_beerc() {
+  _export_beerc_with :
+}
+
+_export_beerc_with() {
   cp "${BATS_TEST_DIRNAME}/fixtures/beerc.bash" "${BATS_TEST_TMPDIR}/beerc.bash"
   export BEE_RC="${BATS_TEST_TMPDIR}/beerc.bash"
   for arg in "$@"; do
     echo "${arg}" >>"${BATS_TEST_TMPDIR}/beerc.bash"
   done
 }
-_set_beerc_fixture() { export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"; }
+
+_export_beerc_fixture() {
+  export BEE_RC="${BATS_TEST_DIRNAME}/fixtures/test-beerc.bash"
+}
 
 # shellcheck disable=SC1090
-_source_beerc() { source "${BEE_RC}"; }
+_source_beerc() {
+  source "${BEE_RC}"
+}
 
 _setup_beefile() {
   echo "$@" >"${BATS_TEST_TMPDIR}/Beefile"
   export BEE_FILE="${BATS_TEST_TMPDIR}/Beefile"
 }
-
-_setup_beefile :
 
 _unset_beefile() {
   unset BEE_FILE

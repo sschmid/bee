@@ -1,7 +1,7 @@
 setup() {
   load 'test-helper'
   _common_setup
-  _set_beerc
+  _export_beerc
 }
 
 @test "shows help when args" {
@@ -33,7 +33,7 @@ setup() {
   assert_output "1.2.3"
 
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
+  _export_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
   run bee version --latest --cached
   assert_output "1.2.3"
 }
@@ -45,7 +45,7 @@ setup() {
   sleep 2
 
   # shellcheck disable=SC2016
-  _set_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
+  _export_beerc_with 'BEE_LATEST_VERSION_PATH="file://${BATS_TEST_DIRNAME}/fixtures/testversion2.txt"'
   run bee version --latest --cached
   assert_output "99.99.99"
 }
