@@ -7,7 +7,7 @@
     "sschmid"
   ],
   "info": "bee testplugin",
-  "git": "file://HOME/plugins/testplugin",
+  "git": "file://$HOME/plugins/testplugin",
   "tag": "v0.1.0",
   "sha256": "wrong-sha"
 }

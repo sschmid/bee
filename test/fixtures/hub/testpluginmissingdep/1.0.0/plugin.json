@@ -7,7 +7,7 @@
     "sschmid"
   ],
   "info": "bee testplugin",
-  "git": "file://HOME/plugins/testpluginmissingdep",
+  "git": "file://$HOME/plugins/testpluginmissingdep",
   "tag": "v1.0.0",
   "sha256": "c736a622bc60538f1721171f8d5518372c61ffe8d7e634969829208c8d275703",
   "dependencies": [
