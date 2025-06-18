@@ -9,5 +9,5 @@
   "info": "bee testplugin",
   "git": "file://$HOME/plugins/othertestplugin",
   "tag": "v1.0.0",
-  "sha256": "bdc32900b8cb4774cfee89876828adfeab8a164f8b02324fe251fba29d20727c"
+  "sha256": "44faaa47edf1ec5559f6aa02219387fea32391d0b279bfd1466e1073c3220b38"
 }
