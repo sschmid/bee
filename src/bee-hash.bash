@@ -30,7 +30,7 @@ main() {
       if (( ! ignore )); then
         file_hash="$(os_sha256sum "${file}")"
         echo "${file_hash}" >&2
-        hashes+=("${file_hash%% *}")
+        hashes+=("${file_hash}")
       fi
     done < <(find . -type f -print0 | LC_ALL=C sort -z)
   popd >/dev/null || exit 1

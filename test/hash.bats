@@ -10,6 +10,39 @@ setup() {
   assert_bee_help
 }
 
+@test "hashes files in folder" {
+  mkdir -p "${BATS_TEST_TMPDIR}/test"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file1"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file2"
+  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file3"
+
+  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
+  assert_success
+  assert_equal "${output}" "058cb1c617e7d34818519907671d341bc15bbb24ecd8eee656b34307d3f27772"
+  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
+3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file1
+ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file2
+f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file3
+058cb1c617e7d34818519907671d341bc15bbb24ecd8eee656b34307d3f27772  -"
+}
+
+@test "includes file names in hash" {
+  # file content is the same as in previous test, but file names are different
+  mkdir -p "${BATS_TEST_TMPDIR}/test"
+  echo "test 1" >"${BATS_TEST_TMPDIR}/test/file1X"
+  echo "test 2" >"${BATS_TEST_TMPDIR}/test/file2X"
+  echo "test 3" >"${BATS_TEST_TMPDIR}/test/file3X"
+
+  run --separate-stderr bee hash "${BATS_TEST_TMPDIR}/test"
+  assert_success
+  assert_equal "${output}" "bb09bab532739b138613f8036c2aab483dd3a984a7907c3a7840af4a65bf3b2b"
+  assert_equal "${stderr}" "${BATS_TEST_TMPDIR}/test
+3cd203ac11340842055a6de561c9d69ca4493e912bd4c3c440c80711e16d5aee  ./file1X
+ef691f74bb2e7cb7e9b48b4d57e9e62fa535a0a6ea0100676c4fc492cca8b6d0  ./file2X
+f332dc0b25c681863f10100f0fedd2b2e6ddcc9abe360d6d780d73b7322c9aa5  ./file3X
+bb09bab532739b138613f8036c2aab483dd3a984a7907c3a7840af4a65bf3b2b  -"
+}
+
 @test "ignores .git and .DS_Store by default" {
   mkdir -p "${BATS_TEST_TMPDIR}/test/.git"
   touch "${BATS_TEST_TMPDIR}/test/.git/ignore" "${BATS_TEST_TMPDIR}/test/.DS_Store"
