@@ -223,36 +223,36 @@ EOF
 
 @test "deletes newly installed plugin when hash doesn't match" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
+  _create_generic_plugin_repo plugin_with_wrong_hash 1.0.0
   bee pull
-  run bee install plugin_wrong_hash:1.0.0
+  run bee install plugin_with_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_ERROR} plugin_wrong_hash:1.0.0 sha256 mismatch"
-  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
+  assert_output --partial "${BEE_ERROR} plugin_with_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_with_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_with_wrong_hash/1.0.0/plugin_with_wrong_hash.bash"
 }
 
 @test "forces install plugin with wrong hash" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
+  _create_generic_plugin_repo plugin_with_wrong_hash 1.0.0
   bee pull
-  run bee install --force plugin_wrong_hash:1.0.0
+  run bee install --force plugin_with_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_WARNING} plugin_wrong_hash:1.0.0 sha256 mismatch"
-  assert_output --partial "└── #W${BEE_CHECK_SUCCESS} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
+  assert_output --partial "${BEE_WARNING} plugin_with_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #W${BEE_CHECK_SUCCESS} plugin_with_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_wrong_hash/1.0.0/plugin_with_wrong_hash.bash"
 }
 
 @test "deletes already installed plugin when hash doesn't match" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
+  _create_generic_plugin_repo plugin_with_wrong_hash 1.0.0
   bee pull
-  bee install --force plugin_wrong_hash:1.0.0
-  run bee install plugin_wrong_hash:1.0.0
+  bee install --force plugin_with_wrong_hash:1.0.0
+  run bee install plugin_with_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_ERROR} plugin_wrong_hash:1.0.0 sha256 mismatch"
-  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
+  assert_output --partial "${BEE_ERROR} plugin_with_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_with_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_with_wrong_hash/1.0.0/plugin_with_wrong_hash.bash"
 }
 
 @test "installs plugins from Beefile" {
