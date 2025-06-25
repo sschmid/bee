@@ -6,7 +6,7 @@
   "authors": [
     "sschmid"
   ],
-  "info": "bee plugin_1",
+  "info": "bee plugin_with_missing_deps",
   "git": "file://$HOME/plugins/plugin_with_missing_deps",
   "tag": "v1.0.0",
   "sha256": "70dea9921f2939c9b96a241883d610fe0ceee8522e715bf709fc8a3197a39836",

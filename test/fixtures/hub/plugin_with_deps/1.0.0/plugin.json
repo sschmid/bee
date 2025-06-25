@@ -6,7 +6,7 @@
   "authors": [
     "sschmid"
   ],
-  "info": "bee plugin_1",
+  "info": "bee plugin_with_deps",
   "git": "file://$HOME/plugins/plugin_with_deps",
   "tag": "v1.0.0",
   "sha256": "3b987f3c6466f877f84f82762fd16b89d53dcebacb06aa76e591e78455a7c5ad",
