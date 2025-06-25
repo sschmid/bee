@@ -2,6 +2,39 @@ setup() {
   load 'test-helper'
   _common_setup
   _export_beerc
+
+  ALL_PLUGINS_LIST="plugin_1
+plugin_2
+plugin_with_comp
+plugin_with_deps
+plugin_with_missing_deps
+plugin_with_recursive_deps
+plugin_with_wrong_hash"
+
+  ALL_PLUGINS_IN_HUB="├── plugin_1
+├── plugin_2
+├── plugin_with_comp
+├── plugin_with_deps
+├── plugin_with_missing_deps
+├── plugin_with_recursive_deps
+└── plugin_with_wrong_hash"
+
+  ALL_PLUGINS_WITH_VERSIONS="├── plugin_1
+│    ├── 0.2.0
+│    ├── 1.0.0
+│    └── 2.0.0
+├── plugin_2
+│    └── 1.0.0
+├── plugin_with_comp
+│    └── 1.0.0
+├── plugin_with_deps
+│    └── 1.0.0
+├── plugin_with_missing_deps
+│    └── 1.0.0
+├── plugin_with_recursive_deps
+│    └── 1.0.0
+└── plugin_with_wrong_hash
+    └── 1.0.0"
 }
 
 @test "lists all hub urls with their plugins" {
@@ -13,20 +46,10 @@ setup() {
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
-├── plugin_1
-├── plugin_2
-├── plugin_with_deps
-├── plugin_with_missing_deps
-├── plugin_with_recursive_deps
-└── plugin_with_wrong_hash
+${ALL_PLUGINS_IN_HUB[*]}
 
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── plugin_1
-├── plugin_2
-├── plugin_with_deps
-├── plugin_with_missing_deps
-├── plugin_with_recursive_deps
-└── plugin_with_wrong_hash
+${ALL_PLUGINS_IN_HUB[*]}
 EOF
 }
 
@@ -39,12 +62,7 @@ EOF
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── plugin_1
-├── plugin_2
-├── plugin_with_deps
-├── plugin_with_missing_deps
-├── plugin_with_recursive_deps
-└── plugin_with_wrong_hash
+${ALL_PLUGINS_IN_HUB[*]}
 EOF
 }
 
@@ -64,18 +82,8 @@ EOF
   run bee hubs --list
   assert_success
   cat << EOF | assert_output -
-plugin_1
-plugin_2
-plugin_with_deps
-plugin_with_missing_deps
-plugin_with_recursive_deps
-plugin_with_wrong_hash
-plugin_1
-plugin_2
-plugin_with_deps
-plugin_with_missing_deps
-plugin_with_recursive_deps
-plugin_with_wrong_hash
+${ALL_PLUGINS_LIST}
+${ALL_PLUGINS_LIST}
 EOF
 }
 
@@ -88,37 +96,10 @@ EOF
 
   cat << EOF | assert_output -
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
-├── plugin_1
-│    ├── 0.2.0
-│    ├── 1.0.0
-│    └── 2.0.0
-├── plugin_2
-│    └── 1.0.0
-├── plugin_with_deps
-│    └── 1.0.0
-├── plugin_with_missing_deps
-│    └── 1.0.0
-├── plugin_with_recursive_deps
-│    └── 1.0.0
-└── plugin_with_wrong_hash
-    └── 1.0.0
+${ALL_PLUGINS_WITH_VERSIONS[*]}
 
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
-├── plugin_1
-│    ├── 0.2.0
-│    ├── 1.0.0
-│    └── 2.0.0
-├── plugin_2
-│    └── 1.0.0
-├── plugin_with_deps
-│    └── 1.0.0
-├── plugin_with_missing_deps
-│    └── 1.0.0
-├── plugin_with_recursive_deps
-│    └── 1.0.0
-└── plugin_with_wrong_hash
-    └── 1.0.0
-
+${ALL_PLUGINS_WITH_VERSIONS[*]}
 EOF
 }
 

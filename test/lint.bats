@@ -55,7 +55,7 @@ _spec() {
   "info": "bee plugin_1",
   "git": "file://${BATS_TEST_TMPDIR}/plugins/plugin_1",
   "tag": "v2.0.0",
-  "sha256": "57cf7b9abc5e847e84f87140fe483c248666f9d50f84fd0e2113e8bd0b563e8c",
+  "sha256": "19f0a6af8b5e82d2c6fedaf155c6e7c9455dfb084f57d1d562561e8ddfbfd71b",
   "unknown": "null"
 }
 EOF
@@ -206,7 +206,7 @@ EOF
 }
 
 @test "lints incorrect sha256" {
-  assert_lint_error_replace "sha256" '"xxx"' 'sha256.*xxx.*57cf7b9abc5e847e84f87140fe483c248666f9d50f84fd0e2113e8bd0b563e8c'
+  assert_lint_error_replace "sha256" '"xxx"' 'sha256.*xxx.*19f0a6af8b5e82d2c6fedaf155c6e7c9455dfb084f57d1d562561e8ddfbfd71b'
 }
 
 @test "lints missing plugin bash file" {

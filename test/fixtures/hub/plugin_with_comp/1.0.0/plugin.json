@@ -1,0 +1,13 @@
+{
+  "name": "plugin_with_comp",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee plugin_with_comp",
+  "git": "file://$HOME/plugins/plugin_with_comp",
+  "tag": "v1.0.0",
+  "sha256": "0d66c56b172fa66affdc201fff5d4b05dec1943b1fe3c4d7533d265a658d36c9"
+}

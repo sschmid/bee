@@ -28,7 +28,3 @@ plugin_1::greet() {
     echo "greeting from plugin_1 2.0.0"
   fi
 }
-
-plugin_1::comp() {
-  echo "testplugincomp"
-}

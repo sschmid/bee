@@ -267,7 +267,7 @@ EOF
 }
 
 @test "completes plugins with comp function" {
-  assert_comp "bee plugin_1 " "testplugincomp"
+  assert_comp "bee plugin_with_comp " "comp for plugin_with_comp 1.0.0"
 }
 
 @test "completes plugins without comp function" {

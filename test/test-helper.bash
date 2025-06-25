@@ -57,6 +57,7 @@ _common_setup() {
   ALL_TEST_PLUGINS=(
     plugin_1
     plugin_2
+    plugin_with_comp
     plugin_with_deps
     plugin_with_recursive_deps
     plugin_with_missing_deps
