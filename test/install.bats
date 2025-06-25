@@ -225,36 +225,36 @@ EOF
 
 @test "deletes newly installed plugin when hash doesn't match" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_1 0.1.0
+  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
   bee pull
-  run bee install plugin_1:0.1.0
+  run bee install plugin_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_ERROR} plugin_1:0.1.0 sha256 mismatch"
-  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_1:0.1.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_1/0.1.0/plugin_1.bash"
+  assert_output --partial "${BEE_ERROR} plugin_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
 }
 
 @test "forces install plugin with wrong hash" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_1 0.1.0
+  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
   bee pull
-  run bee install --force plugin_1:0.1.0
+  run bee install --force plugin_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_WARNING} plugin_1:0.1.0 sha256 mismatch"
-  assert_output --partial "└── #W${BEE_CHECK_SUCCESS} plugin_1:0.1.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_1/0.1.0/plugin_1.bash"
+  assert_output --partial "${BEE_WARNING} plugin_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #W${BEE_CHECK_SUCCESS} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
 }
 
 @test "deletes already installed plugin when hash doesn't match" {
   _create_bee_hub_repo "${TEST_HUB_1}"
-  _create_generic_plugin_repo plugin_1 0.1.0
+  _create_generic_plugin_repo plugin_wrong_hash 1.0.0
   bee pull
-  bee install plugin_1:0.1.0
-  run bee install plugin_1:0.1.0
+  bee install --force plugin_wrong_hash:1.0.0
+  run bee install plugin_wrong_hash:1.0.0
   assert_success
-  assert_output --partial "${BEE_ERROR} plugin_1:0.1.0 sha256 mismatch"
-  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_1:0.1.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
-  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_1/0.1.0/plugin_1.bash"
+  assert_output --partial "${BEE_ERROR} plugin_wrong_hash:1.0.0 sha256 mismatch"
+  assert_output --partial "└── #E${BEE_CHECK_FAIL} plugin_wrong_hash:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#"
+  assert_file_not_exist "${BEE_CACHE_PATH}/plugins/plugin_wrong_hash/1.0.0/plugin_wrong_hash.bash"
 }
 
 @test "installs plugins from Beefile" {
@@ -285,13 +285,11 @@ EOF
 @test "completes bee install with options and plugins" {
   _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
-  local expected=(--force plugin_1 plugin_2 plugin_with_deps plugin_with_deps_on_deps plugin_with_missing_deps)
-  assert_comp "bee install " "${expected[*]}"
+  assert_comp "bee install " "--force ${ALL_TEST_PLUGINS[*]}"
 }
 
 @test "completes bee install with multiple plugins" {
   _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
-  local expected=(plugin_1 plugin_2 plugin_with_deps plugin_with_deps_on_deps plugin_with_missing_deps)
-  assert_comp "bee install myplugin " "${expected[*]}"
+  assert_comp "bee install myplugin " "${ALL_TEST_PLUGINS[*]}"
 }

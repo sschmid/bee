@@ -65,17 +65,15 @@ EOF
 @test "completes bee info with plugin" {
   _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
-  local expected=(plugin_1 plugin_2 plugin_with_deps plugin_with_deps_on_deps testplugindepslatest plugin_with_missing_deps)
-  assert_comp "bee info " "${expected[*]}"
+  assert_comp "bee info " "${ALL_TEST_PLUGINS[*]} testplugindepslatest"
 }
 
-@test "completes bee info with local plugin" {
+@test "completes bee info with custom plugin" {
   # shellcheck disable=SC2030,SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
   _create_bee_hub_repo "${TEST_HUB_1}"
   bee pull
-  local expected=(plugin_1 plugin_2 plugin_with_deps plugin_with_deps_on_deps testplugindepslatest plugin_with_missing_deps custom_plugin local_plugin)
-  assert_comp "bee info " "${expected[*]}"
+  assert_comp "bee info " "${ALL_TEST_PLUGINS[*]} ${ALL_CUSTOM_PLUGINS[*]} testplugindepslatest"
 }
 
 @test "no completion after plugin" {

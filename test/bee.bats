@@ -106,20 +106,12 @@ EOF
 
 @test "completes bee with commands" {
   _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
-  assert_comp "bee " "${expected[*]}"
-}
-
-@test "completes bee options with commands" {
-  _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help --verbose cache env hash hubs info install job lint new plugins pull res update version wiki)
-  assert_comp "bee --quiet " "${expected[*]}"
+  assert_comp "bee " "${ALL_BEE_OPTIONS[*]} ${ALL_BEE_COMMANDS[*]}"
 }
 
 @test "completes bee options with commands and removes already used options" {
   _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
-  local expected=(--batch --help cache env hash hubs info install job lint new plugins pull res update version wiki)
-  assert_comp "bee --quiet --verbose " "${expected[*]}"
+  assert_comp "bee --quiet --verbose " "--batch --help ${ALL_BEE_COMMANDS[*]}"
 }
 
 @test "no completion for bee --help" {
@@ -127,20 +119,13 @@ EOF
   assert_comp "bee --help "
 }
 
-@test "completes with plugins" {
+@test "completes with plugins and custom plugins" {
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  local expected=(
-    --batch --help --quiet --verbose
-    cache env hash hubs info install job lint new plugins pull res update version wiki
-    plugin_1 plugin_with_deps plugin_with_deps_on_deps testplugindepslatest plugin_with_missing_deps plugin_2
-    custom_plugin local_plugin
-  )
-  assert_comp "bee " "${expected[*]}"
+  assert_comp "bee " "${ALL_BEE_OPTIONS[*]} ${ALL_BEE_COMMANDS[*]} ${ALL_TEST_PLUGINS[*]} ${ALL_CUSTOM_PLUGINS[*]} testplugindepslatest"
 }
 
 @test "completes available functions" {
   _export_beerc_with 'BEE_PLUGINS_PATHS=(unknown)'
   _create_beefile_with "test::func() { :; }"
-  local expected=(--batch --help --quiet --verbose cache env hash hubs info install job lint new plugins pull res test::func update version wiki)
-  assert_comp "bee " "${expected[*]}"
+  assert_comp "bee " "test::func ${ALL_BEE_OPTIONS[*]} ${ALL_BEE_COMMANDS[*]}"
 }

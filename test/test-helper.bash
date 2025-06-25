@@ -26,6 +26,49 @@ _common_setup() {
   export TEST_HUB_1="test_hub_1"
   export TEST_HUB_2="test_hub_2"
 
+  # shellcheck disable=SC2034
+  ALL_BEE_OPTIONS=(
+    --batch
+    --help
+    --quiet
+    --verbose
+  )
+
+  # shellcheck disable=SC2034
+  ALL_BEE_COMMANDS=(
+    cache
+    env
+    hash
+    hubs
+    info
+    install
+    job
+    lint
+    new
+    plugins
+    pull
+    res
+    update
+    version
+    wiki
+  )
+
+  # shellcheck disable=SC2034
+  ALL_TEST_PLUGINS=(
+    plugin_1
+    plugin_2
+    plugin_with_deps
+    plugin_with_deps_on_deps
+    plugin_with_missing_deps
+    plugin_wrong_hash
+  )
+
+  # shellcheck disable=SC2034
+  ALL_CUSTOM_PLUGINS=(
+    custom_plugin
+    local_plugin
+  )
+
   _create_beefile_with :
 }
 

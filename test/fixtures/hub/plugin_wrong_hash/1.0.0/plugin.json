@@ -1,0 +1,13 @@
+{
+  "name": "plugin_wrong_hash",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee plugin_wrong_hash",
+  "git": "file://$HOME/plugins/plugin_wrong_hash",
+  "tag": "v1.0.0",
+  "sha256": "wrong-hash"
+}
