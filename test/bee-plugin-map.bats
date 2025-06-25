@@ -80,10 +80,10 @@ EOF
 }
 
 @test "resolves plugins dependencies recursively" {
-  run bee bee::map_plugins plugin_with_deps_on_deps plugin_1
+  run bee bee::map_plugins plugin_with_recursive_deps plugin_1
   assert_success
   cat << EOF | assert_output -
-plugin_with_deps_on_deps:1.0.0
+plugin_with_recursive_deps:1.0.0
 plugin_with_deps:1.0.0
 plugin_1:1.0.0
 plugin_2:1.0.0

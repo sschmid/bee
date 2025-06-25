@@ -1,6 +1,6 @@
 {
   "dependencies": [
-    "plugin_with_deps_on_deps:1.0.0",
+    "plugin_with_recursive_deps:1.0.0",
     "missing_1:1.0.0",
     "missing_2:1.0.0"
   ]

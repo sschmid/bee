@@ -114,7 +114,7 @@ EOF
   assert_line "plugin_1"
   assert_line "plugin_2"
   assert_line "plugin_with_deps"
-  assert_line "plugin_with_deps_on_deps"
+  assert_line "plugin_with_recursive_deps"
   assert_line "plugin_with_missing_deps"
   assert_line "custom_plugin"
 }

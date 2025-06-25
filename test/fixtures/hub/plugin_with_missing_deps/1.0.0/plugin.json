@@ -9,10 +9,10 @@
   "info": "bee plugin_with_missing_deps",
   "git": "file://$HOME/plugins/plugin_with_missing_deps",
   "tag": "v1.0.0",
-  "sha256": "70dea9921f2939c9b96a241883d610fe0ceee8522e715bf709fc8a3197a39836",
+  "sha256": "e3d0365890d195dcc5759c5ad7862df40f1387d1a1b6fae839a9c0d97d5eed12",
   "dependencies": [
+    "plugin_with_recursive_deps:1.0.0",
     "missing_1:1.0.0",
-    "missing_2:1.0.0",
-    "plugin_with_deps_on_deps:1.0.0"
+    "missing_2:1.0.0"
   ]
 }

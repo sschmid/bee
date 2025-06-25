@@ -16,16 +16,16 @@ file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
 ├── plugin_1
 ├── plugin_2
 ├── plugin_with_deps
-├── plugin_with_deps_on_deps
 ├── plugin_with_missing_deps
+├── plugin_with_recursive_deps
 └── plugin_with_wrong_hash
 
 file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 ├── plugin_1
 ├── plugin_2
 ├── plugin_with_deps
-├── plugin_with_deps_on_deps
 ├── plugin_with_missing_deps
+├── plugin_with_recursive_deps
 └── plugin_with_wrong_hash
 EOF
 }
@@ -42,8 +42,8 @@ file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 ├── plugin_1
 ├── plugin_2
 ├── plugin_with_deps
-├── plugin_with_deps_on_deps
 ├── plugin_with_missing_deps
+├── plugin_with_recursive_deps
 └── plugin_with_wrong_hash
 EOF
 }
@@ -67,14 +67,14 @@ EOF
 plugin_1
 plugin_2
 plugin_with_deps
-plugin_with_deps_on_deps
 plugin_with_missing_deps
+plugin_with_recursive_deps
 plugin_with_wrong_hash
 plugin_1
 plugin_2
 plugin_with_deps
-plugin_with_deps_on_deps
 plugin_with_missing_deps
+plugin_with_recursive_deps
 plugin_with_wrong_hash
 EOF
 }
@@ -96,9 +96,9 @@ file://${BATS_TEST_TMPDIR}/${TEST_HUB_1}
 │    └── 1.0.0
 ├── plugin_with_deps
 │    └── 1.0.0
-├── plugin_with_deps_on_deps
-│    └── 1.0.0
 ├── plugin_with_missing_deps
+│    └── 1.0.0
+├── plugin_with_recursive_deps
 │    └── 1.0.0
 └── plugin_with_wrong_hash
     └── 1.0.0
@@ -112,9 +112,9 @@ file://${BATS_TEST_TMPDIR}/${TEST_HUB_2}
 │    └── 1.0.0
 ├── plugin_with_deps
 │    └── 1.0.0
-├── plugin_with_deps_on_deps
-│    └── 1.0.0
 ├── plugin_with_missing_deps
+│    └── 1.0.0
+├── plugin_with_recursive_deps
 │    └── 1.0.0
 └── plugin_with_wrong_hash
     └── 1.0.0

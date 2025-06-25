@@ -58,7 +58,7 @@ setup() {
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_1/2.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_2/1.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_with_deps/1.0.0/plugin.json"
-  assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_with_deps_on_deps/1.0.0/plugin.json"
+  assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_with_recursive_deps/1.0.0/plugin.json"
   assert_file_exist "${BEE_HUBS_CACHE_PATH}/${TEST_HUB_1}/plugin_with_missing_deps/1.0.0/plugin.json"
 }
 

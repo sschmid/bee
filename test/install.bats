@@ -138,20 +138,20 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
+  _create_generic_plugin_repo plugin_with_recursive_deps
   bee pull
-  run bee install plugin_with_deps_on_deps plugin_1:1.0.0
+  run bee install plugin_with_recursive_deps plugin_1:1.0.0
   assert_success
   cat << EOF | assert_output -
 Installing
-├── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+├── #S${BEE_CHECK_SUCCESS} plugin_with_recursive_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
 └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
 EOF
-  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps_on_deps/1.0.0/plugin_with_deps_on_deps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_recursive_deps/1.0.0/plugin_with_recursive_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps/1.0.0/plugin_with_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_1/1.0.0/plugin_1.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_2/1.0.0/plugin_2.bash"
@@ -196,7 +196,7 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
+  _create_generic_plugin_repo plugin_with_recursive_deps
   _create_generic_plugin_repo plugin_with_missing_deps
   bee pull
   run bee install plugin_with_missing_deps
@@ -204,18 +204,18 @@ EOF
   cat << EOF | assert_output -
 Installing
 └── #S${BEE_CHECK_SUCCESS} plugin_with_missing_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    ├── #S${BEE_CHECK_SUCCESS} plugin_with_recursive_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    │   ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    │   │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    │   │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+    │   └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
     ├── #E${BEE_CHECK_FAIL} missing_1:1.0.0#
-    ├── #E${BEE_CHECK_FAIL} missing_2:1.0.0#
-    └── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-        ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-        │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-        │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-        └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
+    └── #E${BEE_CHECK_FAIL} missing_2:1.0.0#
 ${BEE_ERROR} Couldn't install plugin: missing_1:1.0.0
 ${BEE_ERROR} Couldn't install plugin: missing_2:1.0.0
 EOF
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_missing_deps/1.0.0/plugin_with_missing_deps.bash"
-  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps_on_deps/1.0.0/plugin_with_deps_on_deps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_recursive_deps/1.0.0/plugin_with_recursive_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps/1.0.0/plugin_with_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_1/1.0.0/plugin_1.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_2/1.0.0/plugin_2.bash"
@@ -260,21 +260,21 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
-  _create_beefile_with 'BEE_PLUGINS=(plugin_with_deps_on_deps plugin_1)'
+  _create_generic_plugin_repo plugin_with_recursive_deps
+  _create_beefile_with 'BEE_PLUGINS=(plugin_with_recursive_deps plugin_1)'
   bee pull
   run bee install
   assert_success
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile
-├── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+├── #S${BEE_CHECK_SUCCESS} plugin_with_recursive_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
 └── #S${BEE_CHECK_SUCCESS} plugin_1:2.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 EOF
-  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps_on_deps/1.0.0/plugin_with_deps_on_deps.bash"
+  assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_recursive_deps/1.0.0/plugin_with_recursive_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps/1.0.0/plugin_with_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_1/1.0.0/plugin_1.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_2/1.0.0/plugin_2.bash"

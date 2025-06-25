@@ -170,17 +170,17 @@ EOF
 
 @test "loads plugin dependencies" {
   run bee --batch \
-    "bee::load_plugin plugin_with_deps_on_deps" \
+    "bee::load_plugin plugin_with_recursive_deps" \
     "env BEE_LOAD_PLUGIN_NAME BEE_LOAD_PLUGIN_PATH BEE_LOAD_PLUGIN_JSON_PATH"
   assert_success
   cat << EOF | assert_output -
-# plugin_with_deps_on_deps 1.0.0 sourced
+# plugin_with_recursive_deps 1.0.0 sourced
 # plugin_with_deps 1.0.0 sourced
 # plugin_1 1.0.0 sourced
 # plugin_2 1.0.0 sourced
-plugin_with_deps_on_deps
-${BATS_TEST_DIRNAME}/fixtures/plugins/plugin_with_deps_on_deps/1.0.0/plugin_with_deps_on_deps.bash
-${BATS_TEST_DIRNAME}/fixtures/plugins/plugin_with_deps_on_deps/1.0.0/plugin.json
+plugin_with_recursive_deps
+${BATS_TEST_DIRNAME}/fixtures/plugins/plugin_with_recursive_deps/1.0.0/plugin_with_recursive_deps.bash
+${BATS_TEST_DIRNAME}/fixtures/plugins/plugin_with_recursive_deps/1.0.0/plugin.json
 EOF
 }
 
@@ -191,7 +191,7 @@ EOF
   assert_failure
   cat << EOF | assert_output -
 # plugin_with_missing_deps 1.0.0 sourced
-# plugin_with_deps_on_deps 1.0.0 sourced
+# plugin_with_recursive_deps 1.0.0 sourced
 # plugin_with_deps 1.0.0 sourced
 # plugin_1 1.0.0 sourced
 # plugin_2 1.0.0 sourced

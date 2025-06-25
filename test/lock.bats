@@ -48,13 +48,13 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
-  _create_beefile_with 'BEE_PLUGINS=(plugin_with_deps_on_deps plugin_with_deps)'
+  _create_generic_plugin_repo plugin_with_recursive_deps
+  _create_beefile_with 'BEE_PLUGINS=(plugin_with_recursive_deps plugin_with_deps)'
   bee pull
   run bee install
   run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
   cat << EOF | assert_output -
-├── plugin_with_deps_on_deps:1.0.0
+├── plugin_with_recursive_deps:1.0.0
 │   ├── plugin_with_deps:1.0.0
 │   │   ├── plugin_1:1.0.0
 │   │   └── plugin_2:1.0.0
@@ -114,10 +114,10 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
+  _create_generic_plugin_repo plugin_with_recursive_deps
   _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
-├── plugin_with_deps_on_deps:1.0.0
+├── plugin_with_recursive_deps:1.0.0
 │   ├── plugin_with_deps:1.0.0
 │   │   ├── plugin_1:1.0.0
 │   │   └── plugin_2:1.0.0
@@ -130,7 +130,7 @@ EOF
   run bee install
   cat << EOF | assert_output -
 Installing plugins based on ${BATS_TEST_TMPDIR}/Beefile.lock
-├── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+├── #S${BEE_CHECK_SUCCESS} plugin_with_recursive_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
 │   │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
@@ -169,10 +169,10 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_generic_plugin_repo plugin_with_deps
-  _create_generic_plugin_repo plugin_with_deps_on_deps
+  _create_generic_plugin_repo plugin_with_recursive_deps
   _create_beefile_with
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
-├── plugin_with_deps_on_deps:1.0.0
+├── plugin_with_recursive_deps:1.0.0
 │   ├── plugin_with_deps:1.0.0
 │   │   ├── plugin_1:1.0.0
 │   │   └── plugin_2:1.0.0
@@ -185,7 +185,7 @@ EOF
   bee install
   run cat "${BATS_TEST_TMPDIR}/Beefile.lock"
   cat << EOF | assert_output -
-├── plugin_with_deps_on_deps:1.0.0
+├── plugin_with_recursive_deps:1.0.0
 │   ├── plugin_with_deps:1.0.0
 │   │   ├── plugin_1:1.0.0
 │   │   └── plugin_2:1.0.0

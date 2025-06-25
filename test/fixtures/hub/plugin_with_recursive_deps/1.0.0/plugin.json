@@ -1,0 +1,17 @@
+{
+  "name": "plugin_with_recursive_deps",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://github.com/sschmid/bee",
+  "authors": [
+    "sschmid"
+  ],
+  "info": "bee plugin_with_recursive_deps",
+  "git": "file://$HOME/plugins/plugin_with_recursive_deps",
+  "tag": "v1.0.0",
+  "sha256": "ea4caad0480a77bbe1727f1e10e9200a2e7b28f697983878eb83d80ad5645c0e",
+  "dependencies": [
+    "plugin_with_deps:1.0.0",
+    "plugin_1:1.0.0"
+  ]
+}
