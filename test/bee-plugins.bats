@@ -195,8 +195,8 @@ EOF
 # plugin_with_deps 1.0.0 sourced
 # plugin_1 1.0.0 sourced
 # plugin_2 1.0.0 sourced
-${BEE_ERROR} Missing plugin: 'missing:1.0.0'
-${BEE_ERROR} Missing plugin: 'othermissing:1.0.0'
+${BEE_ERROR} Missing plugin: 'missing_1:1.0.0'
+${BEE_ERROR} Missing plugin: 'missing_2:1.0.0'
 EOF
 }
 

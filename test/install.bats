@@ -204,15 +204,15 @@ EOF
   cat << EOF | assert_output -
 Installing
 └── #S${BEE_CHECK_SUCCESS} plugin_with_missing_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-    ├── #E${BEE_CHECK_FAIL} missing:1.0.0#
-    ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-    │   ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-    │   │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-    │   │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
-    │   └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
-    └── #E${BEE_CHECK_FAIL} othermissing:1.0.0#
-${BEE_ERROR} Couldn't install plugin: missing:1.0.0
-${BEE_ERROR} Couldn't install plugin: othermissing:1.0.0
+    ├── #E${BEE_CHECK_FAIL} missing_1:1.0.0#
+    ├── #E${BEE_CHECK_FAIL} missing_2:1.0.0#
+    └── #S${BEE_CHECK_SUCCESS} plugin_with_deps_on_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+        ├── #S${BEE_CHECK_SUCCESS} plugin_with_deps:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+        │   ├── #S${BEE_CHECK_SUCCESS} plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+        │   └── #S${BEE_CHECK_SUCCESS} plugin_2:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})#
+        └── plugin_1:1.0.0 (file://${BATS_TEST_TMPDIR}/${TEST_HUB_1})
+${BEE_ERROR} Couldn't install plugin: missing_1:1.0.0
+${BEE_ERROR} Couldn't install plugin: missing_2:1.0.0
 EOF
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_missing_deps/1.0.0/plugin_with_missing_deps.bash"
   assert_file_exist "${BEE_CACHE_PATH}/plugins/plugin_with_deps_on_deps/1.0.0/plugin_with_deps_on_deps.bash"
