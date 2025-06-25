@@ -1,6 +1,4 @@
-if [[ ! -v TEST_PLUGIN_QUIET ]]; then
-  echo "# plugin_with_deps_on_deps 1.0.0 sourced"
-fi
+_plugin_log "# plugin_with_deps_on_deps 1.0.0 sourced"
 
 plugin_with_deps_on_deps() {
   if (( $# > 0 )); then

@@ -1,6 +1,6 @@
 setup() {
   load 'test-helper'
- _common_setup
+  _common_setup
 }
 
 _test_dependencies() {

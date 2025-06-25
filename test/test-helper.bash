@@ -111,11 +111,11 @@ assert_bee_help() {
   assert_output --partial "plugin-based bash automation"
 }
 
-# shellcheck disable=SC2154,SC2207,SC2068,SC2206
+# shellcheck disable=SC2207,SC2206,SC2068
 assert_comp() {
   export COMP_LINE="$1"
   export COMP_POINT="${#COMP_LINE}"
-  export TEST_PLUGIN_QUIET=1
+  _disable_plugin_log
   run bee bee::comp
   actual=("${output}")
   actual=($(for i in ${actual[@]}; do echo "$i"; done | LC_ALL=C sort))
@@ -131,8 +131,18 @@ assert_comp() {
   fi
 }
 
+_plugin_log() {
+  echo "$@"
+}
+export -f _plugin_log
+
+_disable_plugin_log() {
+  # shellcheck disable=SC2317
+  _plugin_log() { :; }
+}
+
 ################################################################################
-# Hubs
+# hubs
 ################################################################################
 _create_bee_hub_repo() {
   local hub="$1"

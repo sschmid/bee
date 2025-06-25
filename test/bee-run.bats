@@ -1,8 +1,8 @@
 setup() {
   load 'test-helper'
- _common_setup
+  _common_setup
   _export_beerc_with 'bee::secrets() { echo "bee-secrets $@"; }'
-  export TEST_PLUGIN_QUIET=1
+  _disable_plugin_log
 }
 
 @test "prints bee help when no args" {

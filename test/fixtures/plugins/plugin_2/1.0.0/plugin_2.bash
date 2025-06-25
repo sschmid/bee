@@ -4,9 +4,8 @@ if [[ -v OTHERTEST_PLUGIN_SOURCED ]]; then
 fi
 
 OTHERTEST_PLUGIN_SOURCED=1
-if [[ ! -v TEST_PLUGIN_QUIET ]]; then
-  echo "# plugin_2 1.0.0 sourced"
-fi
+
+_plugin_log "# plugin_2 1.0.0 sourced"
 
 plugin_2() {
   if (( $# )); then

@@ -9,7 +9,7 @@
   "info": "bee plugin_1",
   "git": "file://$HOME/plugins/plugin_with_deps_on_deps",
   "tag": "v1.0.0",
-  "sha256": "83c15dc03da05c715641c88bde443edee67149e4c7c176bd3cd42cdcc966d9f9",
+  "sha256": "b0d29d45b9c341d9b7a7e9788525b21ad401dca937910c606d8b7e09ffdb351d",
   "dependencies": [
     "plugin_with_deps:1.0.0",
     "plugin_1:1.0.0"

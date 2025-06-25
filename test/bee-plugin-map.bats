@@ -1,10 +1,10 @@
 setup() {
   load 'test-helper'
- _common_setup
+  _common_setup
   _export_beerc
   _source_beerc
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  export TEST_PLUGIN_QUIET=1
+  _disable_plugin_log
 }
 
 @test "maps latest version" {

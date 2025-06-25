@@ -1,6 +1,6 @@
 setup() {
   load 'test-helper'
- _common_setup
+  _common_setup
   _export_beerc
 }
 

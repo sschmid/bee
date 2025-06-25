@@ -146,9 +146,9 @@ EOF
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
   _create_beefile_with
-  # shellcheck disable=SC2030,SC2031
+  _disable_plugin_log
+  # shellcheck disable=SC2031
   export TEST_BEE_PLUGINS_PATHS_CUSTOM=1
-  export TEST_PLUGIN_QUIET=1
   cat << 'EOF' >"${BATS_TEST_TMPDIR}/Beefile.lock"
 └── local_plugin:local
     ├── plugin_1:1.0.0

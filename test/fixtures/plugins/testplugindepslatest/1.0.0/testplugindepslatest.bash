@@ -1,6 +1,4 @@
-if [[ ! -v TEST_PLUGIN_QUIET ]]; then
-  echo "# testplugindepslatest 1.0.0 sourced"
-fi
+_plugin_log "# testplugindepslatest 1.0.0 sourced"
 
 testplugindepslatest() {
   if (( $# > 0 )); then

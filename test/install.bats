@@ -158,8 +158,7 @@ EOF
 }
 
 @test "installs local plugins with dependencies recursively" {
-  # shellcheck disable=SC2030,SC2031
-  export TEST_PLUGIN_QUIET=1
+  _disable_plugin_log
   _create_bee_hub_repo "${TEST_HUB_1}"
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
@@ -176,8 +175,7 @@ EOF
 }
 
 @test "installs local plugins with local tag with dependencies recursively" {
-  # shellcheck disable=SC2030,SC2031
-  export TEST_PLUGIN_QUIET=1
+  _disable_plugin_log
   _create_bee_hub_repo "${TEST_HUB_1}"
   _create_plugin_repo
   _create_generic_plugin_repo plugin_2
